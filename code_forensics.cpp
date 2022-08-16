@@ -1496,6 +1496,9 @@ auto main(int argc, const char** argv) -> int {
     Py_Initialize();
     if (in_script.empty()) {
         forensics = new PyForensics();
+        LOG_W(logger)
+            << "No filter script was provided - analysing all commits in "
+               "the whole repository might be slow for large projects";
 
     } else {
         LOG_I(logger) << "User-defined filter configuration was provided, "

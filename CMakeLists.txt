@@ -12,17 +12,18 @@ set(CMAKE_CXX_COMPILER clang++)
 # Treat included conan libraries as a system headers - ignore warnings.
 set(CONAN_SYSTEM_INCLUDES ON)
 
+# Otherwise boost compilation fails to work due to internal compilation errors.
+# No, 'SYSTEM_INCLUDES' does not help.
+add_compile_options(-Wno-c++11-narrowing)
+add_compile_options(-Wno-deprecated-declarations)
+
+find_package(Boost REQUIRED COMPONENTS system filesystem thread log
+                                       program_options python)
+find_package(Python REQUIRED COMPONENTS Development)
+find_package(fmt REQUIRED)
+
 include(${CMAKE_SOURCE_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
-
-find_package(
-  Boost
-  COMPONENTS system filesystem thread log program_options python
-  REQUIRED)
-find_package(
-  Python
-  COMPONENTS Interpreter Development
-  REQUIRED)
 
 add_compile_options(-ggdb)
 
@@ -34,19 +35,16 @@ add_compile_options(-Wno-format-security)
 add_compile_options(-Wno-c99-designator)
 add_executable(code_forensics code_forensics.cpp)
 
-target_link_libraries(code_forensics matplot)
+target_link_libraries(code_forensics PUBLIC Python::Python ${CONAN_LIBS})
+target_include_directories(code_forensics PUBLIC Boost::Python ${CONAN_LIBS})
 
-target_link_libraries(code_forensics ${Boost_LIBRARIES})
-target_link_libraries(code_forensics ${CONAN_LIBS})
-target_link_libraries(code_forensics ${Python_LIBRARIES})
+# target_link_directories(code_forensics PRIVATE ${CONAN_LIB_DIRS})
+# target_link_directories(code_forensics PRIVATE ${Boost_LIBRARY_DIRS})
+# target_link_directories(code_forensics PRIVATE ${Python_LIBRARY_DIRS})
 
-target_link_directories(code_forensics PRIVATE ${CONAN_LIB_DIRS})
-target_link_directories(code_forensics PRIVATE ${Boost_LIBRARY_DIRS})
-target_link_directories(code_forensics PRIVATE ${Python_LIBRARY_DIRS})
-
-target_include_directories(code_forensics PRIVATE ${Boost_INCLUDE_DIRS})
-target_include_directories(code_forensics PRIVATE ${CONAN_INCLUDE_DIRS})
-target_include_directories(code_forensics PRIVATE ${Python_INCLUDE_DIRS})
+# target_include_directories(code_forensics PRIVATE ${Boost_INCLUDE_DIRS})
+# target_include_directories(code_forensics PRIVATE ${CONAN_INCLUDE_DIRS})
+# target_include_directories(code_forensics PRIVATE ${Python_INCLUDE_DIRS})
 
 # set_target_properties(code_forensics PROPERTIES RUNTIME_OUTPUT_DIRECTORY
 # "${CMAKE_SOURCE_DIR}")

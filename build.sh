@@ -10,7 +10,7 @@ path=$(
 )
 
 function py_plotter() {
-    ./plotter.py
+    ./table_per_period.py
     echo "py plotter ok"
 }
 
@@ -35,17 +35,16 @@ function gdb_cmd {
 
 function try_build() {
     mkdir -p build
-    cd build
-    cmake ..
+    pushd build
+    cmake .. -D "CMAKE_MODULE_PATH=$ROOT/build/dependencies/conan"
     make -j12
 
     echo "git user compile ok"
-    OPTS="/tmp/nimskull --branch=devel"
+    OPTS="/tmp/nimskull --branch=devel --filter-script=../code_filter.py"
     ./bin/code_forensics --help
     ./bin/code_forensics $OPTS || gdb_cmd ./bin/code_forensics $OPTS
     echo "git user run ok"
-
-    # --filter-script=../code_filter.py
+    popd
 }
 
 function build_git_wrapper() {
@@ -69,10 +68,15 @@ function wrap_git() {
 
 }
 
+function conan_install() {
+    conan install . -if build/dependencies/conan --build=missing --settings compiler.libcxx="libstdc++11"
+}
+
 # try_build
 # build_git_wrapper
 # wrap_git
+conan_install
 try_build
-# py_plotter
+py_plotter
 # cmake .
 # make -j 12
