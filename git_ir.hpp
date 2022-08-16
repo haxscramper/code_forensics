@@ -5,8 +5,8 @@
 #include <unordered_map>
 #include <experimental/type_traits>
 
-#include "../common.hpp"
-#include "../generator.hpp"
+#include "common.hpp"
+#include "generator.hpp"
 
 /// Helper implementation to pass multiple types around in a 'pack'
 template <typename... Args>

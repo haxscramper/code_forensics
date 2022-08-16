@@ -14,11 +14,16 @@ function py_plotter() {
     echo "py plotter ok"
 }
 
+ROOT=$(pwd)
+
+echo "source $ROOT/gdb_decorator"
 function gdb_cmd {
     gdb \
         -batch \
+        -nx \
+        -ex "source $ROOT/gdb_decorator.py" \
         -ex "set print address off" \
-        -ex "set print frame-arguments scalar" \
+        -ex "set print frame-arguments none" \
         -ex "set print frame-info source-and-location" \
         -ex "set filename-display basename" \
         -ex "run" \
@@ -29,28 +34,18 @@ function gdb_cmd {
 }
 
 function try_build() {
-    cd git_user
-    # clang-tidy git_user.cpp git_ir.hpp || true
-    cmake .
+    mkdir -p build
+    cd build
+    cmake ..
     make -j12
 
-    # clang++ \
-    #     -fuse-ld=mold \
-    #     -std=c++2a \
-    #     -o git_user.bin \
-    #     -O3 \
-    #     -ferror-limit=4 \
-    #     -lboost_system \
-    #     -lboost_filesystem \
-    #     git_user/git_user.cpp \
-    #     @conanbuildinfo.gcc
-
     echo "git user compile ok"
-    # ./bin/git_user --help
-    OPTS="/tmp/nimskull --branch=devel --filter-script=code_filter.py"
-    ./bin/git_user --help
-    ./bin/git_user $OPTS || gdb_cmd ./bin/git_user $OPTS
+    OPTS="/tmp/nimskull --branch=devel"
+    ./bin/code_forensics --help
+    ./bin/code_forensics $OPTS || gdb_cmd ./bin/code_forensics $OPTS
     echo "git user run ok"
+
+    # --filter-script=../code_filter.py
 }
 
 function build_git_wrapper() {
@@ -69,7 +64,7 @@ function build_git_wrapper() {
 function wrap_git() {
     ./genwrapper \
         $path/git2.h \
-        -o=$PWD/git_user/gitwrap.hpp \
+        -o=$PWD/code_forensics/gitwrap.hpp \
         -extra-arg=-I/usr/lib/clang/14.0.6/include
 
 }

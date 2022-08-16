@@ -372,3 +372,4 @@ CMakeLists.txt.user*
 docs
 !Doxyfile
 
+.gdb_history

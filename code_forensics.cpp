@@ -1,4 +1,4 @@
-#include "../common.hpp"
+#include "common.hpp"
 #include "git_ir.hpp"
 
 #include <exception>
@@ -784,7 +784,7 @@ auto launch_analysis(git_oid& oid, walker_state* state)
         for (const auto& oid : state->sampled_commits) {
             file_tasks(params, state, oid, process_commit(oid, state));
             get_files.set_option(option::PostfixText{fmt::format(
-                "{}/{}", ++count, state->sampled_commits.size())});
+                "{}/{} commits", ++count, state->sampled_commits.size())});
             get_files.tick();
         }
         get_files.mark_as_completed();
@@ -1494,7 +1494,10 @@ auto main(int argc, const char** argv) -> int {
     PyImport_AppendInittab("forensics", &PyInit_forensics);
     // Initialize main python library part
     Py_Initialize();
-    if (!in_script.empty()) {
+    if (in_script.empty()) {
+        forensics = new PyForensics();
+
+    } else {
         LOG_I(logger) << "User-defined filter configuration was provided, "
                          "evaluating "
                       << in_script;

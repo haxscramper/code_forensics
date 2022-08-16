@@ -8,3 +8,8 @@ jobs:
       - run: |
           pip install conan
           conan install . --build=missing
+          mkdir build
+          cd build
+          cmake ..
+          make -j10
+          cd ..
