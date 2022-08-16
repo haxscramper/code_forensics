@@ -17,17 +17,16 @@ set(CONAN_SYSTEM_INCLUDES ON)
 add_compile_options(-Wno-c++11-narrowing)
 add_compile_options(-Wno-deprecated-declarations)
 
-find_package(Boost REQUIRED COMPONENTS system filesystem thread log
-                                       program_options python)
-find_package(Python REQUIRED COMPONENTS Development)
-find_package(fmt REQUIRED)
-
 include(${CMAKE_SOURCE_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-add_compile_options(-ggdb)
+find_package(Python REQUIRED COMPONENTS Development)
+find_package(Boost REQUIRED COMPONENTS system program_options python thread log)
+find_package(SqliteOrm REQUIRED)
+find_package(fmt REQUIRED)
+find_package(libgit2 REQUIRED)
+find_package(SQLite3 REQUIRED)
 
-# add_compile_options(-fmax-errors=1) add_compile_options(-fcoroutines)
 add_compile_options(-ferror-limit=1)
 add_compile_options(-fcoroutines-ts)
 
@@ -35,16 +34,20 @@ add_compile_options(-Wno-format-security)
 add_compile_options(-Wno-c99-designator)
 add_executable(code_forensics code_forensics.cpp)
 
-target_link_libraries(code_forensics PUBLIC Python::Python ${CONAN_LIBS})
-target_include_directories(code_forensics PUBLIC Boost::Python ${CONAN_LIBS})
+# Documentation says I can use `conan_basic_setup` and `CONAN_LIBS`, but this
+# does not work - I consistently end up with a linker error.
+target_link_libraries(
+  code_forensics
+  PUBLIC fmt::fmt
+         Python::Python
+         Boost::system
+         Boost::python
+         Boost::program_options
+         Boost::thread
+         Boost::log
+         SQLite::SQLite
+         libgit2::libgit2)
 
-# target_link_directories(code_forensics PRIVATE ${CONAN_LIB_DIRS})
-# target_link_directories(code_forensics PRIVATE ${Boost_LIBRARY_DIRS})
-# target_link_directories(code_forensics PRIVATE ${Python_LIBRARY_DIRS})
-
-# target_include_directories(code_forensics PRIVATE ${Boost_INCLUDE_DIRS})
-# target_include_directories(code_forensics PRIVATE ${CONAN_INCLUDE_DIRS})
-# target_include_directories(code_forensics PRIVATE ${Python_INCLUDE_DIRS})
-
-# set_target_properties(code_forensics PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-# "${CMAKE_SOURCE_DIR}")
+target_include_directories(
+  code_forensics PUBLIC Python::Python Boost::system Boost::program_options
+                        SqliteOrm::sqlite_orm)
