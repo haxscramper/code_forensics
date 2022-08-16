@@ -5,11 +5,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install Conan
+        id: conan
+        uses: turtlebrowser/get-conan@main
       - run: |
-          pip install conan
-          conan install . --build=missing
+          conan install . -if build/dependencies/conan --build=missing
           mkdir build
           cd build
-          cmake ..
+          cmake .. -D "CMAKE_MODULE_PATH=$(PWD)/../build/dependencies/conan"
           make -j10
           cd ..
