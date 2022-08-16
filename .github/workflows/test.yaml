@@ -1,0 +1,10 @@
+name: "Compile and execute analysis for the current repository"
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          pip install conan
+          conan install . --build=missing
