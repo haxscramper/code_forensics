@@ -364,3 +364,11 @@ CMakeLists.txt.user*
 
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,qt,qtcreator,emacs,conan,cmake,python
+
+**/.cmake
+**/.qtc_clangd
+**/qtcsettings*
+**/CMakeCache*
+docs
+!Doxyfile
+
