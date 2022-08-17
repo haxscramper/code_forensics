@@ -1,0 +1,3 @@
+- [ ] Allow passing extra configuration options to the executed blame
+  subprocess - there are many flags for ignoring certain commits, something
+  for line similarity etc. All of this must be configurable

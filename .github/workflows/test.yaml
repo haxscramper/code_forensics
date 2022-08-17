@@ -3,11 +3,24 @@ on: push
 jobs:
   test:
     runs-on: ubuntu-latest
+    container: archlinux:latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install Conan
-        id: conan
-        uses: turtlebrowser/get-conan@main
+      - run: pacman --noconfirm -Syu
+      - name: "Install dependencies"
+        run: |
+          pacman --noconfirm -S \
+            gcc \
+            clang \
+            python-pip \
+            wget \
+            git \
+            cmake \
+            make \
+            boost
+
+      - name: "Install conan"
+        run: pip install conan
       - run: |
           conan install . -if build/dependencies/conan --build=missing
           mkdir build

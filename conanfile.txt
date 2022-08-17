@@ -5,11 +5,6 @@ yaml-cpp/0.7.0
 range-v3/0.12.0
 sqlite_orm/1.7.1
 indicators/2.2
-boost/1.79.0
-
-[options]
-boost:shared=False
-boost:without_python=False
 
 [generators]
 cmake
