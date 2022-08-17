@@ -265,7 +265,6 @@ Str parse_python_exception() {
 auto main(int argc, const char** argv) -> int {
     auto vm = parse_cmdline(argc, argv);
     PrintVariableMap(vm);
-
     auto file_sink = create_file_sink(vm["logfile"].as<Str>());
     auto out_sink  = create_std_sink();
 

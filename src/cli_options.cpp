@@ -102,6 +102,16 @@ T cast_env_or(CR<Str> env, CR<T> or_value) {
     }
 }
 
+template <typename T>
+T map_env(CR<Str> env, Func<T(CR<Str>)> callback) {
+    const char* value = std::getenv(env.c_str());
+    if (value == nullptr) {
+        return callback("");
+    } else {
+        return callback(Str{value});
+    }
+}
+
 po::variables_map parse_cmdline(int argc, const char** argv) {
     po::variables_map                  vm;
     po::options_description            desc{"Options"};
@@ -135,7 +145,16 @@ po::variables_map parse_cmdline(int argc, const char** argv) {
          "more than once)") //
         ("log-progress",
          po::value<BoolOption>()->default_value(
-             BoolOption(cast_env_or("CI", true)), "$CI or 'true'"),
+             BoolOption(map_env<bool>(
+                 "CI",
+                 [](CR<Str> value) {
+                     if (value.empty()) {
+                         return true;
+                     } else {
+                         return false;
+                     }
+                 })),
+             "$CI or 'true'"),
          "Show dynamic progress bars for operations") //
         ("blame-subprocess",
          po::value<BoolOption>()->default_value(BoolOption(true), "true"),

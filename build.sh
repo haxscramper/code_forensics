@@ -32,13 +32,17 @@ function try_build() {
     pushd build
     cmake ..
     make -j12
+    popd
+}
 
+bin=./build/bin/code_forensics
+
+function debug_run() {
     echo "git user compile ok"
     OPTS="/tmp/nimskull --log-progress=false --branch=devel --filter-script=../scripts/code_filter.py"
-    ./bin/code_forensics --help || gdb_cmd ./bin/code_forensics --help
-    ./bin/code_forensics $OPTS || gdb_cmd ./bin/code_forensics $OPTS
+    bin --help || gdb_cmd bin --help
+    bin $OPTS || gdb_cmd bin $OPTS
     echo "git user run ok"
-    popd
 }
 
 CONAN_DIR="$ROOT/build/dependencies/conan"
@@ -75,13 +79,15 @@ function conan_install() {
     conan install . -if build/dependencies/conan --build=missing --settings compiler.libcxx="libstdc++11"
 }
 
-export CI=true
+CI=true
 
 # try_build
 # build_git_wrapper
 # wrap_git
 # conan_install
 try_build
-py_plotter
+export CI
+./tests/ci_compare_repo.sh
+# py_plotter
 # cmake .
 # make -j 12
