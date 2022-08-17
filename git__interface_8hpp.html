@@ -117,11 +117,13 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfmt_1_1formatter_3_01git__oid_01_4.html">fmt::formatter&lt; git_oid &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstd_1_1hash_3_01git__oid_01_4.html">std::hash&lt; git_oid &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash for git OID.  <a href="structstd_1_1hash_3_01git__oid_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacegit"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegit.html">git</a></td></tr>
+<tr class="memdesc:namespacegit"><td class="mdescLeft">&#160;</td><td class="mdescRight">C++ wrapper for the libgit2 library. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacestd"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestd.html">std</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -134,10 +136,13 @@ Macros</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a4a74fe013dba8d87176fee4b5e5cb80d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a4a74fe013dba8d87176fee4b5e5cb80d">oid_tostr</a> (git_oid oid)</td></tr>
+<tr class="memdesc:a4a74fe013dba8d87176fee4b5e5cb80d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert git ID object to it's string representation.  <a href="git__interface_8hpp.html#a4a74fe013dba8d87176fee4b5e5cb80d">More...</a><br /></td></tr>
 <tr class="separator:a4a74fe013dba8d87176fee4b5e5cb80d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1eb912b18555e43af6f1dffb1438a3d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a1eb912b18555e43af6f1dffb1438a3d0">tree_walk</a> (const git_tree *tree, git_treewalk_mode mode, <a class="el" href="common_8hpp.html#ade2480cf7cadbc49262a063a63264a62">Func</a>&lt; int(const char *, const git_tree_entry *)&gt; callback)</td></tr>
+<tr class="memdesc:a1eb912b18555e43af6f1dffb1438a3d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterate over the git tree in specified order using provided callback.  <a href="git__interface_8hpp.html#a1eb912b18555e43af6f1dffb1438a3d0">More...</a><br /></td></tr>
 <tr class="separator:a1eb912b18555e43af6f1dffb1438a3d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57aad2e609d0f5569322369832487e0b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a57aad2e609d0f5569322369832487e0b">operator==</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; lhs, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; rhs)</td></tr>
+<tr class="memdesc:a57aad2e609d0f5569322369832487e0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare git OID for equality.  <a href="git__interface_8hpp.html#a57aad2e609d0f5569322369832487e0b">More...</a><br /></td></tr>
 <tr class="separator:a57aad2e609d0f5569322369832487e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -196,6 +201,8 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Convert git ID object to it's string representation. </p>
+
 </div>
 </div>
 <a id="a57aad2e609d0f5569322369832487e0b"></a>
@@ -231,6 +238,8 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Compare git OID for equality. </p>
 
 </div>
 </div>
@@ -273,6 +282,17 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Iterate over the git tree in specified order using provided callback. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tree</td><td>Pointer to the git tree to walk over </td></tr>
+    <tr><td class="paramname">mode</td><td>Order of the tree walk </td></tr>
+    <tr><td class="paramname">callback</td><td>Callback to execute on each entry in the tree. Should return GIT_OK value in order continue the iteration. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>both arguments are managed by the tree walk algorithm - if you need to store the root (1st argument) or the entry itself for some post-walk processing you need to use copy the string or use `git::entry_dup` for each argument respectively. </dd></dl>
 
 </div>
 </div>

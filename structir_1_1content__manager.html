@@ -92,6 +92,9 @@ $(document).ready(function(){initNavTree('structir_1_1content__manager.html','')
 </div><!--header-->
 <div class="contents">
 
+<p>Main store for repository analysis.  
+ <a href="structir_1_1content__manager.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="git__ir_8hpp_source.html">git_ir.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for ir::content_manager:</div>
@@ -102,8 +105,10 @@ Collaboration diagram for ir::content_manager:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab240b54ad497c0158c7d36ff03374689"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#ab240b54ad497c0158c7d36ff03374689">parentDirectory</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#aa20d22486508f139f743e51d510c9b78">Path</a> &gt; dir) -&gt; <a class="el" href="common_8hpp.html#a831800a61c1b662adafb727abe4ef552">Opt</a>&lt; DirectoryId &gt;</td></tr>
+<tr class="memdesc:ab240b54ad497c0158c7d36ff03374689"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get <em>optional</em> parent directory Id from the path.  <a href="structir_1_1content__manager.html#ab240b54ad497c0158c7d36ff03374689">More...</a><br /></td></tr>
 <tr class="separator:ab240b54ad497c0158c7d36ff03374689"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a240d29adbeaf7e561c2ee1a41ef76fb7"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#a240d29adbeaf7e561c2ee1a41ef76fb7">getDirectory</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#aa20d22486508f139f743e51d510c9b78">Path</a> &gt; dir) -&gt; DirectoryId</td></tr>
+<tr class="memdesc:a240d29adbeaf7e561c2ee1a41ef76fb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get directory ID from the provided path.  <a href="structir_1_1content__manager.html#a240d29adbeaf7e561c2ee1a41ef76fb7">More...</a><br /></td></tr>
 <tr class="separator:a240d29adbeaf7e561c2ee1a41ef76fb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aecde7f7fa96079a3a95cef47a923c922"><td class="memTemplParams" colspan="2">template&lt;dod::IsIdType Id&gt; </td></tr>
 <tr class="memitem:aecde7f7fa96079a3a95cef47a923c922"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#aecde7f7fa96079a3a95cef47a923c922">at</a> (Id id) -&gt; typename <a class="el" href="namespacedod.html#a90d2ece056b0d6b205602755ec9df792">dod::value_type_t</a>&lt; Id &gt; &amp;</td></tr>
@@ -121,7 +126,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a9a2bab3af5f98b7483912d6ad7196dbc"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a>, DirectoryId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#a9a2bab3af5f98b7483912d6ad7196dbc">prefixes</a></td></tr>
 <tr class="separator:a9a2bab3af5f98b7483912d6ad7196dbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Main store for repository analysis. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="acb86bfff27fb0c36810ebfb49fb8f151"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acb86bfff27fb0c36810ebfb49fb8f151">&#9670;&nbsp;</a></span>add()</h2>
 
@@ -206,6 +213,8 @@ template&lt;dod::IsIdType Id&gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p>Get directory ID from the provided path. </p>
+
 </div>
 </div>
 <a id="ab240b54ad497c0158c7d36ff03374689"></a>
@@ -231,6 +240,8 @@ template&lt;dod::IsIdType Id&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Get <em>optional</em> parent directory Id from the path. </p>
 
 </div>
 </div>

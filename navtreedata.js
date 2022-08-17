@@ -65,8 +65,8 @@ var NAVTREEINDEX =
 "gitwrap_8hpp.html#a1fc625257fc667dabad44564cafb6436",
 "gitwrap_8hpp.html#a6aec68293202296e41be06f77a2e66f5",
 "gitwrap_8hpp.html#ac32d3ce04a43401d4bde11b0ed1b1cf6",
-"logging_8cpp.html#aa19fa41017122b3de372db939ce6ff3f",
-"structis__base__of__template.html"
+"logging_8cpp.html#a6d90e11d77890557687ed30cf72e45ec",
+"structir_1_1orm__string.html#adb59b7e0c7fc49e68e9d53d1262b6e9c"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

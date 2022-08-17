@@ -6,5 +6,5 @@ digraph "Graphical Class Hierarchy"
   rankdir="LR";
   Node0 [label="ir::Commit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1_commit.html",tooltip="single commit by author, taken at some point in time"];
   Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node1 [label="ir::orm_commit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1orm__commit.html",tooltip=" "];
+  Node1 [label="ir::orm_commit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1orm__commit.html",tooltip="ORM wrapper for the commit data."];
 }

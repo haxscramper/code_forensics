@@ -1,5 +1,6 @@
 var NAVTREEINDEX5 =
 {
+"structir_1_1orm__string.html#adb59b7e0c7fc49e68e9d53d1262b6e9c":[2,0,4,14,1],
 "structis__base__of__template.html":[2,0,11],
 "structis__base__of__template.html#a088071fd9a51cc7d97c2ce3dc7fc235b":[2,0,11,3],
 "structis__base__of__template.html#a2af3e045e5bcba48278d6c82c3a29ac9":[2,0,11,0],

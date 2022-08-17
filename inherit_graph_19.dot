@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="ir::content_manager",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1content__manager.html",tooltip=" "];
+  Node0 [label="ir::content_manager",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1content__manager.html",tooltip="Main store for repository analysis."];
 }

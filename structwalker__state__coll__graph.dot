@@ -6,7 +6,7 @@ digraph "walker_state"
   rankdir="LR";
   Node1 [label="walker_state",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Mutable state passed around walker configurations."];
   Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" content" ,fontname="Helvetica"];
-  Node2 [label="ir::content_manager",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1content__manager.html",tooltip=" "];
+  Node2 [label="ir::content_manager",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1content__manager.html",tooltip="Main store for repository analysis."];
   Node3 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" multi" ,fontname="Helvetica"];
   Node3 [label="dod::MultiStore\< dod\l::InternStore\< AuthorId,\l ir::Author \>, dod::InternStore\l\< LineId, ir::LineData \>, dod\l::Store\< FileId, ir::File \>, dod\l::Store\< CommitId, ir::Commit \>,\l dod::Store\< DirectoryId, ir::Directory\l \>, dod::InternStore\< StringId, ir::String \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structdod_1_1_multi_store.html",tooltip=" "];
 }

@@ -94,6 +94,9 @@ $(document).ready(function(){initNavTree('structdod_1_1_id.html',''); initResiza
 </div><!--header-->
 <div class="contents">
 
+<p>DOD <a class="el" href="structdod_1_1_id.html" title="DOD Id type.">Id</a> type.  
+ <a href="structdod_1_1_id.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="dod__base_8hpp_source.html">dod_base.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for dod::Id&lt; IdType &gt;:</div>
@@ -138,7 +141,7 @@ Protected Attributes</h2></td></tr>
 <div class="textblock"><h3>template&lt;std::integral IdType&gt;<br />
 struct dod::Id&lt; IdType &gt;</h3>
 
-<p>DOD <a class="el" href="structdod_1_1_id.html">Id</a> type</p>
+<p>DOD <a class="el" href="structdod_1_1_id.html" title="DOD Id type.">Id</a> type. </p>
 <dl class="section note"><dt>Note</dt><dd>It does not have a default constructor, if you need co construct a an empyt/nil value (not recommended) for some field/argument you can use the static <code>::Nil</code> method defined in the derivations produced in the <code>DECL_ID_TYPE</code> macro</dd>
 <dd>
 ID types can be thought of as a pointers or indices into some 'memory' container and as such should only be parametrized using unsigned data types. They <em>do not</em> provide any sort of pointer-like arithmentics or any other operations that might fail due to the overflow. Container indices can be freely converted to the pointers. </dd></dl>
