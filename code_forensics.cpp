@@ -28,6 +28,7 @@
 
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/lock_guard.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <boost/program_options.hpp>
 #include <boost/log/trivial.hpp>
@@ -183,6 +184,7 @@ struct walker_config {
 
     Str  db_path;
     bool try_incremental;
+    bool log_progress_bars;
 
     /// Allow processing of a specific path in the repository
     Func<bool(CR<Str>)> allow_path;
@@ -741,8 +743,7 @@ auto init_progress(int max) -> BlockProgressBar {
 #define INIT_PROGRESS_BAR(name, counter, max)                             \
     int  counter = 0;                                                     \
     auto name    = init_progress(max);                                    \
-    log::core::get()->flush();                                            \
-    finally close##__LINE__{[&name]() { name.mark_as_completed(); }};
+    log::core::get()->flush();
 
 using BarText = option::PostfixText;
 
@@ -832,11 +833,13 @@ auto launch_analysis(git_oid& oid, walker_state* state)
         for (const auto& param : params) {
             ++count;
             std::chrono::duration<double> diff = clock::now() - start;
-            process_files.set_option(option::PostfixText{fmt::format(
-                "{}/{} (avg {:1.4f}s/file)",
-                count,
-                params.size(),
-                (diff / count).count())});
+            if (state->config->log_progress_bars) {
+                process_files.set_option(option::PostfixText{fmt::format(
+                    "{}/{} (avg {:1.4f}s/file)",
+                    count,
+                    params.size(),
+                    (diff / count).count())});
+            }
 
             process_files.tick();
             auto sub_task =
@@ -896,7 +899,9 @@ auto launch_analysis(git_oid& oid, walker_state* state)
         }
 
 
-        process_files.mark_as_completed();
+        if (state->config->log_progress_bars) {
+            process_files.mark_as_completed();
+        }
     }
     for (auto& future : walked) {
         future.get();
@@ -1026,7 +1031,13 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
         for (const auto& [id, string] :
              content.multi.store<ir::String>().pairs()) {
             storage.insert(ir::orm_string(id, ir::String{*string}));
-            tick_next(strings, counter, max, "strings");
+            if (state->config->log_progress_bars) {
+                tick_next(strings, counter, max, "strings");
+            }
+        }
+
+        if (state->config->log_progress_bars) {
+            strings.mark_as_completed();
         }
     }
 
@@ -1036,7 +1047,12 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
         for (const auto& [id, author] :
              content.multi.store<ir::Author>().pairs()) {
             storage.insert(ir::orm_author(id, *author));
-            tick_next(authors, counter, max, "authors");
+            if (state->config->log_progress_bars) {
+                tick_next(authors, counter, max, "authors");
+            }
+        }
+        if (state->config->log_progress_bars) {
+            authors.mark_as_completed();
         }
     }
 
@@ -1047,7 +1063,13 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
         for (const auto& [id, line] :
              content.multi.store<ir::LineData>().pairs()) {
             storage.insert(ir::orm_line(id, *line));
-            tick_next(authors, counter, max, "unique lines");
+            if (state->config->log_progress_bars) {
+                tick_next(authors, counter, max, "unique lines");
+            }
+        }
+
+        if (state->config->log_progress_bars) {
+            authors.mark_as_completed();
         }
     }
     {
@@ -1057,7 +1079,13 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
         for (const auto& [id, commit] :
              content.multi.store<ir::Commit>().pairs()) {
             storage.insert(ir::orm_commit(id, *commit));
-            tick_next(authors, counter, max, "commits");
+            if (state->config->log_progress_bars) {
+                tick_next(authors, counter, max, "commits");
+            }
+        }
+
+        if (state->config->log_progress_bars) {
+            authors.mark_as_completed();
         }
     }
     {
@@ -1067,7 +1095,13 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
         for (const auto& [id, dir] :
              content.multi.store<ir::Directory>().pairs()) {
             storage.insert(ir::orm_dir(id, *dir));
-            tick_next(authors, counter, max, "directories");
+            if (state->config->log_progress_bars) {
+                tick_next(authors, counter, max, "directories");
+            }
+        }
+
+        if (state->config->log_progress_bars) {
+            authors.mark_as_completed();
         }
     }
     {
@@ -1086,7 +1120,13 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
                     file->changed_ranges[idx], .file = id, .index = idx});
             }
 
-            tick_next(authors, counter, max, "files");
+            if (state->config->log_progress_bars) {
+                tick_next(authors, counter, max, "files");
+            }
+        }
+
+        if (state->config->log_progress_bars) {
+            authors.mark_as_completed();
         }
     }
     storage.commit();
@@ -1378,6 +1418,48 @@ BOOST_PYTHON_MODULE(forensics) {
     py::scope().attr("config")     = module_level_object;
 }
 
+// https://stackoverflow.com/questions/51723237/boostprogram-options-bool-switch-used-multiple-times
+// bool options is taken from this SO question - it is not /exactly/ what I
+// aimed for, but this solution allows specifying =true or =false on the
+// command line explicitly, which I aimed for
+
+class BoolOption {
+  public:
+    BoolOption(bool initialState = false) : state(initialState) {}
+    bool getState() const { return state; }
+    void switchState() { state = !state; }
+         operator bool() const { return state; }
+
+  private:
+    bool state;
+};
+
+namespace boost {
+template <>
+bool lexical_cast<bool, Str>(const Str& arg) {
+    return arg == "true" || arg == "on" || arg == "1";
+}
+
+template <>
+Str lexical_cast<Str, bool>(const bool& b) {
+    std::ostringstream ss;
+    ss << std::boolalpha << b;
+    return ss.str();
+}
+} // namespace boost
+
+
+void validate(boost::any& v, Vec<Str> const& xs, BoolOption* opt, long) {
+    fmt::print("Provided validation values {}\n", xs);
+    if (v.empty()) {
+        // I don't know how to assign default here so this works only when
+        // default is false
+        v = BoolOption(true);
+    } else {
+        v = BoolOption(lexical_cast<bool>(xs[0]));
+    }
+}
+
 
 auto parse_cmdline(int argc, const char** argv) -> variables_map {
     variables_map                  vm;
@@ -1394,6 +1476,7 @@ auto parse_cmdline(int argc, const char** argv) -> variables_map {
          value<Str>()->default_value("master"),
          "Repository branch to analyse") //
         ("incremental",
+         value<BoolOption>()->default_value(BoolOption(false), "false"),
          "Load previosly created database and only process commits that "
          "were not registered previously") //
         ("outfile",
@@ -1407,8 +1490,11 @@ auto parse_cmdline(int argc, const char** argv) -> variables_map {
          value<Vec<Str>>(),
          "Config file where options may be specified (can be specified "
          "more than once)") //
+        ("log-progress",
+         value<BoolOption>()->default_value(BoolOption(true), "true"),
+         "Show dynamic progress bars for operations") //
         ("blame-subprocess",
-         bool_switch()->default_value(true),
+         value<BoolOption>()->default_value(BoolOption(true), "true"),
          "Use blame for subprocess")                    //
         ("repo", value<Str>(), "Input repository path") //
         ("filter-script",
@@ -1472,20 +1558,20 @@ void init_logger_properties() {
 
 /// Parses the value of the active python exception
 /// NOTE SHOULD NOT BE CALLED IF NO EXCEPTION
-std::string parse_python_exception() {
+Str parse_python_exception() {
     PyObject *type_ptr = NULL, *value_ptr = NULL, *traceback_ptr = NULL;
     // Fetch the exception info from the Python C API
     PyErr_Fetch(&type_ptr, &value_ptr, &traceback_ptr);
 
     // Fallback error
-    std::string ret("Unfetchable Python error");
+    Str ret("Unfetchable Python error");
     // If the fetch got a type pointer, parse the type into the exception
     // string
     if (type_ptr != NULL) {
         py::handle<> h_type(type_ptr);
         py::str      type_pstr(h_type);
         // Extract the string from the boost::python object
-        py::extract<std::string> e_type_pstr(type_pstr);
+        py::extract<Str> e_type_pstr(type_pstr);
         // If a valid string extraction is available, use it
         //  otherwise use fallback
         if (e_type_pstr.check()) {
@@ -1497,13 +1583,13 @@ std::string parse_python_exception() {
     // Do the same for the exception value (the stringification of the
     // exception)
     if (value_ptr != NULL) {
-        py::handle<>             h_val(value_ptr);
-        py::str                  a(h_val);
-        py::extract<std::string> returned(a);
+        py::handle<>     h_val(value_ptr);
+        py::str          a(h_val);
+        py::extract<Str> returned(a);
         if (returned.check()) {
             ret += ": " + returned();
         } else {
-            ret += std::string(": Unparseable Python error: ");
+            ret += Str(": Unparseable Python error: ");
         }
     }
     // Parse lines from the traceback using the Python traceback module
@@ -1518,18 +1604,86 @@ std::string parse_python_exception() {
         py::object tb_str(py::str("\n").join(tb_list));
         // Extract the string, check the extraction, and fallback in
         // necessary
-        py::extract<std::string> returned(tb_str);
+        py::extract<Str> returned(tb_str);
         if (returned.check()) {
             ret += ": " + returned();
         } else {
-            ret += std::string(": Unparseable Python traceback");
+            ret += Str(": Unparseable Python traceback");
         }
     }
     return ret;
 }
 
+// inline void PrintUsage(const options_description desc) {
+//     std::cout << "Usage: " << app_name << " [options]" << std::endl;
+//     std::cout << "    App description" << std::endl;
+//     std::cout << desc << std::endl;
+//     std::cout << std::endl << "v" << VERSION << std::endl;
+// }
+
+inline void PrintVariableMap(const variables_map vm) {
+    for (auto& it : vm) {
+        std::cout << "> " << it.first;
+        if (((boost::any)it.second.value()).empty()) {
+            std::cout << "(empty)";
+        }
+        if (vm[it.first].defaulted() || it.second.defaulted()) {
+            std::cout << "(default)";
+        }
+        std::cout << "=";
+
+        bool is_char;
+        try {
+            boost::any_cast<const char*>(it.second.value());
+            is_char = true;
+        } catch (const boost::bad_any_cast&) { is_char = false; }
+        bool is_str;
+        try {
+            boost::any_cast<std::string>(it.second.value());
+            is_str = true;
+        } catch (const boost::bad_any_cast&) { is_str = false; }
+
+        if (((boost::any)it.second.value()).type() == typeid(int)) {
+            std::cout << vm[it.first].as<int>() << std::endl;
+        } else if (
+            ((boost::any)it.second.value()).type() == typeid(bool)) {
+            std::cout << vm[it.first].as<bool>() << std::endl;
+        } else if (
+            ((boost::any)it.second.value()).type() == typeid(double)) {
+            std::cout << vm[it.first].as<double>() << std::endl;
+        } else if (is_char) {
+            std::cout << vm[it.first].as<const char*>() << std::endl;
+        } else if (is_str) {
+            std::string temp = vm[it.first].as<std::string>();
+            if (temp.size()) {
+                std::cout << temp << std::endl;
+            } else {
+                std::cout << "true" << std::endl;
+            }
+        } else { // Assumes that the only remainder is vector<string>
+            try {
+                std::vector<std::string>
+                     vect = vm[it.first].as<std::vector<std::string>>();
+                uint i    = 0;
+                for (std::vector<std::string>::iterator oit = vect.begin();
+                     oit != vect.end();
+                     oit++, ++i) {
+                    std::cout << "\r> " << it.first << "[" << i
+                              << "]=" << (*oit) << std::endl;
+                }
+            } catch (const boost::bad_any_cast&) {
+                std::cout << "UnknownType("
+                          << ((boost::any)it.second.value()).type().name()
+                          << ")" << std::endl;
+            }
+        }
+    }
+}
+
 auto main(int argc, const char** argv) -> int {
-    auto vm        = parse_cmdline(argc, argv);
+    auto vm = parse_cmdline(argc, argv);
+    PrintVariableMap(vm);
+
     auto file_sink = create_file_sink(vm["logfile"].as<Str>());
     auto out_sink  = create_std_sink();
 
@@ -1558,7 +1712,7 @@ auto main(int argc, const char** argv) -> int {
 
     const bool use_fusion = false;
 
-    auto in_blame_subprocess = vm["blame-subprocess"].as<bool>();
+    bool in_blame_subprocess = vm["blame-subprocess"].as<BoolOption>();
     LOG_I(logger) << fmt::format(
         "Use blame subprocess for file analysis: {}", in_blame_subprocess);
 
@@ -1638,16 +1792,19 @@ auto main(int argc, const char** argv) -> int {
         }
     }
 
+    assert(vm["log-progress"].as<BoolOption>() == false);
+
     // Provide implementation callback strategies
     auto config = UPtr<walker_config>(new walker_config{
         .use_subprocess = in_blame_subprocess,
         // Full process parallelization
-        .use_threading   = walker_config::async,
-        .repo            = in_repo,
-        .heads           = fmt::format(".git/refs/heads/{}", in_branch),
-        .db_path         = in_outfile,
-        .try_incremental = 0 < vm.count("incremental"),
-        .allow_path      = [&logger, forensics](CR<Str> path) -> bool {
+        .use_threading     = walker_config::async,
+        .log_progress_bars = vm["log-progress"].as<BoolOption>(),
+        .repo              = in_repo,
+        .heads             = fmt::format(".git/refs/heads/{}", in_branch),
+        .db_path           = in_outfile,
+        .try_incremental   = vm["incremental"].as<BoolOption>(),
+        .allow_path        = [&logger, forensics](CR<Str> path) -> bool {
             try {
                 return forensics->allow_path(path);
             } catch (py::error_already_set& err) {

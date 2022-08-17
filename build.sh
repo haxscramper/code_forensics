@@ -40,7 +40,7 @@ function try_build() {
     make -j12
 
     echo "git user compile ok"
-    OPTS="/tmp/nimskull --branch=devel --filter-script=../code_filter.py"
+    OPTS="/tmp/nimskull --log-progress=false --branch=devel --filter-script=../code_filter.py"
     ./bin/code_forensics --help
     ./bin/code_forensics $OPTS || gdb_cmd ./bin/code_forensics $OPTS
     echo "git user run ok"
@@ -72,11 +72,13 @@ function conan_install() {
     conan install . -if build/dependencies/conan --build=missing --settings compiler.libcxx="libstdc++11"
 }
 
+export CI=true
+
 # try_build
 # build_git_wrapper
 # wrap_git
 # conan_install
-# try_build
+try_build
 py_plotter
 # cmake .
 # make -j 12

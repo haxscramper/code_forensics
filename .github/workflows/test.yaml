@@ -35,6 +35,7 @@ jobs:
       - name: "Compare repositories"
         run: |
           pwd
+          ./build/bin/code_forensics --help
           git clone https://github.com/nim-works/nimskull.git /tmp/nimskull
           git clone https://github.com/nim-lang/Nim.git /tmp/nim
 
