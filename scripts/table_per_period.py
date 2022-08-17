@@ -17,6 +17,7 @@ import numpy as np
 
 parser = argparse.ArgumentParser(description="Process some integers.")
 
+# Basic CLI handling for the script - to avoid hardcoding parameters
 parser.add_argument("database", type=str, help="Input database file")
 parser.add_argument("outfile", type=str, help="Output plot image")
 
@@ -25,13 +26,19 @@ args = parser.parse_args()
 con = sqlite3.connect(args.database)
 cur = con.cursor()
 
+# Store `[commit][change] -> count` mapping
 commit_table = {}
 
-min_change = None
-max_change = None
+# Deduplicated list of all change periods - assigned numbers might be
+# spaced unevenly, have gaps etc. (one possible example is mapping
+# `<year><month>` with zero-padding to six digits). Or some periods had no
+# activity at all.
+all_change_periods = set()
 
+# Map commit period to the hash name
 hash_table = {}
 
+# Move main SQL selector script out of string literal into a separate file
 for row in cur.execute(open(Path(__file__).parent / "table_per_period.sql").read()):
     commit = row[0]
     change = row[1]
@@ -40,76 +47,78 @@ for row in cur.execute(open(Path(__file__).parent / "table_per_period.sql").read
     if commit not in commit_table:
         commit_table[commit] = {}
 
-    if change <= (min_change or change):
-        min_change = change
-    if (max_change or change) <= change:
-        max_change = change
-
+    all_change_periods.add(change)
     commit_table[commit][change] = count
 
 
-change_count = 0
-
+# Fill in any missing data for the commit table with zeroes
 for commit in commit_table:
-    for change in range(min_change, max_change + 1):
+    for change in sorted(all_change_periods):
         if change not in commit_table[commit]:
             commit_table[commit][change] = 0
 
-        change_count = max(change_count, len(commit_table[commit]))
-
-commit_count: int = len(commit_table)
-changes = set()
-max_per_commit = 0
-
-data = np.zeros([change_count, commit_count]).astype(int)
+# Number of known change periods - can be completely different from the
+# number of sampled commits
+change_periods_num: int = len(all_change_periods)
+# Number
+commit_samples_num: int = len(commit_table)
+# Change matrix
+data = np.zeros([change_periods_num, commit_samples_num]).astype(int)
 
 for commit_idx, commit in enumerate(sorted(commit_table.keys())):
-    per_commit = 0
     for change_idx, change in enumerate(sorted(commit_table[commit].keys())):
-        changes.add(change)
         lines = commit_table[commit][change]
         data[change_idx][commit_idx] = lines
-        per_commit += lines
 
-    max_per_commit = max(max_per_commit, per_commit)
+# Sorted indices of the change periods
+change_periods = [f"{change}" for change in sorted(all_change_periods)]
+# Sorted indices of the commit samples
+commit_samples = [f"{commit}" for commit in sorted(commit_table.keys())]
 
 
-columns = [f"{change}" for change in sorted(changes)]
-rows = [f"{commit}" for commit in sorted(commit_table.keys())]
-
-print("  period> ", "".join([f"{count:<6}" for count in columns]), sep="")
+# Print the analysis table directly
+print("  period> ", "".join([f"{count:<6}" for count in commit_samples]), sep="")
 for idx, commit in enumerate(data):
     print(
-        f"{idx:<2} {columns[idx]:<6} ",
+        f"{idx:<2} {change_periods[idx]:<6} ",
         "".join([f"{count:<6}" for count in commit]),
         sep="",
     )
 
-    # Get some pastel shades for the colors
-colors = plt.cm.rainbow(np.linspace(0, 0.8, len(columns)))
-index = np.arange(len(rows))
+# rainbow sequence of colors for each commit period - older periods will have a 'colder' color associated withtehm
+colors = plt.cm.rainbow(np.linspace(0, 0.8, len(change_periods)))
+# Generate range of indices for each sample point
+index = np.arange(len(commit_samples))
 
+# Create fixed-layout figure with given size
 fig = plt.figure(figsize=(10, 12), constrained_layout=True)
+# Two subplots - bar and the table
 spec = gridspec.GridSpec(ncols=1, nrows=2, figure=fig)
+# Stacked bar plot representation of the data
 barplot = fig.add_subplot(spec[0, 0])
-heatmap = fig.add_subplot(spec[1, 0])
+# Plot with numeric data that mirrors the barplot
+change_table = fig.add_subplot(spec[1, 0])
 barplot.set_ylabel("SLOC total")
+# Tight fit of thee bar plot in order to precisely align it with the table
+# change_periods below
 barplot.margins(x=0)
 # Initialize the vertical-offset for the stacked bar chart.
-y_offset = np.zeros(len(rows))
+y_offset = np.zeros(len(commit_samples))
 
 # Plot bars and create text labels for the table
 cell_text = []
-cellColours = []
+cellColours = []  # 2D list of the table colors (gradients)
 for commit_idx, samples in enumerate(data):
+    # Create single layer of bar plot
     barplot.bar(
-        index,
-        samples,
-        width=1.0,
-        bottom=y_offset,
-        color=colors[commit_idx],
-        edgecolor="black",
+        index,  # Indices for each sample point
+        samples,  # New sample information
+        width=1.0,  # Full width, otherwise bars will be misalingned with table change_periods
+        bottom=y_offset,  # baseline for bars
+        color=colors[commit_idx],  # Each comit period has it's own unique color
+        edgecolor="black",  # Distinct borders in case there are many periods
     )
+    # Bars are stacked on each other
     y_offset = y_offset + samples
     cell_text.append([f"{int(x)}" for x in samples])
     res_colors = []
@@ -119,6 +128,7 @@ for commit_idx, samples in enumerate(data):
             res_colors.append("white")
 
         else:
+            # Interpolate color for changes in the current code by origin
             avg = entry / count_max
             color = deepcopy(colors[commit_idx])
             color[0] = (color[0] - 1.0) * avg + 1.0
@@ -128,23 +138,26 @@ for commit_idx, samples in enumerate(data):
 
     cellColours.append(res_colors)
 
-heatmap.axis("off")
-heatmap.axis("tight")
-table = heatmap.table(
+# Table plot does not need any axis information
+change_table.axis("off")
+change_table.axis("tight")
+table = change_table.table(
     cellText=cell_text,
-    rowLabels=columns,
+    rowLabels=change_periods,
     cellColours=cellColours,
     rowColours=colors,
-    colLabels=rows,
+    colLabels=commit_samples,
     loc="top",
 )
 
 
-heatmap.table(
+# Create secondary table with total analysis
+change_table.table(
     cellText=[[str(it) for it in data.sum(axis=0)]], rowLabels=["Total"], loc="bottom"
 )
 
-heatmap.set_yticks([])
-heatmap.set_xticks([])
+# Remove any extraneous annotation on the main generated table
+change_table.set_yticks([])
+change_table.set_xticks([])
 
 plt.savefig(args.outfile, bbox_inches="tight")

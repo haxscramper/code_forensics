@@ -8,11 +8,14 @@ namespace bp = boost::process;
 int get_nesting(CR<Str> line) {
     int result = 0;
     for (char c : line) {
-        if (c != ' ' && c != '\n') { break; }
-        ++result;
+        if (c == ' ') {
+            ++result;
+        } else if (c == '\t') {
+            result += 4;
+        } else {
+            break;
+        }
     }
-
-    fmt::print("nesting: {}\n", result);
 
     return result;
 }

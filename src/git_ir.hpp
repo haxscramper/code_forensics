@@ -88,7 +88,10 @@ namespace ir {
 
 DECL_ID_TYPE(Author, AuthorId, int);
 
-/// single commit by author, taken at some point in time
+/// \defgroup db_mapped Mapped to the database
+
+/// \brief single commit by author, taken at some point in time
+/// \ingroup db_mapped
 struct Commit {
     using id_type = CommitId;
     AuthorId author;   /// references unique author id
@@ -100,14 +103,19 @@ struct Commit {
     Vec<FileId> files;
 };
 
+
+/// \brief Continious span of lines in code with identical period
+/// \ingroup db_mapped
 struct LinePeriods {
-    int  begin;
-    int  end;
-    int  period;
-    bool changed;
+    int  begin;   ///< Starting line index
+    int  end;     ///< End line index
+    int  period;  ///< Period that commit was mapped to
+    bool changed; ///< Whether the range is considered 'changed' for commit
+                  ///< where it appeared in
 };
 
-/// single version of the file that appeared in some commit
+/// \brief single version of the file that appeared in some commit
+/// \ingroup db_mapped
 struct File {
     using id_type = FileId;
     CommitId commit_id; /// Id of the commit this version of the file was
@@ -121,9 +129,9 @@ struct File {
     Vec<LineId>      lines; /// List of all lines found in the file
 };
 
-/// Single directory path part, without specification at which point in
-/// time it existed. Used for the representation of the repository
-/// structure.
+
+/// \brief Full directory path and it's parent ID
+/// \ingroup db_mapped
 struct Directory {
     using id_type = DirectoryId;
     Opt<DirectoryId> parent; /// Parent directory ID
@@ -134,7 +142,8 @@ struct Directory {
     }
 };
 
-/// Table of interned stirngs for different purposes
+/// \brief Table of interned stirngs for different purposes
+/// \ingroup db_mapped
 struct String {
     using id_type = StringId;
     Str  text; /// Textual content of the line
@@ -143,7 +152,8 @@ struct String {
     }
 };
 
-/// Author - name and email found during the source code analysis.
+/// \brief Author - name and email found during the source code analysis.
+/// \ingroup db_mapped
 struct Author {
     using id_type = AuthorId;
     Str name;
@@ -155,6 +165,10 @@ struct Author {
 };
 
 
+/// \brief Unique combination of author+time+content for some line in
+/// database
+/// \ingroup db_mapped
+///
 /// Single line in a file with all the information that can be relevang for
 /// the further analysis. Provides information about the /content/ found at
 /// some line. Interned in the main storage.
@@ -178,6 +192,7 @@ struct LineData {
 // https://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
 inline void hash_combine(std::size_t& seed) {}
 
+/// \brief Mix list of hashes
 template <typename T, typename... Rest>
 inline void hash_combine(std::size_t& seed, const T& v, Rest... rest) {
     std::hash<T> hasher;
@@ -185,6 +200,7 @@ inline void hash_combine(std::size_t& seed, const T& v, Rest... rest) {
     hash_combine(seed, rest...);
 }
 
+/// \brief Declare boilerplate type hasing using list of fields
 #define MAKE_HASHABLE(__type, __varname, ...)                             \
     namespace std {                                                       \
         template <>                                                       \
@@ -207,6 +223,7 @@ MAKE_HASHABLE(ir::String, it, it.text);
 
 
 namespace ir {
+/// \brief Main store for repository analysis
 struct content_manager {
     dod::MultiStore<
         dod::InternStore<AuthorId, Author>, // Full list of authors
@@ -220,6 +237,7 @@ struct content_manager {
 
     std::unordered_map<Str, DirectoryId> prefixes;
 
+    /// \brief Get *optional* parent directory Id from the path
     auto parentDirectory(CR<Path> dir) -> Opt<DirectoryId> {
         if (dir.has_parent_path()) {
             auto parent = dir.parent_path();
@@ -236,18 +254,19 @@ struct content_manager {
         }
     }
 
+    /// \brief Get directory ID from the provided path
     auto getDirectory(CR<Path> dir) -> DirectoryId {
         return add(ir::Directory{
             .parent = parentDirectory(dir), .name = dir.native()});
     }
 
-    /// Get reference to value pointed to by the ID
+    /// \brief Get reference to value pointed to by the ID
     template <dod::IsIdType Id>
     auto at(Id id) -> typename dod::value_type_t<Id>& {
         return multi.at<Id>(id);
     }
 
-    /// Push in a value, return newly generated ID
+    /// \brief Push in a value, return newly generated ID
     template <typename T>
     [[nodiscard]] auto add(CR<T> it) -> dod::id_type_t<T> {
         return multi.add<T>(it);
@@ -259,6 +278,7 @@ struct content_manager {
 /// provide interfacing - `id` field and default constructors (for the
 /// `iterate<>()` method in the storage)
 
+/// \brief ORM wrapper for the file data
 struct orm_file : File {
     FileId id;
     inline orm_file()
@@ -267,6 +287,7 @@ struct orm_file : File {
     inline orm_file(FileId _id, CR<File> base) : File(base), id(_id) {}
 };
 
+/// \brief ORM wrapper for the commit data
 struct orm_commit : Commit {
     CommitId id;
 
@@ -276,6 +297,7 @@ struct orm_commit : Commit {
         : Commit(base), id(_id) {}
 };
 
+/// \brief ORM wrapper for the directory data
 struct orm_dir : Directory {
     DirectoryId id;
 
@@ -284,6 +306,7 @@ struct orm_dir : Directory {
         : Directory(base), id(_id) {}
 };
 
+/// \brief ORM wrapper for the string data
 struct orm_string : String {
     StringId id;
 
@@ -292,6 +315,7 @@ struct orm_string : String {
         : String(base), id(_id) {}
 };
 
+/// \brief ORM wrapper for the author data
 struct orm_author : Author {
     AuthorId id;
 
@@ -301,6 +325,7 @@ struct orm_author : Author {
         : Author(base), id(_id) {}
 };
 
+/// \brief ORM wrapper for the line data
 struct orm_line : LineData {
     LineId id;
     inline orm_line()
@@ -311,17 +336,20 @@ struct orm_line : LineData {
         : LineData(base), id(_id) {}
 };
 
+/// \brief ORM wrapper for the file lines data ir::File::lines
 struct orm_lines_table {
     FileId file;
     int    index;
     LineId line;
 };
 
+/// \brief ORM wrapper for the file change periods ir::File::changed_ranges
 struct orm_changed_range : LinePeriods {
     FileId file;
     int    index;
 };
 
+/// \brief Instantiate database connection
 inline auto create_db(CR<Str> storagePath) {
     auto storage = make_storage(
         storagePath,
@@ -381,6 +409,7 @@ inline auto create_db(CR<Str> storagePath) {
     return storage;
 }
 
+/// \brief Database connection type alias
 using DbConnection = decltype(create_db(""));
 
 } // namespace ir

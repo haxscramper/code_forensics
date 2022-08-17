@@ -6,13 +6,15 @@
 #include "common.hpp"
 #include "generator.hpp"
 
+/// \brief Data-oriented design primitives
+///
 /// This namespace provides implementation of the Data-orited design
 /// primitives such as stores and ID type. The implementation is largely
 /// based on my understanding of the DOD practices and as such might
 /// contain some things that could be implemented differently or ones that
 /// are not necessary at all.
 namespace dod {
-/// DOD Id type
+/// \brief DOD Id type
 ///
 /// \note It does not have a default constructor, if you need co construct
 /// a an empyt/nil value (not recommended) for some field/argument you can
@@ -111,6 +113,11 @@ template <typename T>
 using id_type_t = typename id_type<T>::type;
 
 template <IsIdType Id, typename T>
+/// \brief Store a collection of the value types
+///
+/// The main class in the DOD design - provideds an abstracted container
+/// that allows user to put in a new object, returning ID, or get an
+/// existing object from an ID.
 struct Store {
     Store() = default;
 
@@ -128,9 +135,11 @@ struct Store {
         return Id(index);
     }
 
+    /// Get a mutable reference to an object pointed to by the \arg id
     auto at(Id id) -> T& { return content.at(id.getIndex()); }
+    /// Get a immutable reference to an object pointed to by the \arg id
     auto at(Id id) const -> CR<T> { return content.at(id.getIndex()); }
-
+    /// Get a total number of the stored objects int the store
     auto size() const -> std::size_t { return content.size(); }
 
     /// Get genetator for all stored indices and pairs
@@ -148,6 +157,7 @@ struct Store {
         }
     }
 
+    /// Iterate over mutable pointers to the items stored in the container
     auto items() -> generator<P<T>> {
         for (auto& it : content) {
             co_yield &it;
@@ -172,6 +182,8 @@ struct Store {
 };
 
 
+/// \brief Stores values with with automatic deduplication
+///
 /// Interned data store - for values that can be hashed for deduplication.
 /// Provided type must be usable as a key for unordered associative
 /// continer.
@@ -223,6 +235,8 @@ struct InternStore {
 };
 
 
+/// \brief Wrapper for multiple different stores
+///
 /// Collecting of several different storage types, used as a boilerplate
 /// reduction helper - instead of wrapping around multiple `Store<Id, Val>`
 /// fields in the class, adding helper methods to access them via add/at

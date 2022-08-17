@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-
+/// \brief C++ wrapper for the libgit2 library
 namespace git {
 struct exception : public std::exception {
     Str message;
@@ -36,6 +36,8 @@ namespace git {
 #include "gitwrap.hpp"
 }
 
+
+/// \brief Convert git ID object to it's string representation
 inline Str oid_tostr(git_oid oid) {
     std::array<char, GIT_OID_HEXSZ + 1> result;
     git_oid_tostr(result.data(), sizeof(result), &oid);
@@ -49,10 +51,19 @@ struct fmt::formatter<git_oid> : fmt::formatter<Str> {
     }
 };
 
+/// \brief Iterate over the git tree in specified order using provided
+/// callback
 inline void tree_walk(
-    const git_tree*                               tree,
-    git_treewalk_mode                             mode,
-    Func<int(const char*, const git_tree_entry*)> callback) {
+    const git_tree*   tree, ///< Pointer to the git tree to walk over
+    git_treewalk_mode mode, ///< Order of the tree walk
+    Func<int(const char*, const git_tree_entry*)> callback /// Callback to
+    /// execute on each entry in the tree. Should return GIT_OK value in
+    /// order continue the iteration. \note both arguments are managed by
+    /// the tree walk algorithm - if you need to store the root (1st
+    /// argument) or the entry itself for some post-walk processing you
+    /// need to use copy the string or use `git::entry_dup` for each
+    /// argument respectively.
+) {
     using CB      = decltype(callback);
     CB* allocated = new CB;
     *allocated    = std::move(callback);
@@ -72,6 +83,7 @@ inline void tree_walk(
 }
 
 namespace std {
+/// \brief Hash for git OID
 template <>
 struct hash<git_oid> {
     inline std::size_t operator()(const git_oid& it) const {
@@ -81,6 +93,7 @@ struct hash<git_oid> {
 };
 } // namespace std
 
+/// \brief Compare git OID for equality
 inline bool operator==(CR<git_oid> lhs, CR<git_oid> rhs) {
     return git::oid_cmp(&lhs, &rhs) == 0;
 }

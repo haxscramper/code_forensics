@@ -1,25 +1,13 @@
 - [ ] Allow passing extra configuration options to the executed blame
   subprocess - there are many flags for ignoring certain commits, something
   for line similarity etc. All of this must be configurable
-- [ ] Split code forensics implementation into several directories - DOD
-  helpers, IR definition, logger helpers and other parts.
-- [ ] Move plotting scripts into the separate directory - ~scripts/~
-- [ ] Add readme and documentation for the general usage
-- [ ] Add configuration option for the dynamic progress bars - in some
-  cases they are better replaced with regular logging ticks (~LOG_T~ with
-  "progress" tag or something similar). GitHub CI cannot handle the
-  interactive update properly, instead creating this wall of text:
-
-  #+begin_example
-[██████████████████████████████████████████▏                 ] 70% 1166/1658 (avg 0.0661s/file)
-[██████████████████████████████████████████▏                 ] 70% 1167/1658 (avg 0.0660s/file)
-[██████████████████████████████████████████▎                 ] 70% 1168/1658 (avg 0.0660s/file)
-[██████████████████████████████████████████▎                 ] 70% 1169/1658 (avg 0.0659s/file)
-[██████████████████████████████████████████▎                 ] 70% 1170/1658 (avg 0.0658s/file)
-[██████████████████████████████████████████▍                 ] 70% 1171/1658 (avg 0.0658s/file)
-[██████████████████████████████████████████▍                 ] 70% 1172/1658 (avg 0.0657s/file)
-[██████████████████████████████████████████▍                 ] 70% 1173/1658 (avg 0.0657s/file)
-  #+end_example
-
-  This is especially bad for the database write progress - there might be
-  tens of thousands of line writes, each one triggering progress update.
+- [ ] Support different resolutions for the sampling and period assignment.
+  For example, I want to sample commits on a quarterly basis, but still
+  divide the whole timeline on the yearly basis. Plotting this is
+  relatively easy - the build would just put two bars per single table
+  column - but the periods might be off.
+- [ ] Store information about modified files for each commit in order to
+  provide hotspot analysis.
+  - this might be used to speed up the change analysis - only refresh files
+    that changed between two sample points, otherwise just copy the data as
+    it is now.

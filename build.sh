@@ -10,7 +10,6 @@ function py_plotter() {
 
 ROOT=$(pwd)
 
-echo "source $ROOT/gdb_decorator"
 function gdb_cmd {
     gdb \
         -batch \
@@ -39,9 +38,9 @@ bin=./build/bin/code_forensics
 
 function debug_run() {
     echo "git user compile ok"
-    OPTS="/tmp/nimskull --log-progress=false --branch=devel --filter-script=../scripts/code_filter.py"
-    bin --help || gdb_cmd bin --help
-    bin $OPTS || gdb_cmd bin $OPTS
+    OPTS="/tmp/nimskull --branch=devel --filter-script=scripts/code_filter.py"
+    $bin --help || gdb_cmd $bin --help
+    $bin $OPTS || gdb_cmd $bin $OPTS
     echo "git user run ok"
 }
 
@@ -85,9 +84,10 @@ CI=true
 # build_git_wrapper
 # wrap_git
 # conan_install
-try_build
+# try_build
+# debug_run
 # export CI
-./tests/ci_compare_repo.sh
-# py_plotter
+# ./tests/ci_compare_repo.sh
+py_plotter
 # cmake .
 # make -j 12
