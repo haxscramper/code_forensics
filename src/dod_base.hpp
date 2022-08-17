@@ -297,4 +297,13 @@ struct hash<Id> {
 };
 }; // namespace std
 
+
+template <dod::IsIdType Id>
+struct fmt::formatter<Id> : fmt::formatter<Str> {
+    auto format(CR<Id> date, fmt::format_context& ctx) const {
+        return fmt::formatter<Str>::format(date.getStr(), ctx);
+    }
+};
+
+
 #endif // DOD_BASE_HPP

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <sqlite_orm/sqlite_orm.h>
 #include <concepts>
 #include <iostream>
@@ -203,7 +205,6 @@ MAKE_HASHABLE(ir::LineData, it, it.author, it.time, it.content);
 MAKE_HASHABLE(ir::Directory, it, it.name, it.parent);
 MAKE_HASHABLE(ir::String, it, it.text);
 
-using Path = std::filesystem::path;
 
 namespace ir {
 struct content_manager {

@@ -36,7 +36,7 @@ function gdb_cmd {
 function try_build() {
     mkdir -p build
     pushd build
-    cmake .. -D "CMAKE_MODULE_PATH=$ROOT/build/dependencies/conan"
+    cmake ..
     make -j12
 
     echo "git user compile ok"

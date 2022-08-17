@@ -8,7 +8,13 @@
 #include <memory>
 #include <string>
 #include <cstdint>
+#include <utility>
+#include <filesystem>
 #include <experimental/type_traits>
+
+#include <fmt/core.h>
+#include <fmt/ranges.h>
+#include <fmt/color.h>
 
 /// Helper implementation to pass multiple types around in a 'pack'
 template <typename... Args>
@@ -37,6 +43,8 @@ template <typename T> using Opt  = std::optional<T>;
 template <typename T> using UPtr = std::unique_ptr<T>;
 template <typename T> using SPtr = std::shared_ptr<T>;
 template <typename T> using Func = std::function<T>;
+
+template <typename A, typename B> using Pair = std::tuple<A, B>;
 
 // clang-format on
 
@@ -119,3 +127,26 @@ struct is_in_pack<V> {
 /// `::value` accessor for the 'is in pack' type trait
 template <typename T, typename... Pack>
 inline constexpr bool is_in_pack_v = is_in_pack<T, Pack...>::value;
+
+
+template <typename T>
+struct fmt::formatter<Opt<T>> : fmt::formatter<Str> {
+    auto format(CR<Opt<T>> date, fmt::format_context& ctx) const {
+        if (date) {
+            return fmt::formatter<T>().format(date.value(), ctx);
+        } else {
+            return fmt::formatter<Str>().format("none()", ctx);
+        }
+    }
+};
+
+namespace fs = std::filesystem;
+
+using Path = fs::path;
+
+template <>
+struct fmt::formatter<Path> : fmt::formatter<Str> {
+    auto format(CR<Path> date, fmt::format_context& ctx) const {
+        return fmt::formatter<Str>::format(date.native(), ctx);
+    }
+};
