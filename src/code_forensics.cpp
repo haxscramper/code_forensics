@@ -374,8 +374,6 @@ auto main(int argc, const char** argv) -> int {
         }
     }
 
-    assert(vm["log-progress"].as<BoolOption>() == false);
-
     // Provide implementation callback strategies
     auto config = UPtr<walker_config>(new walker_config{
         .use_subprocess = in_blame_subprocess,

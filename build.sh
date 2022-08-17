@@ -35,7 +35,7 @@ function try_build() {
 
     echo "git user compile ok"
     OPTS="/tmp/nimskull --log-progress=false --branch=devel --filter-script=../scripts/code_filter.py"
-    ./bin/code_forensics --help
+    ./bin/code_forensics --help || gdb_cmd ./bin/code_forensics --help
     ./bin/code_forensics $OPTS || gdb_cmd ./bin/code_forensics $OPTS
     echo "git user run ok"
     popd

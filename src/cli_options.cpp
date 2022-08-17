@@ -1,6 +1,8 @@
 #include "cli_options.hpp"
 
 #include <boost/lexical_cast.hpp>
+#include <locale>
+#include <cstdlib>
 
 namespace boost {
 template <>
@@ -13,6 +15,16 @@ Str lexical_cast<Str, bool>(const bool& b) {
     std::ostringstream ss;
     ss << std::boolalpha << b;
     return ss.str();
+}
+
+template <>
+BoolOption lexical_cast<BoolOption, Str>(CR<Str> arg) {
+    return BoolOption(lexical_cast<bool, Str>(arg));
+}
+
+template <>
+Str lexical_cast<Str, BoolOption>(CR<BoolOption> b) {
+    return lexical_cast<Str, bool>(b.getState());
 }
 } // namespace boost
 
@@ -45,6 +57,10 @@ void PrintVariableMap(const po::variables_map vm) {
             ((boost::any)it.second.value()).type() == typeid(bool)) {
             std::cout << vm[it.first].as<bool>() << std::endl;
         } else if (
+            ((boost::any)it.second.value()).type() == typeid(BoolOption)) {
+            std::cout << std::boolalpha << vm[it.first].as<BoolOption>()
+                      << std::endl;
+        } else if (
             ((boost::any)it.second.value()).type() == typeid(double)) {
             std::cout << vm[it.first].as<double>() << std::endl;
         } else if (is_char) {
@@ -76,10 +92,21 @@ void PrintVariableMap(const po::variables_map vm) {
     }
 }
 
+template <typename T>
+T cast_env_or(CR<Str> env, CR<T> or_value) {
+    const char* value = std::getenv(env.c_str());
+    if (value == nullptr) {
+        return or_value;
+    } else {
+        return boost::lexical_cast<T>(Str{value});
+    }
+}
+
 po::variables_map parse_cmdline(int argc, const char** argv) {
     po::variables_map                  vm;
     po::options_description            desc{"Options"};
     po::positional_options_description pos{};
+
 
     desc.add_options()
         //
@@ -107,7 +134,8 @@ po::variables_map parse_cmdline(int argc, const char** argv) {
          "Config file where options may be specified (can be specified "
          "more than once)") //
         ("log-progress",
-         po::value<BoolOption>()->default_value(BoolOption(true), "true"),
+         po::value<BoolOption>()->default_value(
+             BoolOption(cast_env_or("CI", true)), "$CI or 'true'"),
          "Show dynamic progress bars for operations") //
         ("blame-subprocess",
          po::value<BoolOption>()->default_value(BoolOption(true), "true"),
@@ -161,12 +189,5 @@ po::variables_map parse_cmdline(int argc, const char** argv) {
 }
 
 void validate(boost::any& v, const Vec<Str>& xs, BoolOption* opt, long) {
-    fmt::print("Provided validation values {}\n", xs);
-    if (v.empty()) {
-        // I don't know how to assign default here so this works only when
-        // default is false
-        v = BoolOption(true);
-    } else {
-        v = BoolOption(boost::lexical_cast<bool>(xs[0]));
-    }
+    v = BoolOption(boost::lexical_cast<bool>(xs[0]));
 }

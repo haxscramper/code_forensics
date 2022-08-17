@@ -461,13 +461,17 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
         logging::core::get()->flush();
         for (const auto& oid : state->sampled_commits) {
             file_tasks(params, state, oid, process_commit(oid, state));
-            tick_next(
-                get_files,
-                count,
-                state->sampled_commits.size(),
-                "commits");
+            if (state->config->log_progress_bars) {
+                tick_next(
+                    get_files,
+                    count,
+                    state->sampled_commits.size(),
+                    "commits");
+            }
         }
-        get_files.mark_as_completed();
+        if (state->config->log_progress_bars) {
+            get_files.mark_as_completed();
+        }
         LOG_I(state) << "Done. Total number of files: " << params.size();
     }
 
@@ -498,9 +502,10 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
                     count,
                     params.size(),
                     (diff / count).count())});
+                process_files.tick();
             }
 
-            process_files.tick();
+
             auto sub_task =
                 [state, param, &counting, &start]() -> ir::FileId {
                 finally finish{[&counting]() { counting.release(); }};
@@ -583,11 +588,13 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
             line->category = state->config->classify_line(
                 multi.store<ir::String>().at(line->content).text);
 
-            line_assign.set_option(
-                BarText{fmt::format("{}/{}", ++count, max_size)});
-            line_assign.tick();
+            if (state->config->log_progress_bars) {
+                tick_next(line_assign, ++count, max_size, "unqiue lines");
+            }
         }
-        line_assign.mark_as_completed();
+        if (state->config->log_progress_bars) {
+            line_assign.mark_as_completed();
+        }
     }
     return processed;
 }
