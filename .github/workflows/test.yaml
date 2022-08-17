@@ -12,13 +12,14 @@ jobs:
         run: |
           sudo apt-get -qq -y install \
             cmake git g++ gcc make sudo tar wget curl \
-            pip clang libboost-all-dev
+            pip clang libboost-all-dev \
+            python-is-python3
 
         env:
           DEBIAN_FRONTEND: noninteractive
 
       - name: "Install conan"
-        run: pip install conan
+        run: pip install conan matplotlib
       - name: "Build code analyzer"
         run: |
           conan install . \

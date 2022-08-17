@@ -86,7 +86,7 @@ CI=true
 # wrap_git
 # conan_install
 try_build
-export CI
+# export CI
 ./tests/ci_compare_repo.sh
 # py_plotter
 # cmake .
