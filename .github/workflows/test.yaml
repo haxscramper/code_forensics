@@ -4,12 +4,15 @@ jobs:
   test:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-      - run: sudo apt-get -qq update
-      - run: |
+      - name: "Checkout the repository"
+        uses: actions/checkout@v2
+      - name: "Update installed packages"
+        run: sudo apt-get -qq update
+      - name: "Install package dependencies"
+        run: |
           sudo apt-get -qq -y install \
             cmake git g++ gcc make sudo tar wget curl \
-            pip clang libboost-system-dev
+            pip clang libboost-all-dev
 
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -17,7 +20,11 @@ jobs:
       - name: "Install conan"
         run: pip install conan
       - run: |
-          conan install . -if build/dependencies/conan --build=missing
+          conan install . \
+            -if build/dependencies/conan \
+            --build=missing \
+            --settings compiler.libcxx="libstdc++11"
+
           mkdir -p build
           cd build
           cmake ..

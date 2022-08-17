@@ -738,6 +738,19 @@ auto init_progress(int max) -> BlockProgressBar {
         option::MaxProgress{max}};
 }
 
+#define INIT_PROGRESS_BAR(name, counter, max)                             \
+    int  counter = 0;                                                     \
+    auto name    = init_progress(max);                                    \
+    log::core::get()->flush();                                            \
+    finally close##__LINE__{[&name]() { name.mark_as_completed(); }};
+
+using BarText = option::PostfixText;
+
+void tick_next(BlockProgressBar& bar, int& count, int max, CR<Str> name) {
+    bar.set_option(BarText{fmt::format("{}/{} {}", ++count, max, name)});
+    bar.tick();
+}
+
 auto launch_analysis(git_oid& oid, walker_state* state)
     -> Vec<ir::CommitId> {
     // All constructed information
@@ -788,9 +801,11 @@ auto launch_analysis(git_oid& oid, walker_state* state)
         log::core::get()->flush();
         for (const auto& oid : state->sampled_commits) {
             file_tasks(params, state, oid, process_commit(oid, state));
-            get_files.set_option(option::PostfixText{fmt::format(
-                "{}/{} commits", ++count, state->sampled_commits.size())});
-            get_files.tick();
+            tick_next(
+                get_files,
+                count,
+                state->sampled_commits.size(),
+                "commits");
         }
         get_files.mark_as_completed();
         LOG_I(state) << "Done. Total number of files: " << params.size();
@@ -1005,46 +1020,75 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
         LOG_I(state) << "Incremental update, reusing the database";
     }
 
-    for (const auto& [id, string] :
-         content.multi.store<ir::String>().pairs()) {
-        storage.insert(ir::orm_string(id, ir::String{*string}));
-    }
-
-
-    for (const auto& [id, author] :
-         content.multi.store<ir::Author>().pairs()) {
-        storage.insert(ir::orm_author(id, *author));
-    }
-
-    for (const auto& [id, line] :
-         content.multi.store<ir::LineData>().pairs()) {
-        storage.insert(ir::orm_line(id, *line));
-    }
-
-    for (const auto& [id, commit] :
-         content.multi.store<ir::Commit>().pairs()) {
-        storage.insert(ir::orm_commit(id, *commit));
-    }
-
-    for (const auto& [id, dir] :
-         content.multi.store<ir::Directory>().pairs()) {
-        storage.insert(ir::orm_dir(id, *dir));
-    }
-
-    for (const auto& [id, file] :
-         content.multi.store<ir::File>().pairs()) {
-        storage.insert(ir::orm_file(id, *file));
-        for (int idx = 0; idx < file->lines.size(); ++idx) {
-            storage.insert(ir::orm_lines_table{
-                .file = id, .index = idx, .line = file->lines[idx]});
-        }
-
-        for (int idx = 0; idx < file->changed_ranges.size(); ++idx) {
-            storage.insert(ir::orm_changed_range{
-                file->changed_ranges[idx], .file = id, .index = idx});
+    {
+        auto max = content.multi.store<ir::String>().size();
+        INIT_PROGRESS_BAR(strings, counter, max);
+        for (const auto& [id, string] :
+             content.multi.store<ir::String>().pairs()) {
+            storage.insert(ir::orm_string(id, ir::String{*string}));
+            tick_next(strings, counter, max, "strings");
         }
     }
 
+    {
+        auto max = content.multi.store<ir::Author>().size();
+        INIT_PROGRESS_BAR(authors, counter, max);
+        for (const auto& [id, author] :
+             content.multi.store<ir::Author>().pairs()) {
+            storage.insert(ir::orm_author(id, *author));
+            tick_next(authors, counter, max, "authors");
+        }
+    }
+
+    {
+
+        auto max = content.multi.store<ir::LineData>().size();
+        INIT_PROGRESS_BAR(authors, counter, max);
+        for (const auto& [id, line] :
+             content.multi.store<ir::LineData>().pairs()) {
+            storage.insert(ir::orm_line(id, *line));
+            tick_next(authors, counter, max, "unique lines");
+        }
+    }
+    {
+
+        auto max = content.multi.store<ir::Commit>().size();
+        INIT_PROGRESS_BAR(authors, counter, max);
+        for (const auto& [id, commit] :
+             content.multi.store<ir::Commit>().pairs()) {
+            storage.insert(ir::orm_commit(id, *commit));
+            tick_next(authors, counter, max, "commits");
+        }
+    }
+    {
+
+        auto max = content.multi.store<ir::Directory>().size();
+        INIT_PROGRESS_BAR(authors, counter, max);
+        for (const auto& [id, dir] :
+             content.multi.store<ir::Directory>().pairs()) {
+            storage.insert(ir::orm_dir(id, *dir));
+            tick_next(authors, counter, max, "directories");
+        }
+    }
+    {
+        auto max = content.multi.store<ir::File>().size();
+        INIT_PROGRESS_BAR(authors, counter, max);
+        for (const auto& [id, file] :
+             content.multi.store<ir::File>().pairs()) {
+            storage.insert(ir::orm_file(id, *file));
+            for (int idx = 0; idx < file->lines.size(); ++idx) {
+                storage.insert(ir::orm_lines_table{
+                    .file = id, .index = idx, .line = file->lines[idx]});
+            }
+
+            for (int idx = 0; idx < file->changed_ranges.size(); ++idx) {
+                storage.insert(ir::orm_changed_range{
+                    file->changed_ranges[idx], .file = id, .index = idx});
+            }
+
+            tick_next(authors, counter, max, "files");
+        }
+    }
     storage.commit();
 }
 
