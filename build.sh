@@ -3,11 +3,11 @@
 set -o nounset
 set -o errexit
 
-path=$(
-    jq -r \
-        '.dependencies[] | select(.name == "libgit2") | .include_paths[0]' \
-        conanbuildinfo.json
-)
+# path=$(
+#     jq -r \
+#         '.dependencies[] | select(.name == "libgit2") | .include_paths[0]' \
+#         conanbuildinfo.json
+# )
 
 function py_plotter() {
     ./table_per_period.py

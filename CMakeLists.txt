@@ -17,7 +17,9 @@ set(CONAN_SYSTEM_INCLUDES ON)
 add_compile_options(-Wno-c++11-narrowing)
 add_compile_options(-Wno-deprecated-declarations)
 
-include(${CMAKE_SOURCE_DIR}/conanbuildinfo.cmake)
+set(DEPS_DIR ${CMAKE_SOURCE_DIR}/build/dependencies/conan)
+list(PREPEND CMAKE_MODULE_PATH ${DEPS_DIR})
+include(${DEPS_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 find_package(Python REQUIRED COMPONENTS Development)

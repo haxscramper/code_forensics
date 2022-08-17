@@ -2,29 +2,24 @@ name: "Compile and execute analysis for the current repository"
 on: push
 jobs:
   test:
-    runs-on: ubuntu-latest
-    container: archlinux:latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
-      - run: pacman --noconfirm -Syu
-      - name: "Install dependencies"
-        run: |
-          pacman --noconfirm -S \
-            gcc \
-            clang \
-            python-pip \
-            wget \
-            git \
-            cmake \
-            make \
-            boost
+      - run: sudo apt-get -qq update
+      - run: |
+          sudo apt-get -qq -y install \
+            cmake git g++ gcc make sudo tar wget curl \
+            pip clang libboost-system-dev
+
+        env:
+          DEBIAN_FRONTEND: noninteractive
 
       - name: "Install conan"
         run: pip install conan
       - run: |
           conan install . -if build/dependencies/conan --build=missing
-          mkdir build
+          mkdir -p build
           cd build
-          cmake .. -D "CMAKE_MODULE_PATH=$(PWD)/../build/dependencies/conan"
+          cmake ..
           make -j10
           cd ..
