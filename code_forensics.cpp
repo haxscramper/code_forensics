@@ -190,6 +190,7 @@ struct walker_config {
     Func<int(CR<PTime>)> get_period;
     /// Check whether commits at the specified date should be analysed
     Func<bool(CR<PTime>, CR<Str>, CR<Str>)> allow_sample;
+    Func<int(CR<Str>)>                      classify_line;
 };
 
 
@@ -728,6 +729,15 @@ auto file_tasks(
 
 #define GIT_SUCCESS 0
 
+using namespace indicators;
+auto init_progress(int max) -> BlockProgressBar {
+    return BlockProgressBar{
+        option::BarWidth{60},
+        option::ForegroundColor{Color::white},
+        option::FontStyles{std::vector<FontStyle>{FontStyle::bold}},
+        option::MaxProgress{max}};
+}
+
 auto launch_analysis(git_oid& oid, walker_state* state)
     -> Vec<ir::CommitId> {
     // All constructed information
@@ -767,14 +777,9 @@ auto launch_analysis(git_oid& oid, walker_state* state)
         state->add_full_commit(commit, state->config->get_period(date));
     }
 
-    using namespace indicators;
     Vec<SubTaskParams> params;
     {
-        BlockProgressBar get_files{
-            option::BarWidth{60},
-            option::ForegroundColor{Color::white},
-            option::FontStyles{std::vector<FontStyle>{FontStyle::bold}},
-            option::MaxProgress{state->sampled_commits.size()}};
+        auto get_files = init_progress(state->sampled_commits.size());
 
         int count = 0;
         LOG_I(state)
@@ -805,11 +810,7 @@ auto launch_analysis(git_oid& oid, walker_state* state)
     Vec<std::future<ir::FileId>> walked{};
     {
 
-        BlockProgressBar process_files{
-            option::BarWidth{60},
-            option::ForegroundColor{Color::white},
-            option::FontStyles{std::vector<FontStyle>{FontStyle::bold}},
-            option::MaxProgress{params.size()}};
+        auto process_files = init_progress(params.size());
 
         log::core::get()->flush();
         int count = 0;
@@ -892,7 +893,23 @@ auto launch_analysis(git_oid& oid, walker_state* state)
         tree_entry_free(param.entry);
     }
 
+    {
+        LOG_I(state) << "Assigning line categories";
+        auto& multi       = state->content->multi;
+        auto  max_size    = multi.store<ir::LineData>().size();
+        auto  line_assign = init_progress(max_size);
+        int   count       = 0;
+        log::core::get()->flush();
+        for (auto& line : multi.store<ir::LineData>().items()) {
+            line->category = state->config->classify_line(
+                multi.store<ir::String>().at(line->content).text);
 
+            line_assign.set_option(option::PostfixText{
+                fmt::format("{}/{}", ++count, max_size)});
+            line_assign.tick();
+        }
+        line_assign.mark_as_completed();
+    }
     return processed;
 }
 
@@ -1128,6 +1145,7 @@ class PyForensics {
     py::object   path_predicate;
     py::object   period_mapping;
     py::object   sample_predicate;
+    py::object   line_classifier;
     SPtr<Logger> logger;
 
   public:
@@ -1139,6 +1157,10 @@ class PyForensics {
     void log_debug(CR<Str> text) { LOG_D(logger) << text; }
     void log_error(CR<Str> text) { LOG_E(logger) << text; }
     void log_fatal(CR<Str> text) { LOG_F(logger) << text; }
+
+    void set_line_classifier(py::object classifier) {
+        line_classifier = classifier;
+    }
 
     void set_path_predicate(py::object predicate) {
         path_predicate = predicate;
@@ -1174,6 +1196,14 @@ class PyForensics {
             return py::extract<bool>(sample_predicate(date, author, id));
         } else {
             return true;
+        }
+    }
+
+    int classify_line(CR<Str> line) const {
+        if (line_classifier) {
+            return py::extract<int>(line_classifier(line));
+        } else {
+            return 0;
         }
     }
 };
@@ -1283,6 +1313,10 @@ BOOST_PYTHON_MODULE(forensics) {
             .def("log_debug", &PyForensics::log_debug, py::args("text"))
             .def("log_error", &PyForensics::log_error, py::args("text"))
             .def("log_fatal", &PyForensics::log_fatal, py::args("text"))
+            .def(
+                "set_line_classifier",
+                &PyForensics::set_line_classifier,
+                py::args("classifier"))
             .def(
                 "set_path_predicate",
                 &PyForensics::set_path_predicate,
@@ -1593,6 +1627,14 @@ auto main(int argc, const char** argv) -> int {
             } catch (py::error_already_set& err) {
                 LOG_PY_ERROR(logger);
                 return false;
+            }
+        },
+        .classify_line = [&logger, forensics](CR<Str> line) -> int {
+            try {
+                return forensics->classify_line(line);
+            } catch (py::error_already_set& err) {
+                LOG_PY_ERROR(logger);
+                return 0;
             }
         }});
 

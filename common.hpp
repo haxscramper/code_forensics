@@ -26,6 +26,7 @@ template <typename ...Args> using Var = std::vector<Args...>;
 template <typename T> using Vec  = std::vector<T>;
 template <typename T> using CR   = const T&;
 template <typename T> using CP   = const T*;
+template <typename T> using P    = T*;
 template <typename T> using C    = const T;
 template <typename T> using Opt  = std::optional<T>;
 template <typename T> using UPtr = std::unique_ptr<T>;

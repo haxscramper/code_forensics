@@ -33,6 +33,14 @@ def period_mapping(date) -> bool:
     return date.year
 
 
+def classify_line(line: str) -> int:
+    if line.startswith(" "):
+        return 1
+    else:
+        return 0
+
+
 config.set_path_predicate(path_predicate)
 config.set_sample_predicate(sample_predicate)
 config.set_period_mapping(period_mapping)
+config.set_line_classifier(classify_line)

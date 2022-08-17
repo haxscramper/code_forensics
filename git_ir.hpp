@@ -191,6 +191,12 @@ struct Store {
         }
     }
 
+    auto items() -> generator<P<T>> {
+        for (auto& it : content) {
+            co_yield &it;
+        }
+    }
+
     /// Insert value into the store at position, either appending to the
     /// internal list or replacing an existing value.
     void insert(Id id, CR<T> value) {
@@ -256,6 +262,7 @@ struct InternStore {
 
     /// Return generator of the stored values
     auto items() const -> generator<CP<Val>> { return content.items(); }
+    auto items() -> generator<P<Val>> { return content.items(); }
 };
 
 
@@ -505,10 +512,11 @@ struct Author {
 /// some line. Interned in the main storage.
 struct LineData {
     using id_type = LineId;
-    AuthorId author;  /// Line author ID
-    i64      time;    /// Time line was written
-    StringId content; /// Content of the line
-    int      nesting; /// Line indentation depth
+    AuthorId author;   /// Line author ID
+    i64      time;     /// Time line was written
+    StringId content;  /// Content of the line
+    int      nesting;  /// Line indentation depth
+    int      category; /// Line category
 
     auto operator==(CR<LineData> other) const -> bool {
         return author == other.author && time == other.time &&
@@ -694,6 +702,7 @@ auto create_db(CR<Str> storagePath) {
             make_column("author", &orm_line::author),
             make_column("time", &orm_line::time),
             make_column("content", &orm_line::content),
+            make_column("category", &orm_line::category),
             make_column("nesting", &orm_line::nesting)),
         make_table<orm_lines_table>(
             "file_lines",
