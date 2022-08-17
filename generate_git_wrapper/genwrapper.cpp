@@ -25,7 +25,7 @@
 
 #include <range/v3/all.hpp>
 
-#include "common.hpp"
+#include "../src/common.hpp"
 
 #define BOOST_STACKTRACE_USE_ADDR2LINE
 #define BOOST_STACKTRACE_ADDR2LINE_LOCATION "/bin/addr2line"
@@ -203,16 +203,21 @@ class ASTBuilder {
         }
 
         auto res = FunctionDecl::Create(
-            ctx(),
-            dc(),
-            sl(),
-            sl(),
-            name(p.Name),
-            context->getFunctionType(
-                p.ResultTy, p.ArgsTy, FunctionProtoType::ExtProtoInfo()),
-            nullptr,
-            p.Storage,
-            p.Inline);
+            ctx(),                    // C
+            dc(),                     // DC
+            sl(),                     // StartLoc
+            sl(),                     // NLoc
+            name(p.Name),             // N
+            context->getFunctionType( // T
+                p.ResultTy,
+                p.ArgsTy,
+                FunctionProtoType::ExtProtoInfo()),
+            nullptr,   // TInfo
+            p.Storage, // SC
+            true,      // UsesFPIntrin
+            p.Inline   // isInlineSpecified
+        );
+
         res->setParams(passParams);
         if (p.Body != nullptr) { res->setBody(p.Body); }
         return res;
@@ -671,7 +676,7 @@ class ConvertPusher : public MatchFinder::MatchCallback {
 
     /// Override of the match finder result handing.
     virtual void run(const MatchFinder::MatchResult& Result) {
-        auto func = Result.Nodes1.getNodeAs<FunctionDecl>("function");
+        auto func = Result.Nodes.getNodeAs<FunctionDecl>("function");
         if (allowCb &&
             !allowCb(DynTypedNode::create<FunctionDecl>(*func))) {
             return;
@@ -704,6 +709,11 @@ int main_impl(int argc, const char** argv) {
         cl::value_desc("filename"),
         cl::cat(category));
 
+    cl::opt<Str> ConfFilename(
+        "conf",
+        cl::desc("Specify wrapper configuration"),
+        cl::value_desc("conf"),
+        cl::cat(category));
 
     auto cli = CommonOptionsParser::create(argc, argv, category);
 
@@ -751,8 +761,9 @@ int main_impl(int argc, const char** argv) {
         return result;
     });
 
-    { // Collect user-provided pattern matching rules
-        YAML::Node doc = YAML::LoadFile("wrapconf.yaml");
+    if (!ConfFilename.empty()) {
+        // Collect user-provided pattern matching rules
+        YAML::Node doc = YAML::LoadFile(ConfFilename.getValue());
         for (unsigned i = 0; i < doc.size(); i++) {
             UserWrapRule rule;
             doc[i] >> rule;
@@ -765,7 +776,8 @@ int main_impl(int argc, const char** argv) {
     auto result = Tool.run(newFrontendActionFactory(&finder).get());
 
     if (!OutputFilename.empty()) {
-        Str           name = OutputFilename.getValue();
+        Str name = OutputFilename.getValue();
+        std::cout << "wrote generated wrapper to " << name << "\n";
         std::ofstream out{name};
         out << "#pragma once\n";
         for (const auto& entry : convert.getWrapped()) {
