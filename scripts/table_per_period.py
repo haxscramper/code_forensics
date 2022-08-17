@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from matplotlib import rcParams
+from pathlib import Path
 import argparse
 
 
@@ -31,7 +32,7 @@ max_change = None
 
 hash_table = {}
 
-for row in cur.execute(open("table_per_period.sql").read()):
+for row in cur.execute(open(Path(__file__).parent / "table_per_period.sql").read()):
     commit = row[0]
     change = row[1]
     count = row[2]

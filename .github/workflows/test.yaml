@@ -51,8 +51,8 @@ jobs:
             --logfile=nim.log \
             --outfile=nim.sqlite
 
-          ./table_per_period.py nimskull.sqlite nimskull.png
-          ./table_per_period.py nim.sqlite nim.png
+          ./scripts/table_per_period.py nimskull.sqlite nimskull.png
+          ./scripts/table_per_period.py nim.sqlite nim.png
 
       - uses: actions/upload-artifact@v3
         with:

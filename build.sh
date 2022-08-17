@@ -4,7 +4,7 @@ set -o nounset
 set -o errexit
 
 function py_plotter() {
-    ./table_per_period.py /tmp/db.sqlite /tmp/db.png
+    ./scripts/table_per_period.py /tmp/db.sqlite /tmp/db.png
     echo "py plotter ok"
 }
 
