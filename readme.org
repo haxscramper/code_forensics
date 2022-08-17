@@ -1,14 +1,50 @@
+Historical data analysis for the git repositories. Largely inspired by
+projects such as [[https://github.com/src-d/hercules][src-d/hercules: Gaining advanced insights from Git
+repository history]], [[https://github.com/adamtornhill/code-maat][adamtornhill/code-maat: A command line tool to mine and
+analyze data from version-control systems]], [[https://github.com/adamtornhill/maat-scripts][adamtornhill/maat-scripts:
+Scripts used to post-process the results from Code Maat]], and most
+importantly a [[https://pragprog.com/titles/atcrime/your-code-as-a-crime-scene/][Your Code as a Crime Scene: Use Forensic Techniques to Arrest
+Defects, Bottlenecks, and Bad Design in Your Programs by Adam Tornhill]] book.
 
-* SQL queries
+This project consists of two parts - (1) the C++ CLI script that generates
+SQLite database with information from the repository, and (2) a collection
+of user scripts for generating concrete analysis from the repository. Some
+scripts come with a repository (for more details on the usage see related
+wiki pages), but you are free to write your own in any language that can
+interact with a SQLite database file.
 
-Select every instance of the file, find it's relative complexity and order by it.
+* CLI Application
 
-#+begin_src sql
-select strings.`text`, file.total_complexity / cast(file.line_count as real) as result
-from file, strings
-where file.name == strings.id
-order by result;
+** Main CLI options
+
+#+begin_src sh
+code_forensics user_repo(1) [ --filter-script=file.py(2) ] [ --outfile=db.sqlite(3) ]
 #+end_src
+
+The main CLI application ~code_forensics~ is a self-contained binary file
+that takes in a (1) user-provided repository, an (2) optional python filter
+script, and possibly (3) previously generated database  (for incremental
+updates) generates the new database file (or updates existing one).
+
+1. A user-provided git repository - no special constraints on the
+   structure, size etc., although large repositories generally require (2)
+   filter script in order to only pick certain commits - full analysis
+   might take too much time.
+2. User-provided filter script - regular python script that is provided by
+   the user in order to customize handling of certain commits and files.
+   Script should import the ~forensics.config~ object and configure it as
+   needed. For mode details on the script configuration see the "Scripting"
+   section of this readme.
+3. Path to the output database file
+
+** Extra CLI configuration
+
+- ~--branch=~ which repository branch to analyze (defaults to master)
+
+** Scripting
+
+Custom analysis logic can be injected directly in the database processing
+stage using a user-provided python script that is
 
 * The database structure
 
@@ -29,3 +65,16 @@ database:
 - file lines :: auxiliary table for data found in the analyzed files.
   ~.file~ refers to the ~files~ table, ~index~ shows the position in the
   file and the ~.line~ refers to the information in the ~line~ table.
+
+* Analyzing data
+
+** SQL queries
+
+Select every instance of the file, find it's relative complexity and order by it.
+
+#+begin_src sql
+select strings.`text`, file.total_complexity / cast(file.line_count as real) as result
+from file, strings
+where file.name == strings.id
+order by result;
+#+end_src

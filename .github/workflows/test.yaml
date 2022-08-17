@@ -13,7 +13,7 @@ jobs:
           sudo apt-get -qq -y install \
             cmake git g++ gcc make sudo tar wget curl \
             pip clang libboost-all-dev \
-            python-is-python3
+            python-is-python3 graphviz
 
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -42,3 +42,4 @@ jobs:
           path: |
             nim.png
             nimskull.png
+            nimskull.sqlite

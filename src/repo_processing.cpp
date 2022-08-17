@@ -5,14 +5,14 @@
 
 namespace bp = boost::process;
 
-auto get_nesting(CR<Str> line) -> int {
+int get_nesting(CR<Str> line) {
     int result = 0;
-    while (result < line.size()) {
-        char c = line[result];
+    for (char c : line) {
         if (c != ' ' && c != '\n') { break; }
-
         ++result;
     }
+
+    fmt::print("nesting: {}\n", result);
 
     return result;
 }
