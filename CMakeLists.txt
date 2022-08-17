@@ -34,7 +34,10 @@ add_compile_options(-fcoroutines-ts)
 
 add_compile_options(-Wno-format-security)
 add_compile_options(-Wno-c99-designator)
-add_executable(code_forensics code_forensics.cpp)
+file(GLOB SRC_FILES ${CMAKE_SOURCE_DIR}/src/*.cpp)
+file(GLOB HEADER_FILES ${CMAKE_SOURCE_DIR}/src/*.hpp)
+add_executable(code_forensics ${SRC_FILES})
+target_sources(code_forensics PRIVATE ${SRC_FILES} ${HEADER_FILES})
 
 # Documentation says I can use `conan_basic_setup` and `CONAN_LIBS`, but this
 # does not work - I consistently end up with a linker error.
