@@ -100,3 +100,15 @@ boost::shared_ptr<sink_t> create_std_sink() {
     sink->set_formatter(&out_formatter);
     return sink;
 }
+
+void init_logger_properties() {
+    // Add some attributes too
+    logging::core::get()->add_global_attribute(
+                "TimeStamp", logging::attrs::local_clock());
+    logging::core::get()->add_global_attribute(
+                "RecordID", logging::attrs::counter<unsigned int>());
+
+    logging::core::get()->add_global_attribute("File", MutLog<Str>(""));
+    logging::core::get()->add_global_attribute("Func", MutLog<Str>(""));
+    logging::core::get()->add_global_attribute("Line", MutLog<int>(0));
+}

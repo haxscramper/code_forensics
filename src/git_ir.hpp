@@ -261,50 +261,54 @@ struct content_manager {
 
 struct orm_file : File {
     FileId id;
-    orm_file()
+    inline orm_file()
         : File{.commit_id = CommitId::Nil(), .parent = DirectoryId::Nil(), .name = StringId::Nil()}
         , id(FileId::Nil()) {}
-    orm_file(FileId _id, CR<File> base) : File(base), id(_id) {}
+    inline orm_file(FileId _id, CR<File> base) : File(base), id(_id) {}
 };
 
 struct orm_commit : Commit {
     CommitId id;
 
-    orm_commit()
+    inline orm_commit()
         : Commit{.author = AuthorId::Nil()}, id(CommitId::Nil()) {}
-    orm_commit(CommitId _id, CR<Commit> base) : Commit(base), id(_id) {}
+    inline orm_commit(CommitId _id, CR<Commit> base)
+        : Commit(base), id(_id) {}
 };
 
 struct orm_dir : Directory {
     DirectoryId id;
 
-    orm_dir() : Directory{}, id(DirectoryId::Nil()) {}
-    orm_dir(DirectoryId _id, CR<Directory> base)
+    inline orm_dir() : Directory{}, id(DirectoryId::Nil()) {}
+    inline orm_dir(DirectoryId _id, CR<Directory> base)
         : Directory(base), id(_id) {}
 };
 
 struct orm_string : String {
     StringId id;
 
-    orm_string() : String{}, id(StringId::Nil()) {}
-    orm_string(StringId _id, CR<String> base) : String(base), id(_id) {}
+    inline orm_string() : String{}, id(StringId::Nil()) {}
+    inline orm_string(StringId _id, CR<String> base)
+        : String(base), id(_id) {}
 };
 
 struct orm_author : Author {
     AuthorId id;
 
 
-    orm_author() : Author{}, id(AuthorId::Nil()) {}
-    orm_author(AuthorId _id, CR<Author> base) : Author(base), id(_id) {}
+    inline orm_author() : Author{}, id(AuthorId::Nil()) {}
+    inline orm_author(AuthorId _id, CR<Author> base)
+        : Author(base), id(_id) {}
 };
 
 struct orm_line : LineData {
     LineId id;
-    orm_line()
+    inline orm_line()
         : LineData{.author = AuthorId::Nil(), .content = StringId::Nil()}
         , id(LineId::Nil()) {}
 
-    orm_line(LineId _id, CR<LineData> base) : LineData(base), id(_id) {}
+    inline orm_line(LineId _id, CR<LineData> base)
+        : LineData(base), id(_id) {}
 };
 
 struct orm_lines_table {
@@ -318,7 +322,7 @@ struct orm_changed_range : LinePeriods {
     int    index;
 };
 
-auto create_db(CR<Str> storagePath) {
+inline auto create_db(CR<Str> storagePath) {
     auto storage = make_storage(
         storagePath,
         make_table<orm_commit>(

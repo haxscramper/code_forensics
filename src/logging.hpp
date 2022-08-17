@@ -136,5 +136,6 @@ boost::shared_ptr<sink_t> create_file_sink(CR<Str> outfile);
 
 boost::shared_ptr<sink_t> create_std_sink();
 
+void init_logger_properties();
 
 #endif // LOGGING_HPP

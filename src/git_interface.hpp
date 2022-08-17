@@ -1,4 +1,5 @@
-/// \file git_interface.hpp This file provides helper types and wrappers for the libgit API
+/// \file git_interface.hpp This file provides helper types and wrappers
+/// for the libgit API
 #ifndef GIT_INTERFACE_HPP
 #define GIT_INTERFACE_HPP
 
@@ -35,7 +36,7 @@ namespace git {
 #include "gitwrap.hpp"
 }
 
-auto oid_tostr(git_oid oid) -> Str {
+inline Str oid_tostr(git_oid oid) {
     std::array<char, GIT_OID_HEXSZ + 1> result;
     git_oid_tostr(result.data(), sizeof(result), &oid);
     return Str{result.data(), result.size() - 1};
@@ -48,7 +49,7 @@ struct fmt::formatter<git_oid> : fmt::formatter<Str> {
     }
 };
 
-void tree_walk(
+inline void tree_walk(
     const git_tree*                               tree,
     git_treewalk_mode                             mode,
     Func<int(const char*, const git_tree_entry*)> callback) {
@@ -73,14 +74,14 @@ void tree_walk(
 namespace std {
 template <>
 struct hash<git_oid> {
-    auto operator()(const git_oid& it) const -> std::size_t {
+    inline std::size_t operator()(const git_oid& it) const {
         return std::hash<Str>()(
             Str(reinterpret_cast<const char*>(&it.id[0]), sizeof(it.id)));
     }
 };
 } // namespace std
 
-auto operator==(CR<git_oid> lhs, CR<git_oid> rhs) -> bool {
+inline bool operator==(CR<git_oid> lhs, CR<git_oid> rhs) {
     return git::oid_cmp(&lhs, &rhs) == 0;
 }
 
