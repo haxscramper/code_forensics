@@ -19,7 +19,8 @@ jobs:
 
       - name: "Install conan"
         run: pip install conan
-      - run: |
+      - name: "Build code analyzer"
+        run: |
           conan install . \
             -if build/dependencies/conan \
             --build=missing \
@@ -30,3 +31,31 @@ jobs:
           cmake ..
           make -j10
           cd ..
+
+      - name: "Compare repositories"
+        run: |
+          pwd
+          git clone https://github.com/nim-works/nimskull.git /tmp/nimskull
+          git clone https://github.com/nim-lang/Nim.git /tmp/nim
+
+          ./build/bin/code_forensics /tmp/nimskull \
+            --filter-script=code_filter.py \
+            --branch=devel \
+            --logfile=nimskull.log \
+            --outfile=nimskull.sqlite
+
+          ./build/bin/code_forensics /tmp/nim \
+            --filter-script=code_filter.py \
+            --branch=devel \
+            --logfile=nim.log \
+            --outfile=nim.sqlite
+
+          ./table_per_period.py nimskull.sqlite nimskull.png
+          ./table_per_period.py nim.sqlite nim.png
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: burndown-plots
+          path: |
+            nim.png
+            nimskull.png

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from matplotlib import rcParams
+import argparse
+
 
 rcParams["font.family"] = "consolas"
 
@@ -12,7 +14,14 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import numpy as np
 
-con = sqlite3.connect("/tmp/db.sqlite")
+parser = argparse.ArgumentParser(description="Process some integers.")
+
+parser.add_argument("database", type=str, help="Input database file")
+parser.add_argument("outfile", type=str, help="Output plot image")
+
+args = parser.parse_args()
+
+con = sqlite3.connect(args.database)
 cur = con.cursor()
 
 commit_table = {}
@@ -136,7 +145,5 @@ heatmap.table(
 
 heatmap.set_yticks([])
 heatmap.set_xticks([])
-# heatmap.set_xlabel("Sampling period")
-# heatmap.set_ylabel("Code origin")
 
-plt.savefig("/tmp/db.png", bbox_inches="tight")
+plt.savefig(args.outfile, bbox_inches="tight")

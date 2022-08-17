@@ -10,7 +10,7 @@ set -o errexit
 # )
 
 function py_plotter() {
-    ./table_per_period.py
+    ./table_per_period.py /tmp/db.sqlite /tmp/db.png
     echo "py plotter ok"
 }
 
@@ -75,8 +75,8 @@ function conan_install() {
 # try_build
 # build_git_wrapper
 # wrap_git
-conan_install
-try_build
+# conan_install
+# try_build
 py_plotter
 # cmake .
 # make -j 12
