@@ -57,7 +57,7 @@ digraph "src/logging.cpp"
   Node13 -> Node27 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node27 [label="fmt/color.h",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
   Node2 -> Node28 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node28 [label="program_state.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$program__state_8hpp.html",tooltip=" "];
+  Node28 [label="program_state.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$program__state_8hpp.html",tooltip="Main code analysis state and configuration classes."];
   Node28 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node28 -> Node29 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node29 [label="chrono",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];

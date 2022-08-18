@@ -3,7 +3,7 @@ digraph "src/repo_processing.hpp"
  // LATEX_PDF_SIZE
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
-  Node1 [label="src/repo_processing.hpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 [label="src/repo_processing.hpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Headers for the repository processing algorithms."];
   Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node2 [label="mutex",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
   Node1 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -60,7 +60,7 @@ digraph "src/repo_processing.hpp"
   Node26 [label="type_traits",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
   Node24 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node1 -> Node27 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node27 [label="program_state.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$program__state_8hpp.html",tooltip=" "];
+  Node27 [label="program_state.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$program__state_8hpp.html",tooltip="Main code analysis state and configuration classes."];
   Node27 -> Node28 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node28 [label="unordered_set",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
   Node27 -> Node29 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

@@ -2,8 +2,8 @@ var structwalker__state =
 [
     [ "add_full_commit", "structwalker__state.html#ad81de230fbe18406483b5007640d5d8b", null ],
     [ "consider_changed", "structwalker__state.html#ac0f44c43ce52bc9bdd3ddcc2991f2c26", null ],
-    [ "get_period", "structwalker__state.html#a9fdde3df9213800e404c5208e94f53ed", null ],
-    [ "get_period", "structwalker__state.html#a90726a7db0524e188431f35848110a9d", null ],
+    [ "get_period", "structwalker__state.html#a22e666a8188e9317791d0d3f20f0a1a1", null ],
+    [ "get_period", "structwalker__state.html#a944e7933895be2cc42e4c4c0774be923", null ],
     [ "config", "structwalker__state.html#a7d4de3c70d5cfd425d8c4aa39ad275e1", null ],
     [ "content", "structwalker__state.html#a808b305b6826411c16d21db04ad7c15f", null ],
     [ "full_commits", "structwalker__state.html#a66a31e5b9d09a62f815f4de9d4de0af6", null ],

@@ -1,5 +1,12 @@
 var NAVTREEINDEX4 =
 {
+"index.html":[],
+"logging_8cpp.html":[3,0,0,9],
+"logging_8cpp.html#a1956d5efa9d80e4422143cd2448d9a58":[3,0,0,9,6],
+"logging_8cpp.html#a325e7588a67409e6676c83770d23b3d4":[3,0,0,9,3],
+"logging_8cpp.html#a34ec48faac1c82194d696bd2fd471c76":[3,0,0,9,1],
+"logging_8cpp.html#a48df0f513f848fc44b25a2411a558a1e":[3,0,0,9,7],
+"logging_8cpp.html#a5088a2a04b1f0e3adf5d61cf29f82378":[3,0,0,9,2],
 "logging_8cpp.html#a6d90e11d77890557687ed30cf72e45ec":[3,0,0,9,0],
 "logging_8cpp.html#aa19fa41017122b3de372db939ce6ff3f":[3,0,0,9,5],
 "logging_8cpp.html#ada10ea9fff788b25c56a0c6cd3464c77":[3,0,0,9,4],
@@ -24,10 +31,10 @@ var NAVTREEINDEX4 =
 "namespaceboost_1_1log.html":[1,0,0,0],
 "namespacedod.html":[2,0,1],
 "namespacedod.html":[1,0,1],
-"namespacefmt.html":[1,0,2],
 "namespacefmt.html":[2,0,2],
-"namespacegit.html":[2,0,3],
+"namespacefmt.html":[1,0,2],
 "namespacegit.html":[1,0,3],
+"namespacegit.html":[2,0,3],
 "namespaceir.html":[2,0,4],
 "namespaceir.html":[1,0,4],
 "namespacemembers.html":[1,1,0],
@@ -242,12 +249,5 @@ var NAVTREEINDEX4 =
 "structir_1_1orm__line.html":[2,0,4,12],
 "structir_1_1orm__line.html#a809bb3868c7bfd71508109a3e4d333d6":[2,0,4,12,2],
 "structir_1_1orm__line.html#a85cbaee53a20eef0a8bfa800ce6dfa47":[2,0,4,12,1],
-"structir_1_1orm__line.html#acc8103bb846bb78029e519e78fe46e9d":[2,0,4,12,0],
-"structir_1_1orm__lines__table.html":[2,0,4,13],
-"structir_1_1orm__lines__table.html#a3c2a57667706a8a48d5332eee216af95":[2,0,4,13,1],
-"structir_1_1orm__lines__table.html#a517a1e5f89ae0a790d9934f52af1659d":[2,0,4,13,0],
-"structir_1_1orm__lines__table.html#ab7ffad463f9a917e1b3d1b04f547b19c":[2,0,4,13,2],
-"structir_1_1orm__string.html":[2,0,4,14],
-"structir_1_1orm__string.html#a88eff252924313f0bc776cb131d3e83b":[2,0,4,14,0],
-"structir_1_1orm__string.html#a94dc1f250e1f239f8bfe7dbb227c7ed9":[2,0,4,14,2]
+"structir_1_1orm__line.html#acc8103bb846bb78029e519e78fe46e9d":[2,0,4,12,0]
 };

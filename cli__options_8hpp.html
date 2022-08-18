@@ -117,8 +117,8 @@ Functions</h2></td></tr>
 <tr class="separator:a592427abd3e86dfa54cac34a75eee7e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c7d32fd01831cc3c150635f0632da9c"><td class="memItemLeft" align="right" valign="top">po::variables_map&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cli__options_8hpp.html#a3c7d32fd01831cc3c150635f0632da9c">parse_cmdline</a> (int argc, const char **argv)</td></tr>
 <tr class="separator:a3c7d32fd01831cc3c150635f0632da9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac051c4a43486b4755f21848e7c78ca38"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cli__options_8hpp.html#ac051c4a43486b4755f21848e7c78ca38">PrintVariableMap</a> (const po::variables_map vm)</td></tr>
-<tr class="separator:ac051c4a43486b4755f21848e7c78ca38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27dfbc40e2eeb9ff1d027407ba1ded2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cli__options_8hpp.html#a27dfbc40e2eeb9ff1d027407ba1ded2b">print_variables_map</a> (std::ostream &amp;out, const po::variables_map vm)</td></tr>
+<tr class="separator:a27dfbc40e2eeb9ff1d027407ba1ded2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a3c7d32fd01831cc3c150635f0632da9c"></a>
@@ -149,18 +149,28 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ac051c4a43486b4755f21848e7c78ca38"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac051c4a43486b4755f21848e7c78ca38">&#9670;&nbsp;</a></span>PrintVariableMap()</h2>
+<a id="a27dfbc40e2eeb9ff1d027407ba1ded2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27dfbc40e2eeb9ff1d027407ba1ded2b">&#9670;&nbsp;</a></span>print_variables_map()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void PrintVariableMap </td>
+          <td class="memname">void print_variables_map </td>
           <td>(</td>
-          <td class="paramtype">const po::variables_map&#160;</td>
-          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const po::variables_map&#160;</td>
+          <td class="paramname"><em>vm</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
