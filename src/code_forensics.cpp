@@ -114,7 +114,8 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
     for (auto bar = ScopedBar(
              state,
              content.multi.store<ir::LineData>().size(),
-             "unique lines");
+             "unique lines",
+             false);
          const auto& [id, line] :
          content.multi.store<ir::LineData>().pairs()) {
         storage.insert(ir::orm_line(id, *line));

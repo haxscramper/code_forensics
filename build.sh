@@ -5,8 +5,8 @@ set -o errexit
 
 PER_YEAR=1
 
-TARGET=fusion
-BRANCH=master
+TARGET=nimskull
+BRANCH=devel
 
 function py_plotter() {
     ./scripts/table_per_period.py /tmp/db.sqlite /tmp/db.png --per-year=$PER_YEAR
@@ -105,6 +105,6 @@ debug_run
 # # export CI
 # ./tests/ci_compare_repo.sh
 # sql_select
-# py_plotter
+py_plotter
 # cmake .
 # make -j 12

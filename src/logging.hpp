@@ -3,6 +3,7 @@
 
 #include <unordered_set>
 #include <fstream>
+#include <chrono>
 
 #include <boost/log/trivial.hpp>
 #include <boost/log/common.hpp>
@@ -22,7 +23,7 @@
 #include <indicators/block_progress_bar.hpp>
 #include <indicators/cursor_control.hpp>
 
-indicators::BlockProgressBar init_progress(int max);
+indicators::BlockProgressBar init_progress(int max, int width = 60);
 
 using BarText = indicators::option::PostfixText;
 
@@ -31,7 +32,8 @@ void tick_next(
     indicators::BlockProgressBar& bar,
     int&                          count,
     int                           max,
-    CR<Str>                       name);
+    CR<Str>                       name,
+    CR<Str>                       extra = "");
 
 
 namespace logging = boost::log;
@@ -42,22 +44,34 @@ namespace attrs = logging::attributes;
 }; // namespace boost::log
 
 
-struct ScopedBar {
-    int                          count = 0;
-    int                          max;
-    indicators::BlockProgressBar bar;
-    Str                          annotation;
-    walker_state*                state;
+namespace sc = std::chrono;
 
-    inline ScopedBar(walker_state* _state, int _max, CR<Str> _annotation)
+struct ScopedBar {
+    int                                   count = 0;
+    int                                   max;
+    indicators::BlockProgressBar          bar;
+    Str                                   annotation;
+    walker_state*                         state;
+    bool                                  timed;
+    sc::high_resolution_clock::time_point start;
+
+
+    inline ScopedBar(
+        walker_state* _state,
+        int           _max,
+        CR<Str>       _annotation,
+        bool          _timed = true,
+        int           _width = 60)
         : max(_max)
-        , bar(init_progress(_max))
+        , bar(init_progress(_max, _width))
         , state(_state)
-        , annotation(_annotation) {
+        , annotation(_annotation)
+        , timed(_timed) {
         if (state->config->log_progress_bars) {
             // Avoid verlap of the progress bar and the stdout logging.
             logging::core::get()->flush();
         }
+        if (timed) { start = sc::high_resolution_clock::now(); }
     }
 
     inline ~ScopedBar() {
@@ -66,7 +80,17 @@ struct ScopedBar {
 
     inline void tick() {
         if (state->config->log_progress_bars) {
-            tick_next(bar, count, max, annotation);
+            Str extra;
+            if (timed) {
+                sc::duration<double>
+                    diff = sc::high_resolution_clock::now() - start;
+                extra    = fmt::format(
+                    " {:1.4f}/{:4.2f}/{:4.2f}",
+                    (diff / count).count(),
+                    (max - count) * (diff / count).count(),
+                    diff.count());
+            }
+            tick_next(bar, count, max, annotation, extra);
         }
     }
 };

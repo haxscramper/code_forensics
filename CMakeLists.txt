@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.5)
 
 project(code_forensics LANGUAGES CXX)
 
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CONAN_DISABLE_CHECK_COMPILER ON)
@@ -30,6 +29,8 @@ find_package(SqliteOrm REQUIRED)
 find_package(fmt REQUIRED)
 find_package(libgit2 REQUIRED)
 find_package(SQLite3 REQUIRED)
+# For parallel execution policies in the standard library algorithms
+find_package(TBB REQUIRED)
 
 add_compile_options(-ferror-limit=1)
 add_compile_options(-fcoroutines-ts)
@@ -53,7 +54,8 @@ target_link_libraries(
          Boost::thread
          Boost::log
          SQLite::SQLite
-         libgit2::libgit2)
+         libgit2::libgit2
+         TBB::tbb)
 
 target_include_directories(
   code_forensics PUBLIC Python::Python Boost::system Boost::program_options

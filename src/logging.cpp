@@ -2,15 +2,21 @@
 
 
 using namespace indicators;
-BlockProgressBar init_progress(int max) {
+BlockProgressBar init_progress(int max, int width) {
     return BlockProgressBar{
-        option::BarWidth{60},
+        option::BarWidth{width},
         option::ForegroundColor{Color::green},
         option::MaxProgress{max}};
 }
 
-void tick_next(BlockProgressBar& bar, int& count, int max, CR<Str> name) {
-    bar.set_option(BarText{fmt::format("{}/{} {}", ++count, max, name)});
+void tick_next(
+    BlockProgressBar& bar,
+    int&              count,
+    int               max,
+    CR<Str>           name,
+    CR<Str>           extra) {
+    bar.set_option(
+        BarText{fmt::format("{}/{} {}{}", ++count, max, name, extra)});
     bar.tick();
 }
 

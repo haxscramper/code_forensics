@@ -4,6 +4,11 @@
 #include "common.hpp"
 #include "git_interface.hpp"
 
+#include <algorithm>
+#include <execution>
+
+using namespace ir;
+
 namespace bp = boost::process;
 
 int get_nesting(CR<Str> line) {
@@ -22,11 +27,11 @@ int get_nesting(CR<Str> line) {
 }
 
 void push_line(
-    ir::FileId       id,
-    walker_state*    walker,
-    CR<ir::LineData> line,
-    bool             changed,
-    int              period) {
+    FileId        id,
+    walker_state* walker,
+    CR<LineData>  line,
+    bool          changed,
+    int           period) {
     auto& file      = walker->content->at(id);
     int   new_index = file.lines.size();
     auto& ranges    = file.changed_ranges;
@@ -49,17 +54,17 @@ void push_line(
     file.line_count += 1;
 }
 
-ir::FileId stats_via_subprocess(
+FileId stats_via_subprocess(
     git_oid       commit_oid,
     walker_state* walker,
-    ir::File      file,
+    File          file,
     CR<Str>       relpath) {
 
     Str str_oid{oid_tostr(commit_oid)};
 
     // Getting file id immediately at the start in order to use it for the
     // line construction.
-    auto result = ir::FileId::Nil();
+    auto result = FileId::Nil();
     {
         SLock lock{walker->m};
         result = walker->content->add(file);
@@ -153,10 +158,10 @@ ir::FileId stats_via_subprocess(
                 push_line(
                     result,
                     walker,
-                    ir::LineData{
+                    LineData{
                         .author  = walker->content->add(author),
                         .time    = std::stol(time),
-                        .content = walker->content->add(ir::String{line}),
+                        .content = walker->content->add(String{line}),
                         .nesting = get_nesting(line)},
                     walker->consider_changed(commit_oid, line_changed),
                     walker->get_period(commit_oid, line_changed));
@@ -178,14 +183,14 @@ ir::FileId stats_via_subprocess(
     return result;
 }
 
-ir::FileId stats_via_libgit(
+FileId stats_via_libgit(
     walker_state*         state,
     git_oid               commit_oid,
     const git_tree_entry* entry,
     CR<Str>               relpath,
-    ir::File              file) {
+    File                  file) {
 
-    auto result = ir::FileId::Nil();
+    auto result = FileId::Nil();
     {
         SLock lock{state->m};
         result = state->content->add(file);
@@ -242,11 +247,11 @@ ir::FileId stats_via_libgit(
             push_line(
                 result,
                 state,
-                ir::LineData{
-                    .author = state->content->add(ir::Author{}),
+                LineData{
+                    .author = state->content->add(Author{}),
                     .time   = hunk->final_signature->when.time,
                     // FIXME get slice of the string for the content
-                    .content = state->content->add(ir::String{str}),
+                    .content = state->content->add(String{str}),
                     .nesting = get_nesting(str)},
                 state->consider_changed(commit_oid, hunk->final_commit_id),
                 state->get_period(commit_oid, hunk->final_commit_id));
@@ -264,16 +269,16 @@ ir::FileId stats_via_libgit(
     return result;
 }
 
-ir::FileId exec_walker(
+FileId exec_walker(
     git_oid               commit_oid,
     walker_state*         state,
-    ir::CommitId          commit,
+    CommitId              commit,
     const char*           root,
     const git_tree_entry* entry) {
 
     // We are looking for blobs
     if (git::tree_entry_type(entry) != GIT_OBJECT_BLOB) {
-        return ir::FileId::Nil();
+        return FileId::Nil();
     }
     // get entry name relative to `root`
     Str path{git::tree_entry_name(entry)};
@@ -284,32 +289,32 @@ ir::FileId exec_walker(
     // IR has several fields that must be initialized at the start, so
     // using an optional for the file and calling init in the
     // RAII-lock-guarded section.
-    Opt<ir::File> init;
+    Opt<File> init;
 
     {
         SLock lock{state->m};
-        init = ir::File{
+        init = File{
             .commit_id = commit,
             .parent    = state->content->getDirectory(Str{root}),
-            .name      = state->content->add(ir::String{path})};
+            .name      = state->content->add(String{path})};
     }
 
     // Choose between different modes of data processing and call into one.
-    ir::FileId result = state->config->use_subprocess
-                            ? stats_via_subprocess(
-                                  commit_oid, state, init.value(), relpath)
-                            : stats_via_libgit(
-                                  state,
-                                  commit_oid,
-                                  entry,
-                                  relpath,
-                                  init.value());
+    FileId result = state->config->use_subprocess
+                        ? stats_via_subprocess(
+                              commit_oid, state, init.value(), relpath)
+                        : stats_via_libgit(
+                              state,
+                              commit_oid,
+                              entry,
+                              relpath,
+                              init.value());
 
 
     return result;
 }
 
-ir::CommitId process_commit(git_oid commit_oid, walker_state* state) {
+CommitId process_commit(git_oid commit_oid, walker_state* state) {
     git_commit* commit = git::commit_lookup(state->repo, &commit_oid);
     // commit information should be cleaned up when we exit the scope
     finally close{[commit]() {
@@ -325,7 +330,7 @@ ir::CommitId process_commit(git_oid commit_oid, walker_state* state) {
 
     if (state->config->try_incremental) {
         for (auto& [id, commit] :
-             state->content->multi.store<ir::Commit>().pairs()) {
+             state->content->multi.store<Commit>().pairs()) {
             if (commit->hash == hash) { return id; }
         }
     }
@@ -334,8 +339,8 @@ ir::CommitId process_commit(git_oid commit_oid, walker_state* state) {
         auto signature = const_cast<git_signature*>(
             git::commit_author(commit));
         finally close{[signature]() { git::signature_free(signature); }};
-        return state->content->add(ir::Commit{
-            .author   = state->content->add(ir::Author{
+        return state->content->add(Commit{
+            .author   = state->content->add(Author{
                   .name  = Str{signature->name},
                   .email = Str{signature->email}}),
             .time     = git::commit_time(commit),
@@ -351,7 +356,7 @@ void file_tasks(
     Vec<SubTaskParams>& treewalk,
     walker_state*       state,
     git_oid             commit_oid,
-    ir::CommitId        out_commit) {
+    CommitId            out_commit) {
     git_commit* commit = git::commit_lookup(state->repo, &commit_oid);
     // Get tree for a commit
     auto tree = git::commit_tree(commit);
@@ -415,12 +420,93 @@ void open_walker(git_oid& oid, walker_state& state) {
     git::revwalk_push(state.walker, &oid);
 }
 
-Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
+
+struct FullCommitData {
+    git_oid     oid;
+    PTime       time;
+    git_commit* commit;
+    CommitId    id;
+};
+
+void for_each_commit(
+    walker_state*           state,
+    CR<Vec<FullCommitData>> full_commits) {
+    LOG_I(state) << "Getting list of files changed per each commit";
+    git_commit*      prev     = nullptr;
+    git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
+
+    struct CommitTask {
+        CommitId  id;
+        git_tree* prev_tree;
+        git_tree* this_tree;
+    };
+
+    Vec<git_tree*>  trees;
+    Vec<CommitTask> tasks;
+    git_tree*       prev_tree = nullptr;
+
+    for (const auto& [oid, date, git_commit, oid_commit] : full_commits) {
+        git_tree* this_tree = git::commit_tree(git_commit);
+        tasks.push_back({oid_commit, prev_tree, this_tree});
+        trees.push_back(this_tree);
+        prev_tree = this_tree;
+
+        prev = git_commit;
+    }
+
+    auto bar = ScopedBar(
+        state, full_commits.size(), "commits to analyze", true, 40);
+
+    std::mutex tick_mutex;
+    auto       task_executor = [state, &tick_mutex, &diffopts, &bar](
+                             CR<CommitTask> task) {
+        git_diff* diff = git::diff_tree_to_tree(
+            state->repo, task.prev_tree, task.this_tree, &diffopts);
+
+        auto     id_commit = task.id;
+        Vec<Str> paths;
+        diff_foreach(
+            diff,
+            DiffForeachParams{
+                .file_cb = [state, id_commit, &tick_mutex, &bar, &paths](
+                               const git_diff_delta* delta,
+                               float                 progress,
+                               void*                 payload) {
+                    paths.push_back(delta->new_file.path);
+                    return GIT_OK;
+                }});
+
+        SLock lock{tick_mutex};
+        for (const auto& path : paths) {
+            state->content->at(id_commit).changed_files.push_back(
+                {state->content->add(String{path}),
+                 state->content->parentDirectory(path)});
+        }
+    };
+
+    const int                             max_parallel = 16;
+    std::counting_semaphore<max_parallel> counting{max_parallel};
+    Vec<std::future<void>>                executed;
+
+    for (const auto& task : tasks) {
+        bar.tick();
+        counting.acquire();
+        executed.push_back(std::async([task, &counting, &task_executor]() {
+            finally finish{[&counting]() { counting.release(); }};
+            task_executor(task);
+        }));
+    }
+
+    for (auto& future : executed) {
+        future.get();
+    }
+}
+
+Vec<CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     // All constructed information
-    Vec<ir::CommitId> processed{};
+    Vec<CommitId> processed{};
     // Walk over every commit in the history
-    Vec<std::tuple<git_oid, PTime, git_commit*, ir::CommitId>>
-        full_commits{};
+    Vec<FullCommitData> full_commits;
     while (git::revwalk_next(&oid, state->walker) == 0) {
         // Get commit from the provided oid
         git_commit* commit = git::commit_lookup(state->repo, &oid);
@@ -457,42 +543,7 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     }
 
 
-    LOG_I(state) << "Getting list of files changed per each commit";
-    git_commit*      prev     = nullptr;
-    git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
-    for (auto bar =
-             ScopedBar(state, full_commits.size(), "commits to analyze");
-         const auto& [oid, date, git_commit, oid_commit] : full_commits) {
-        if (prev != nullptr) {
-            git_tree* prev_tree = git::commit_tree(prev);
-            git_tree* this_tree = git::commit_tree(git_commit);
-            finally   tree_free{[prev_tree, this_tree]() {
-                git::tree_free(prev_tree);
-                git::tree_free(this_tree);
-            }};
-
-            git_diff* diff = git::diff_tree_to_tree(
-                state->repo, prev_tree, this_tree, &diffopts);
-
-            auto id_commit = oid_commit;
-            diff_foreach(
-                diff,
-                DiffForeachParams{
-                    .file_cb = [state, id_commit](
-                                   const git_diff_delta* delta,
-                                   float                 progress,
-                                   void*                 payload) {
-                        auto path = Str{delta->new_file.path};
-                        state->content->at(id_commit)
-                            .changed_files.push_back(
-                                {state->content->add(ir::String{path}),
-                                 state->content->parentDirectory(path)});
-                        return GIT_OK;
-                    }});
-        }
-        bar.tick();
-        prev = git_commit;
-    }
+    for_each_commit(state, full_commits);
 
     for (auto& [oid, date, commit, _] : full_commits) {
         git::commit_free(commit);
@@ -519,87 +570,59 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
 
     constexpr int                         max_parallel = 32;
     std::counting_semaphore<max_parallel> counting{max_parallel};
-    using clock = std::chrono::high_resolution_clock;
-    auto                         start = clock::now();
-    Vec<std::future<ir::FileId>> walked{};
-    {
-        auto process_files = init_progress(params.size());
-        logging::core::get()->flush();
-        int count = 0;
-        for (const auto& param : params) {
-            ++count;
-            std::chrono::duration<double> diff = clock::now() - start;
-            if (state->config->log_progress_bars) {
-                process_files.set_option(BarText{fmt::format(
-                    "{}/{} avg {:1.4f}s, eta {:4.2f}s",
-                    count,
-                    params.size(),
-                    (diff / count).count(),
-                    (params.size() - count) * (diff / count).count())});
-                process_files.tick();
+    Vec<std::future<FileId>>              walked{};
+    for (auto bar = ScopedBar(state, params.size(), "files", true, 40);
+         const auto& param : params) {
+        bar.tick();
+        auto sub_task = [state, param, &counting]() -> FileId {
+            finally finish{[&counting]() { counting.release(); }};
+            // Walker returns optional analysis result
+            auto result = exec_walker(
+                param.commit_oid,
+                state,
+                param.out_commit,
+                param.root.c_str(),
+                param.entry);
+
+            if (!result.isNil()) {
+                // FIXME This sink is placed inside of the `process_filter`
+                // tick range, so increasing debugging level would
+                // invariably mess up the stdout. It might be possible to
+                // introduce a HACK via CLI configuration - disable progres
+                // bar if stdout sink shows trace records (after all these
+                // two items perform the same task)
+                LOG_T(state) << fmt::format(
+                    "FILE {:>5}/{:<5} {} {}",
+                    param.index,
+                    param.max_count,
+                    oid_tostr(param.commit_oid),
+                    param.root + git::tree_entry_name(param.entry));
             }
 
-            auto sub_task =
-                [state, param, &counting, &start]() -> ir::FileId {
-                finally finish{[&counting]() { counting.release(); }};
-                // Walker returns optional analysis result
-                auto result = exec_walker(
-                    param.commit_oid,
-                    state,
-                    param.out_commit,
-                    param.root.c_str(),
-                    param.entry);
+            return result;
+        };
 
-                if (!result.isNil()) {
-                    std::chrono::duration<double> diff = clock::now() -
-                                                         start;
-                    // FIXME This sink is placed inside of the
-                    // `process_filter` tick range, so increasing debugging
-                    // level would invariably mess up the stdout. It might
-                    // be possible to introduce a HACK via CLI
-                    // configuration  - disable progres bar if stdout sink
-                    // shows trace records (after all these two items
-                    // perform the same task)
-                    LOG_T(state) << fmt::format(
-                        "FILE {:>5}/{:<5} (avg: {:1.4f}s) {:07.4f}% {} {}",
-                        param.index,
-                        param.max_count,
-                        (diff / param.index).count(),
-                        float(param.index) / param.max_count * 100.0,
-                        oid_tostr(param.commit_oid),
-                        param.root + git::tree_entry_name(param.entry));
-                }
+        counting.acquire();
 
-                return result;
-            };
-
-            counting.acquire();
-
-            switch (state->config->use_threading) {
-                case walker_config::async: {
-                    walked.push_back(
-                        std::async(std::launch::async, sub_task));
-                    break;
-                }
-                case walker_config::defer: {
-                    walked.push_back(
-                        std::async(std::launch::deferred, sub_task));
-                    break;
-                }
-                case walker_config::sequential: {
-                    auto tmp = sub_task();
-                    walked.push_back(std::async(
-                        std::launch::deferred, [tmp]() { return tmp; }));
-                    break;
-                }
+        switch (state->config->use_threading) {
+            case walker_config::async: {
+                walked.push_back(std::async(std::launch::async, sub_task));
+                break;
             }
-        }
-
-
-        if (state->config->log_progress_bars) {
-            process_files.mark_as_completed();
+            case walker_config::defer: {
+                walked.push_back(
+                    std::async(std::launch::deferred, sub_task));
+                break;
+            }
+            case walker_config::sequential: {
+                auto tmp = sub_task();
+                walked.push_back(std::async(
+                    std::launch::deferred, [tmp]() { return tmp; }));
+                break;
+            }
         }
     }
+
     for (auto& future : walked) {
         future.get();
     }
@@ -613,13 +636,13 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     {
         LOG_I(state) << "Assigning line categories";
         auto& multi       = state->content->multi;
-        auto  max_size    = multi.store<ir::LineData>().size();
+        auto  max_size    = multi.store<LineData>().size();
         auto  line_assign = init_progress(max_size);
         int   count       = 0;
         logging::core::get()->flush();
-        for (auto& line : multi.store<ir::LineData>().items()) {
+        for (auto& line : multi.store<LineData>().items()) {
             line->category = state->config->classify_line(
-                multi.store<ir::String>().at(line->content).text);
+                multi.store<String>().at(line->content).text);
 
             if (state->config->log_progress_bars) {
                 tick_next(line_assign, ++count, max_size, "unqiue lines");

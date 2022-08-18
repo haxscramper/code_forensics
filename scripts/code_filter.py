@@ -33,7 +33,7 @@ config.log_info(f"Number of samples per year: {args.per_year}")
 
 # We are only interested in the code in the main compiler directory, and ignoring everything else
 def path_predicate(path: str) -> bool:
-    if args.target == "nim":
+    if args.target in ["nim", "nimskull"]:
         if path.endswith(".nim"):
             return path.startswith("compiler") or path.startswith("rod")
 
