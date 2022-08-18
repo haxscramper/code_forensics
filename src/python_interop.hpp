@@ -1,3 +1,6 @@
+/// \file python_interop.hpp \brief Python module definition and
+/// interfacing classes
+
 #ifndef PYTHON_INTEROP_HPP
 #define PYTHON_INTEROP_HPP
 
@@ -14,37 +17,61 @@ namespace py = boost::python;
 
 class PyForensics {
     py::object   path_predicate;
-    py::object   period_mapping;
+    py::object   commit_period_mapping;
+    py::object   sample_period_mapping;
     py::object   sample_predicate;
     py::object   line_classifier;
+    py::object   post_analyze;
     SPtr<Logger> logger;
 
   public:
     void set_logger(SPtr<Logger> log) { logger = log; }
 
+    /// \brief write text as a info-level log record
     void log_info(CR<Str> text) { LOG_I(logger) << text; }
+    /// \brief write text as a warning-level log record
     void log_warning(CR<Str> text) { LOG_W(logger) << text; }
+    /// \brief write text as a trace-level log record
     void log_trace(CR<Str> text) { LOG_T(logger) << text; }
+    /// \brief write text as a debug-level log record
     void log_debug(CR<Str> text) { LOG_D(logger) << text; }
+    /// \brief write text as a error-level log record
     void log_error(CR<Str> text) { LOG_E(logger) << text; }
+    /// \brief write text as a fatal-level log record
     void log_fatal(CR<Str> text) { LOG_F(logger) << text; }
 
+
+    /// \brief set post-analyze hook implementation
+    void set_post_analyze(py::object post) { post_analyze = post; }
+
+    /// \brief set line classification callback for the #classify_line
     void set_line_classifier(py::object classifier) {
         line_classifier = classifier;
     }
 
+    /// \brief set path filtering predicate for the #allow_path predicate
     void set_path_predicate(py::object predicate) {
         path_predicate = predicate;
     }
 
-    void set_period_mapping(py::object mapping) {
-        period_mapping = mapping;
+    /// \brief set period mapping callback for the #get_commit_period
+    void set_commit_period_mapping(py::object mapping) {
+        commit_period_mapping = mapping;
     }
 
+    /// \brief set period mapping callback for the #get_sample_period
+    void set_sample_period_mapping(py::object mapping) {
+        sample_period_mapping = mapping;
+    }
+
+    /// \brief set sample predicate callback for the #allow_sample_at_date predicate
     void set_sample_predicate(py::object predicate) {
         sample_predicate = predicate;
     }
 
+
+    /// \brief Check whether provided path should be processed for the
+    /// 'blame' information
     bool allow_path(CR<Str> path) const {
         if (path_predicate) {
             return py::extract<bool>(path_predicate(path));
@@ -53,14 +80,27 @@ class PyForensics {
         }
     }
 
-    int get_period(CR<PTime> date) const {
-        if (period_mapping) {
-            return py::extract<int>(period_mapping(date));
+    /// \brief Get period number from the specified commit date
+    int get_commit_period(CR<PTime> date) const {
+        if (commit_period_mapping) {
+            return py::extract<int>(commit_period_mapping(date));
         } else {
             return 0;
         }
     }
 
+
+    /// \brief Get period number from the specified commit date
+    int get_sample_period(CR<PTime> date) const {
+        if (sample_period_mapping) {
+            return py::extract<int>(sample_period_mapping(date));
+        } else {
+            return 0;
+        }
+    }
+
+    /// \brief Check whether commit by \arg author at a \arg date should be
+    /// sampled for the blame info
     bool allow_sample_at_date(CR<PTime> date, CR<Str> author, CR<Str> id)
         const {
         if (sample_predicate) {
@@ -70,6 +110,7 @@ class PyForensics {
         }
     }
 
+    /// \brief get line category
     int classify_line(CR<Str> line) const {
         if (line_classifier) {
             return py::extract<int>(line_classifier(line));
@@ -77,8 +118,15 @@ class PyForensics {
             return 0;
         }
     }
+
+    void run_post_analyze() const {
+        if (post_analyze) { post_analyze(); }
+    }
 };
 
+
+/// \brief helper type to aid conversion from input type T to the python
+/// object
 template <typename T>
 struct type_into_python {
     static PyObject* convert(T const&);
@@ -98,6 +146,8 @@ struct type_from_python {
         py::converter::rvalue_from_python_stage1_data* data);
 };
 
+/// {@
+/// Template specialization for python-C++ type conversion
 template <>
 PyObject* type_into_python<PTime>::convert(CR<PTime> t) {
     auto d    = t.date();
@@ -139,6 +189,7 @@ void type_from_python<PTime>::construct(
     new (storage) PTime(date_only, time_of_day);
     data->convertible = storage;
 }
+/// @}
 
 template <>
 PyObject* type_into_python<Date>::convert(Date const& d) {
@@ -190,12 +241,20 @@ BOOST_PYTHON_MODULE(forensics) {
                 &PyForensics::set_line_classifier,
                 py::args("classifier"))
             .def(
+                "set_post_analyze",
+                &PyForensics::set_post_analyze,
+                py::arg("post"))
+            .def(
                 "set_path_predicate",
                 &PyForensics::set_path_predicate,
                 py::args("predicate"))
             .def(
-                "set_period_mapping",
-                &PyForensics::set_period_mapping,
+                "set_commit_period_mapping",
+                &PyForensics::set_commit_period_mapping,
+                py::args("mapping"))
+            .def(
+                "set_sample_period_mapping",
+                &PyForensics::set_sample_period_mapping,
                 py::args("mapping"))
             .def(
                 "set_sample_predicate",

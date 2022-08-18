@@ -46,12 +46,27 @@ updates) generates the new database file (or updates existing one).
 Custom analysis logic can be injected directly in the database processing
 stage using a user-provided python script that is
 
+
+NOTE: Filtering configuration script and subsequent analysis can be tied
+together via period indexing scheme or some other means. Examples in
+~scripts~ also use this feature. For example, sampling period mapping is
+done using this function, which effectively translates ~2011Q2~ to ~4022~.
+Later on this is unpacked by the data visualization part.
+
+#+begin_src python
+def sample_period_mapping(date) -> bool:
+    result = date.year * 2
+    if 6 < date.month:
+        result += 1
+
+    return result
+#+end_src
+
 * The database structure
 
 Database is comprised of the several tables, mapping different types
-declared in the ~git_ir.hpp~ file. Mapping is done via ORM in a
-straightforward manner. General overview of each table present in the
-database:
+declared in the ~git_ir.hpp~ file. Mapping is done via the [[https://github.com/fnc12/sqlite_orm][ORM]] library
+using ~ir::~ [[https://haxscramper.github.io/code_forensics/group__db__mapped.html][types]]. General overview of each table present in the database:
 
 - line :: Interned information about different lines in the code. Each
   line's content is represented uniquely and includes the ~.author~,

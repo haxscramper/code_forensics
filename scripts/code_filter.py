@@ -1,10 +1,23 @@
 from forensics import config
 import datetime
+import sys
+import argparse
 
+parser = argparse.ArgumentParser(description="Code filter script configuration")
+
+parser.add_argument(
+    "--per-year",
+    dest="per_year",
+    type=int,
+    default=1,
+    help="Number of samples per year",
+)
+
+args = parser.parse_args()
+
+config.log_info(f"argv: {sys.argv}")
 # Configuration object can also access logging functionality
-config.log_info("PY LOG: test from the user code")
-config.log_error("PY_ERR")
-config.log_warning("PY WARN")
+config.log_info(f"Number of samples per year: {args.per_year}")
 
 
 # We are only interested in the code in the main compiler directory, and ignoring everything else
@@ -23,23 +36,31 @@ def path_predicate(path: str) -> bool:
 visited_years = set()
 
 
-def sample_predicate(date, author, oid) -> bool:
+def sample_period_mapping(date) -> bool:
+    shift = date.month // int(12 / args.per_year)
+    result = date.year * args.per_year + shift
+    return result
+
+
+def sample_predicate(date, author: str, oid: str) -> bool:
     # Trim earlier years for testing convenience - this script is used to
     # run on the nim/nimskull repository, which was originally transpiled
     # from the pascal code, and there are some weird glitches in the
     # output beacuse of that.
-    if date.year < 2010:
+    if date.year < 2011:
         return False
 
-    if date.year in visited_years:
+    period = sample_period_mapping(date)
+
+    if period in visited_years:
         return False
 
     else:
-        visited_years.add(date.year)
+        visited_years.add(period)
         return True
 
 
-def period_mapping(date) -> bool:
+def commit_period_mapping(date) -> bool:
     return date.year
 
 
@@ -50,7 +71,13 @@ def classify_line(line: str) -> int:
         return 0
 
 
+def post_analyze():
+    config.log_info("Post-analysis hook")
+
+
 config.set_path_predicate(path_predicate)
 config.set_sample_predicate(sample_predicate)
-config.set_period_mapping(period_mapping)
+config.set_commit_period_mapping(commit_period_mapping)
+config.set_sample_period_mapping(sample_period_mapping)
 config.set_line_classifier(classify_line)
+config.set_post_analyze(post_analyze)

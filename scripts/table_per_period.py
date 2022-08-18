@@ -20,8 +20,17 @@ parser = argparse.ArgumentParser(description="Process some integers.")
 # Basic CLI handling for the script - to avoid hardcoding parameters
 parser.add_argument("database", type=str, help="Input database file")
 parser.add_argument("outfile", type=str, help="Output plot image")
+parser.add_argument(
+    "--per-year",
+    dest="per_year",
+    type=int,
+    default=1,
+    help="Number of samples per year",
+)
 
 args = parser.parse_args()
+# Allow different number of commit samples per year
+multi = args.per_year
 
 con = sqlite3.connect(args.database)
 cur = con.cursor()
@@ -70,18 +79,29 @@ for commit_idx, commit in enumerate(sorted(commit_table.keys())):
         lines = commit_table[commit][change]
         data[change_idx][commit_idx] = lines
 
+
+def name_period(period: int) -> str:
+    return f"[ {int(period / multi)} ]"
+
+
 # Sorted indices of the change periods
 change_periods = [f"{change}" for change in sorted(all_change_periods)]
 # Sorted indices of the commit samples
-commit_samples = [f"{commit}" for commit in sorted(commit_table.keys())]
+commit_samples = [f"{name_period(commit)}" for commit in sorted(commit_table.keys())]
 
+name_w: int = max([len(name) for name in commit_samples]) + 1
 
 # Print the analysis table directly
-print("  period> ", "".join([f"{count:<6}" for count in commit_samples]), sep="")
+print(
+    f"{'':>{name_w}} {'period':<{name_w}}",
+    "".join([f"{count:<{name_w}}" for count in commit_samples]),
+    sep="",
+)
+
 for idx, commit in enumerate(data):
     print(
-        f"{idx:<2} {change_periods[idx]:<6} ",
-        "".join([f"{count:<6}" for count in commit]),
+        f"{idx:>{name_w}} {change_periods[idx]:<{name_w}}",
+        "".join([f"{count:<{name_w}}" for count in commit]),
         sep="",
     )
 
@@ -105,9 +125,13 @@ barplot.margins(x=0)
 # Initialize the vertical-offset for the stacked bar chart.
 y_offset = np.zeros(len(commit_samples))
 
-# Plot bars and create text labels for the table
-cell_text = []
-cellColours = []  # 2D list of the table colors (gradients)
+
+barplot.set_xticks(
+    index,
+    [f"{int(s/multi)} {s%multi}/{multi}" for s in sorted(commit_table.keys())],
+    rotation=90,
+)
+
 for commit_idx, samples in enumerate(data):
     # Create single layer of bar plot
     barplot.bar(
@@ -120,10 +144,20 @@ for commit_idx, samples in enumerate(data):
     )
     # Bars are stacked on each other
     y_offset = y_offset + samples
-    cell_text.append([f"{int(x)}" for x in samples])
+
+# Plot bars and create text labels for the table
+cell_text = []
+cell_colours = []  # 2D list of the table colors (gradients)
+for commit_idx, samples in enumerate(data):
     res_colors = []
     count_max = samples.max()
-    for entry in samples:
+    row_text = []
+    for entry_idx, entry in enumerate(samples):
+        if multi != 1 and entry_idx % multi == 0:
+            continue
+
+        row_text.append(f"{int(entry)}")
+
         if entry == 0:
             res_colors.append("white")
 
@@ -136,17 +170,21 @@ for commit_idx, samples in enumerate(data):
             color[2] = (color[2] - 1.0) * avg + 1.0
             res_colors.append(color)
 
-    cellColours.append(res_colors)
+    cell_colours.append(res_colors)
+    cell_text.append(row_text)
 
 # Table plot does not need any axis information
 change_table.axis("off")
 change_table.axis("tight")
+filter_headers = [
+    sample for idx, sample in enumerate(commit_samples) if idx % multi == 0
+]
 table = change_table.table(
     cellText=cell_text,
     rowLabels=change_periods,
-    cellColours=cellColours,
+    cellColours=cell_colours,
     rowColours=colors,
-    colLabels=commit_samples,
+    colLabels=filter_headers,
     loc="top",
 )
 

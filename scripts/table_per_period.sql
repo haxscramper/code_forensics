@@ -7,5 +7,6 @@ SELECT commits.period AS commmit_period,
     ON commits.id == file.commit_id
  INNER JOIN changed_ranges
     ON file.id == changed_ranges.file
- GROUP BY commits.period,
-          changed_ranges.period;
+ GROUP BY changed_ranges.period,
+          commits.period
+ ORDER BY commits.period ;

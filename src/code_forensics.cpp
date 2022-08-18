@@ -261,10 +261,116 @@ Str parse_python_exception() {
     return ret;
 }
 
+#define LOG_PY_ERROR(logger)                                              \
+    {                                                                     \
+        auto exception = parse_python_exception();                        \
+        LOG_E(logger) << "Error during python code execution";            \
+        LOG_E(logger) << exception;                                       \
+    }
+
+PyForensics* exec_python_filter(
+    SPtr<Logger>      logger,
+    po::variables_map vm) {
+    PyForensics* forensics;
+
+    auto in_script = vm.count("filter-script")
+                         ? vm["filter-script"].as<Str>()
+                         : "";
+
+    // Register user-defined module in python - this would allow importing
+    // `forensics` module in the C++ side of the application
+    PyImport_AppendInittab("forensics", &PyInit_forensics);
+    // Initialize main python library part
+    Py_Initialize();
+
+
+    if (in_script.empty()) {
+        forensics = new PyForensics();
+        LOG_W(logger)
+            << "No filter script was provided - analysing all commits in "
+               "the whole repository might be slow for large projects";
+
+    } else {
+        LOG_I(logger) << "User-defined filter configuration was provided, "
+                         "evaluating "
+                      << in_script;
+        Path path{in_script};
+        if (fs::exists(path)) {
+            py::object main_module = py::import("__main__");
+            py::object name_space  = main_module.attr("__dict__");
+
+            try {
+                // Get the configuration module object
+                py::object forensics_module = py::import("forensics");
+                // Retrieve config pointer object from it
+                py::object config_object = forensics_module.attr(
+                    "__dict__")["config"];
+                // Extract everything to a pointer
+                forensics = py::extract<PyForensics*>(config_object);
+                if (forensics == nullptr) {
+                    LOG_F(logger) << "Could not extract pointer for "
+                                     "forensics configuration object";
+                    throw fs::filesystem_error(
+                        "forensics config object does not exist",
+                        std::error_code());
+                }
+
+                forensics->set_logger(logger);
+
+                auto abs = fs::absolute(path);
+                LOG_T(logger) << "Python file, executing as expected, "
+                                 "absolute path is "
+                              << abs.c_str();
+
+
+                Vec<wchar_t*> argc;
+                if (vm.count("filter-args")) {
+                    auto vec = vm["filter-args"].as<Vec<Str>>();
+                    vec.insert(vec.begin(), abs.c_str());
+                    for (auto& str : vec) {
+                        std::wstring wide{str.begin(), str.end()};
+                        argc.push_back(wcsdup(wide.c_str()));
+                    }
+                    LOG_T(logger) << fmt::format(
+                        "filter script system arguments: {}", vec);
+                }
+
+
+                PySys_SetArgv(argc.size(), argc.data());
+
+                auto result = py::exec_file(
+                    py::str(abs.c_str()), name_space, name_space);
+
+
+                LOG_D(logger) << "Execution of the configuration script "
+                                 "was successfull";
+
+            } catch (py::error_already_set& err) {
+                LOG_PY_ERROR(logger);
+                throw fs::filesystem_error(
+                    "failure evaluating configuration script",
+                    path,
+                    std::error_code());
+            }
+
+        } else {
+            LOG_E(logger)
+                << "User configuration file script does not exist "
+                << path.native() << " no such file or directory";
+            throw fs::filesystem_error(
+                "path does not exist", path, std::error_code());
+        }
+    }
+
+    forensics->run_post_analyze();
+
+    return forensics;
+}
+
 
 auto main(int argc, const char** argv) -> int {
     auto vm = parse_cmdline(argc, argv);
-    PrintVariableMap(vm);
+    print_variables_map(std::cout, vm);
     auto file_sink = create_file_sink(vm["logfile"].as<Str>());
     auto out_sink  = create_std_sink();
 
@@ -297,80 +403,12 @@ auto main(int argc, const char** argv) -> int {
     LOG_I(logger) << fmt::format(
         "Use blame subprocess for file analysis: {}", in_blame_subprocess);
 
-    auto in_script = vm.count("filter-script")
-                         ? vm["filter-script"].as<Str>()
-                         : "";
-
     PyForensics* forensics;
-    // Register user-defined module in python - this would allow importing
-    // `forensics` module in the C++ side of the application
-    PyImport_AppendInittab("forensics", &PyInit_forensics);
-    // Initialize main python library part
-    Py_Initialize();
-    if (in_script.empty()) {
-        forensics = new PyForensics();
-        LOG_W(logger)
-            << "No filter script was provided - analysing all commits in "
-               "the whole repository might be slow for large projects";
-
-    } else {
-        LOG_I(logger) << "User-defined filter configuration was provided, "
-                         "evaluating "
-                      << in_script;
-        Path path{in_script};
-        if (fs::exists(path)) {
-            py::object main_module = py::import("__main__");
-            py::object name_space  = main_module.attr("__dict__");
-
-            try {
-                // Get the configuration module object
-                py::object forensics_module = py::import("forensics");
-                // Retrieve config pointer object from it
-                py::object config_object = forensics_module.attr(
-                    "__dict__")["config"];
-                // Extract everything to a pointer
-                forensics = py::extract<PyForensics*>(config_object);
-                if (forensics == nullptr) {
-                    LOG_F(logger) << "Could not extract pointer for "
-                                     "forensics configuration object";
-                    return 1;
-                }
-
-                forensics->set_logger(logger);
-
-                auto abs = fs::absolute(path);
-                LOG_T(logger) << "Python file, executing as expected, "
-                                 "absolute path is "
-                              << abs.c_str();
-
-
-                auto result = py::exec_file(
-                    py::str(abs.c_str()), name_space, name_space);
-
-
-                LOG_D(logger) << "Execution of the configuration script "
-                                 "was successfull";
-
-            } catch (py::error_already_set& err) {
-
-#define LOG_PY_ERROR(logger)                                              \
-    {                                                                     \
-        auto exception = parse_python_exception();                        \
-        LOG_E(logger) << "Error during python code execution";            \
-        LOG_E(logger) << exception;                                       \
-    }
-
-                LOG_PY_ERROR(logger);
-
-                return 1;
-            }
-
-        } else {
-            LOG_E(logger)
-                << "User configuration file script does not exist "
-                << path.native() << " no such file or directory";
-            return 1;
-        }
+    try {
+        forensics = exec_python_filter(logger, vm);
+    } catch (fs::filesystem_error& error) {
+        LOG_E(logger) << error.what();
+        return 1;
     }
 
     // Provide implementation callback strategies
@@ -391,9 +429,17 @@ auto main(int argc, const char** argv) -> int {
                 return false;
             }
         },
-        .get_period = [&logger, forensics](CR<PTime> date) -> int {
+        .get_commit_period = [&logger, forensics](CR<PTime> date) -> int {
             try {
-                return forensics->get_period(date);
+                return forensics->get_commit_period(date);
+            } catch (py::error_already_set& err) {
+                LOG_PY_ERROR(logger);
+                return 0;
+            }
+        },
+        .get_sampled_period = [&logger, forensics](CR<PTime> date) -> int {
+            try {
+                return forensics->get_sample_period(date);
             } catch (py::error_already_set& err) {
                 LOG_PY_ERROR(logger);
                 return 0;

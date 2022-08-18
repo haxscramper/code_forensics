@@ -1,3 +1,4 @@
+/// \file repo_processing.cpp \brief repository processing algorithms
 #include "repo_processing.hpp"
 #include "logging.hpp"
 #include "common.hpp"
@@ -340,7 +341,7 @@ ir::CommitId process_commit(git_oid commit_oid, walker_state* state) {
             .time     = git::commit_time(commit),
             .timezone = git::commit_time_offset(commit),
             .hash     = hash,
-            .period   = state->config->get_period(
+            .period   = state->config->get_sampled_period(
                 boost::posix_time::from_time_t(git::commit_time(commit))),
             .message = Str{git::commit_message(commit)}});
     }
@@ -436,7 +437,7 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
         // `commit_author(commit)->name` is the correct way (according to
         // the documentation least).
         if (state->config->allow_sample(date, "", oid_tostr(oid))) {
-            int period = state->config->get_period(date);
+            int period = state->config->get_commit_period(date);
             // Store in the list of commits for sampling
             state->sampled_commits.insert(oid);
             LOG_T(state) << fmt::format(
@@ -449,8 +450,10 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
 
     std::reverse(full_commits.begin(), full_commits.end());
 
+    // Push information about all known commits to the full list
     for (const auto& [commit, date] : full_commits) {
-        state->add_full_commit(commit, state->config->get_period(date));
+        state->add_full_commit(
+            commit, state->config->get_commit_period(date));
     }
 
     Vec<SubTaskParams> params;

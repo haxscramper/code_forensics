@@ -29,16 +29,14 @@ Str lexical_cast<Str, BoolOption>(CR<BoolOption> b) {
 } // namespace boost
 
 
-void PrintVariableMap(const po::variables_map vm) {
+void print_variables_map(std::ostream& out, const po::variables_map vm) {
     for (auto& it : vm) {
-        std::cout << "> " << it.first;
-        if (((boost::any)it.second.value()).empty()) {
-            std::cout << "(empty)";
-        }
+        out << "> " << it.first;
+        if (((boost::any)it.second.value()).empty()) { out << "(empty)"; }
         if (vm[it.first].defaulted() || it.second.defaulted()) {
-            std::cout << "(default)";
+            out << "(default)";
         }
-        std::cout << "=";
+        out << "=";
 
         bool is_char;
         try {
@@ -52,25 +50,25 @@ void PrintVariableMap(const po::variables_map vm) {
         } catch (const boost::bad_any_cast&) { is_str = false; }
 
         if (((boost::any)it.second.value()).type() == typeid(int)) {
-            std::cout << vm[it.first].as<int>() << std::endl;
+            out << vm[it.first].as<int>() << std::endl;
         } else if (
             ((boost::any)it.second.value()).type() == typeid(bool)) {
-            std::cout << vm[it.first].as<bool>() << std::endl;
+            out << vm[it.first].as<bool>() << std::endl;
         } else if (
             ((boost::any)it.second.value()).type() == typeid(BoolOption)) {
-            std::cout << std::boolalpha << vm[it.first].as<BoolOption>()
-                      << std::endl;
+            out << std::boolalpha << vm[it.first].as<BoolOption>()
+                << std::endl;
         } else if (
             ((boost::any)it.second.value()).type() == typeid(double)) {
-            std::cout << vm[it.first].as<double>() << std::endl;
+            out << vm[it.first].as<double>() << std::endl;
         } else if (is_char) {
-            std::cout << vm[it.first].as<const char*>() << std::endl;
+            out << vm[it.first].as<const char*>() << std::endl;
         } else if (is_str) {
             std::string temp = vm[it.first].as<std::string>();
             if (temp.size()) {
-                std::cout << temp << std::endl;
+                out << temp << std::endl;
             } else {
-                std::cout << "true" << std::endl;
+                out << "true" << std::endl;
             }
         } else { // Assumes that the only remainder is vector<string>
             try {
@@ -80,13 +78,13 @@ void PrintVariableMap(const po::variables_map vm) {
                 for (std::vector<std::string>::iterator oit = vect.begin();
                      oit != vect.end();
                      oit++, ++i) {
-                    std::cout << "\r> " << it.first << "[" << i
-                              << "]=" << (*oit) << std::endl;
+                    out << "\r> " << it.first << "[" << i << "]=" << (*oit)
+                        << std::endl;
                 }
             } catch (const boost::bad_any_cast&) {
-                std::cout << "UnknownType("
-                          << ((boost::any)it.second.value()).type().name()
-                          << ")" << std::endl;
+                out << "UnknownType("
+                    << ((boost::any)it.second.value()).type().name() << ")"
+                    << std::endl;
             }
         }
     }
@@ -163,7 +161,10 @@ po::variables_map parse_cmdline(int argc, const char** argv) {
         ("filter-script",
          po::value<Str>(),
          "User-provided python script that configures code forensics "
-         "filter")
+         "filter") //
+        ("filter-args",
+         po::value<Vec<Str>>(),
+         "command line arguments to the filter script")
         //
         ;
 

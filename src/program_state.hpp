@@ -1,3 +1,6 @@
+/// \file program_state.hpp \brief Main code analysis state and
+/// configuration classes
+
 #ifndef PROGRAM_STATE_HPP
 #define PROGRAM_STATE_HPP
 
@@ -55,7 +58,8 @@ struct walker_config {
     /// Allow processing of a specific path in the repository
     Func<bool(CR<Str>)> allow_path;
     /// Get integer index of the period for Date
-    Func<int(CR<PTime>)> get_period;
+    Func<int(CR<PTime>)> get_commit_period;
+    Func<int(CR<PTime>)> get_sampled_period;
     /// Check whether commits at the specified date should be analysed
     Func<bool(CR<PTime>, CR<Str>, CR<Str>)> allow_sample;
     Func<int(CR<Str>)>                      classify_line;
@@ -81,7 +85,13 @@ struct walker_state {
     /// Mapping from the commits to the analysis periods they are in
     std::unordered_map<git_oid, int> rev_periods;
 
-    void add_full_commit(CR<git_oid> oid, int period) {
+    /// Add preiod mapping of the commit to the walker. All information
+    /// about line's *origin period* in further analysis will be based on
+    /// the data provided to to this functino.
+    void add_full_commit(
+        CR<git_oid> oid,   ///< git ID of the commit
+        int         period ///< Period ID that this commit belongs to
+    ) {
         rev_index.insert({oid, full_commits.size()});
         rev_periods.insert({oid, period});
         full_commits.push_back(oid);
@@ -90,7 +100,7 @@ struct walker_state {
     /// Get period that commit is attributed to. May return 'none' option
     /// for commits that were not registered in the revese period index -
     /// ones that come from a different branch that we didn't iterate over.
-    auto get_period(CR<git_oid> commit) const noexcept -> Opt<int> {
+    Opt<int> get_period(CR<git_oid> commit) const noexcept {
         // NOTE dynamically patching table of missing commits each time an
         // unknown is encountered is possible, but undesirable.
         auto found = rev_periods.find(commit);
@@ -101,8 +111,7 @@ struct walker_state {
         }
     }
 
-    auto get_period(CR<git_oid> commit, CR<git_oid> line) const noexcept
-        -> int {
+    int get_period(CR<git_oid> commit, CR<git_oid> line) const noexcept {
         auto lp = get_period(line);
         auto cp = get_period(commit);
         return lp.value_or(cp.value());

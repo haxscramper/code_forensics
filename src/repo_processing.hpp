@@ -1,3 +1,6 @@
+/// \file repo_processing.hpp \brief Headers for the repository processing
+/// algorithms
+
 #ifndef REPO_PROCESSING_HPP
 #define REPO_PROCESSING_HPP
 
@@ -42,12 +45,13 @@ ir::FileId exec_walker(
     const git_tree_entry* entry);
 
 struct SubTaskParams {
-    git_oid         commit_oid;
-    ir::CommitId    out_commit;
-    Str             root;
-    git_tree_entry* entry;
-    int             index;
-    int             max_count;
+    git_oid      commit_oid; ///< Original git commit iD
+    ir::CommitId out_commit; ///< ID of the commit to append resulting file
+                             ///< to
+    Str             root;    ///< Root path for the analyzed entry
+    git_tree_entry* entry;   ///< Entry to analyze
+    int             index;   ///< Task index in the global sequence
+    int             max_count; ///< Maximum number of task to process
 };
 
 /// Implementaiton of the commit processing function. Walks files that were

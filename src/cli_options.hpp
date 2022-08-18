@@ -38,6 +38,6 @@ po::variables_map parse_cmdline(int argc, const char** argv);
 //     std::cout << std::endl << "v" << VERSION << std::endl;
 // }
 
-void PrintVariableMap(const po::variables_map vm);
+void print_variables_map(std::ostream& out, const po::variables_map vm);
 
 #endif // CLI_OPTIONS_HPP
