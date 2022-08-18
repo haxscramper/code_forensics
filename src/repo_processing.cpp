@@ -504,10 +504,11 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
             std::chrono::duration<double> diff = clock::now() - start;
             if (state->config->log_progress_bars) {
                 process_files.set_option(BarText{fmt::format(
-                    "{}/{} (avg {:1.4f}s/file)",
+                    "{}/{} avg {:1.4f}s, eta {:4.2f}s",
                     count,
                     params.size(),
-                    (diff / count).count())});
+                    (diff / count).count(),
+                    (params.size() - count) * (diff / count).count())});
                 process_files.tick();
             }
 

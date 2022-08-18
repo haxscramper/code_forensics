@@ -326,9 +326,13 @@ PyForensics* exec_python_filter(
                 Vec<wchar_t*> argc;
                 if (vm.count("filter-args")) {
                     auto vec = vm["filter-args"].as<Vec<Str>>();
+                    // Argument at index zero is an absolute path to the
+                    // script
                     vec.insert(vec.begin(), abs.c_str());
                     for (auto& str : vec) {
                         std::wstring wide{str.begin(), str.end()};
+                        // Duplicate strings - they will be managed by the
+                        // python runtime
                         argc.push_back(wcsdup(wide.c_str()));
                     }
                     LOG_T(logger) << fmt::format(

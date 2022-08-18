@@ -3,8 +3,10 @@ import datetime
 import sys
 import argparse
 
+# Code filter script can accept CLI arguments - main execution program can pass them via `--filter-arg=<argument>` (the option can be repeated)
 parser = argparse.ArgumentParser(description="Code filter script configuration")
 
+# Number of samples that should be taken per commit
 parser.add_argument(
     "--per-year",
     dest="per_year",
@@ -15,7 +17,6 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-config.log_info(f"argv: {sys.argv}")
 # Configuration object can also access logging functionality
 config.log_info(f"Number of samples per year: {args.per_year}")
 

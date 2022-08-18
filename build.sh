@@ -3,8 +3,10 @@
 set -o nounset
 set -o errexit
 
+PER_YEAR=1
+
 function py_plotter() {
-    ./scripts/table_per_period.py /tmp/db.sqlite /tmp/db.png --per-year=2
+    ./scripts/table_per_period.py /tmp/db.sqlite /tmp/db.png --per-year=$PER_YEAR -f=8091
     echo "py plotter ok"
 }
 
@@ -43,7 +45,7 @@ bin=./build/bin/code_forensics
 
 function debug_run() {
     echo "git user compile ok"
-    OPTS="/tmp/nimskull --branch=devel --filter-script=scripts/code_filter.py --filter-args=--per-year=2"
+    OPTS="/tmp/nimskull --branch=devel --filter-script=scripts/code_filter.py --filter-args=--per-year=$PER_YEAR"
     $bin --help || gdb_cmd $bin --help
     $bin $OPTS || gdb_cmd $bin $OPTS
     echo "git user run ok"
@@ -95,10 +97,10 @@ function generate_docs() {
 # build_git_wrapper
 # wrap_git
 # conan_install
-try_build
-debug_run
+# try_build
+# debug_run
 # # export CI
-# # ./tests/ci_compare_repo.sh
+./tests/ci_compare_repo.sh
 # sql_select
 py_plotter
 # cmake .

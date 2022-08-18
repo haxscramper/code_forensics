@@ -28,6 +28,16 @@ parser.add_argument(
     help="Number of samples per year",
 )
 
+parser.add_argument(
+    "-f",
+    "--fake-sample",
+    nargs="+",
+    help="Additional sample IDs that should be displayed on the plot as empty locations",
+    dest="fake_samples",
+    default=[],
+    type=int,
+)
+
 args = parser.parse_args()
 # Allow different number of commit samples per year
 multi = args.per_year
@@ -36,7 +46,7 @@ con = sqlite3.connect(args.database)
 cur = con.cursor()
 
 # Store `[commit][change] -> count` mapping
-commit_table = {}
+samples_table = {}
 
 # Deduplicated list of all change periods - assigned numbers might be
 # spaced unevenly, have gaps etc. (one possible example is mapping
@@ -53,41 +63,58 @@ for row in cur.execute(open(Path(__file__).parent / "table_per_period.sql").read
     change = row[1]
     count = row[2]
     hash_table[f"{commit}"] = row[3]
-    if commit not in commit_table:
-        commit_table[commit] = {}
+    if commit not in samples_table:
+        samples_table[commit] = {}
 
     all_change_periods.add(change)
-    commit_table[commit][change] = count
+    samples_table[commit][change] = count
 
+for fake in args.fake_samples:
+    samples_table[fake] = {}
 
-# Fill in any missing data for the commit table with zeroes
-for commit in commit_table:
+sample_keys = list(sorted(samples_table.keys()))
+
+# Fill in any missing data for the commit table with zeroes, unless it is a
+# gap filler. If it is one, use information about the previous sample
+for sample_idx, sample in enumerate(sample_keys):
     for change in sorted(all_change_periods):
-        if change not in commit_table[commit]:
-            commit_table[commit][change] = 0
+        if change not in samples_table[sample]:
+            if sample in args.fake_samples:
+                # HACK can be unreliable for longer gaps at the start.
+                # Right now it is designed to fill sections that were
+                # caused by the unfinished year quarter - so only trailing
+                # gaps.
+                samples_table[sample][change] = samples_table[
+                    sample_keys[sample_idx - 1]
+                ][change]
+
+            else:
+                samples_table[sample][change] = 0
+
 
 # Number of known change periods - can be completely different from the
 # number of sampled commits
 change_periods_num: int = len(all_change_periods)
 # Number
-commit_samples_num: int = len(commit_table)
+commit_samples_num: int = len(samples_table)
 # Change matrix
 data = np.zeros([change_periods_num, commit_samples_num]).astype(int)
 
-for commit_idx, commit in enumerate(sorted(commit_table.keys())):
-    for change_idx, change in enumerate(sorted(commit_table[commit].keys())):
-        lines = commit_table[commit][change]
+for commit_idx, commit in enumerate(sorted(samples_table.keys())):
+    for change_idx, change in enumerate(sorted(samples_table[commit].keys())):
+        lines = samples_table[commit][change]
         data[change_idx][commit_idx] = lines
 
 
 def name_period(period: int) -> str:
-    return f"[ {int(period / multi)} ]"
+    result = f"{period // multi} Q{period % multi + 1}"
+    return result
 
 
 # Sorted indices of the change periods
 change_periods = [f"{change}" for change in sorted(all_change_periods)]
 # Sorted indices of the commit samples
-commit_samples = [f"{name_period(commit)}" for commit in sorted(commit_table.keys())]
+commit_samples = [f"{name_period(commit)}" for commit in sorted(samples_table.keys())]
 
 name_w: int = max([len(name) for name in commit_samples]) + 1
 
@@ -128,7 +155,7 @@ y_offset = np.zeros(len(commit_samples))
 
 barplot.set_xticks(
     index,
-    [f"{int(s/multi)} {s%multi}/{multi}" for s in sorted(commit_table.keys())],
+    [f"{int(s/multi)} {(s % multi) + 1}/{multi}" for s in sorted(samples_table.keys())],
     rotation=90,
 )
 
@@ -153,9 +180,6 @@ for commit_idx, samples in enumerate(data):
     count_max = samples.max()
     row_text = []
     for entry_idx, entry in enumerate(samples):
-        if multi != 1 and entry_idx % multi == 0:
-            continue
-
         row_text.append(f"{int(entry)}")
 
         if entry == 0:
@@ -176,22 +200,29 @@ for commit_idx, samples in enumerate(data):
 # Table plot does not need any axis information
 change_table.axis("off")
 change_table.axis("tight")
-filter_headers = [
-    sample for idx, sample in enumerate(commit_samples) if idx % multi == 0
-]
+
+
+def filter_samples(samples):
+    return samples[::-1][::multi][::-1]
+
+
+assert len(commit_samples) == len(filter_samples(commit_samples)) * multi
+
 table = change_table.table(
-    cellText=cell_text,
+    cellText=[filter_samples(it) for it in cell_text],
     rowLabels=change_periods,
-    cellColours=cell_colours,
+    cellColours=[filter_samples(it) for it in cell_colours],
     rowColours=colors,
-    colLabels=filter_headers,
+    colLabels=filter_samples(commit_samples),
     loc="top",
 )
 
 
 # Create secondary table with total analysis
 change_table.table(
-    cellText=[[str(it) for it in data.sum(axis=0)]], rowLabels=["Total"], loc="bottom"
+    cellText=[filter_samples([str(it) for it in data.sum(axis=0)])],
+    rowLabels=["Total"],
+    loc="bottom",
 )
 
 # Remove any extraneous annotation on the main generated table
