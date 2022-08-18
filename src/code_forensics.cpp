@@ -126,6 +126,10 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
          const auto& [id, commit] :
          content.multi.store<ir::Commit>().pairs()) {
         storage.insert(ir::orm_commit(id, *commit));
+        for (const auto& [path, dir] : commit->changed_files) {
+            storage.insert(ir::orm_edited_files{id, dir, path});
+        }
+
         bar.tick();
     }
 
@@ -155,6 +159,7 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
         }
         bar.tick();
     }
+
     storage.commit();
 }
 

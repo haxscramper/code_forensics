@@ -419,7 +419,8 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     // All constructed information
     Vec<ir::CommitId> processed{};
     // Walk over every commit in the history
-    Vec<std::tuple<git_oid, PTime, git_commit*>> full_commits{};
+    Vec<std::tuple<git_oid, PTime, git_commit*, ir::CommitId>>
+        full_commits{};
     while (git::revwalk_next(&oid, state->walker) == 0) {
         // Get commit from the provided oid
         git_commit* commit = git::commit_lookup(state->repo, &oid);
@@ -427,7 +428,8 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
         PTime date = boost::posix_time::from_time_t(
             git::commit_time(commit));
 
-        full_commits.push_back({oid, date, commit});
+        auto id = process_commit(oid, state);
+        full_commits.push_back({oid, date, commit, id});
         // check if we can process it
         //
         // FIXME `commit_author` returns invalid signature here that causes
@@ -437,7 +439,7 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
         if (state->config->allow_sample(date, "", oid_tostr(oid))) {
             int period = state->config->get_commit_period(date);
             // Store in the list of commits for sampling
-            state->sampled_commits.insert(oid);
+            state->sampled_commits.insert({oid, id});
             LOG_T(state) << fmt::format(
                 "Processing commit {} at {} into period {}",
                 oid,
@@ -449,7 +451,7 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     std::reverse(full_commits.begin(), full_commits.end());
 
     // Push information about all known commits to the full list
-    for (const auto& [commit, date, _] : full_commits) {
+    for (const auto& [commit, date, _, __] : full_commits) {
         state->add_full_commit(
             commit, state->config->get_commit_period(date));
     }
@@ -460,10 +462,10 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
     for (auto bar =
              ScopedBar(state, full_commits.size(), "commits to analyze");
-         const auto& [oid, date, commit] : full_commits) {
+         const auto& [oid, date, git_commit, oid_commit] : full_commits) {
         if (prev != nullptr) {
             git_tree* prev_tree = git::commit_tree(prev);
-            git_tree* this_tree = git::commit_tree(commit);
+            git_tree* this_tree = git::commit_tree(git_commit);
             finally   tree_free{[prev_tree, this_tree]() {
                 git::tree_free(prev_tree);
                 git::tree_free(this_tree);
@@ -471,9 +473,29 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
 
             git_diff* diff = git::diff_tree_to_tree(
                 state->repo, prev_tree, this_tree, &diffopts);
+
+            auto id_commit = oid_commit;
+            diff_foreach(
+                diff,
+                DiffForeachParams{
+                    .file_cb = [state, id_commit](
+                                   const git_diff_delta* delta,
+                                   float                 progress,
+                                   void*                 payload) {
+                        auto path = Str{delta->new_file.path};
+                        state->content->at(id_commit)
+                            .changed_files.push_back(
+                                {state->content->add(ir::String{path}),
+                                 state->content->parentDirectory(path)});
+                        return GIT_OK;
+                    }});
         }
         bar.tick();
-        prev = commit;
+        prev = git_commit;
+    }
+
+    for (auto& [oid, date, commit, _] : full_commits) {
+        git::commit_free(commit);
     }
 
     Vec<SubTaskParams> params;
@@ -481,8 +503,8 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
                     "origin information ...";
     for (auto bar =
              ScopedBar(state, state->sampled_commits.size(), "commits");
-         const auto& oid : state->sampled_commits) {
-        file_tasks(params, state, oid, process_commit(oid, state));
+         const auto& [oid, id] : state->sampled_commits) {
+        file_tasks(params, state, oid, id);
         bar.tick();
     }
 
@@ -501,9 +523,7 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     auto                         start = clock::now();
     Vec<std::future<ir::FileId>> walked{};
     {
-
         auto process_files = init_progress(params.size());
-
         logging::core::get()->flush();
         int count = 0;
         for (const auto& param : params) {
@@ -518,7 +538,6 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
                     (params.size() - count) * (diff / count).count())});
                 process_files.tick();
             }
-
 
             auto sub_task =
                 [state, param, &counting, &start]() -> ir::FileId {

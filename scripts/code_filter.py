@@ -15,6 +15,16 @@ parser.add_argument(
     help="Number of samples per year",
 )
 
+
+parser.add_argument(
+    "--target",
+    dest="target",
+    type=str,
+    default="nim",
+    help="Which of the predefined predicate configurations to use",
+)
+
+
 args = parser.parse_args()
 
 # Configuration object can also access logging functionality
@@ -23,14 +33,18 @@ config.log_info(f"Number of samples per year: {args.per_year}")
 
 # We are only interested in the code in the main compiler directory, and ignoring everything else
 def path_predicate(path: str) -> bool:
-    if path.endswith(".nim"):
-        return path.startswith("compiler") or path.startswith("rod")
+    if args.target == "nim":
+        if path.endswith(".nim"):
+            return path.startswith("compiler") or path.startswith("rod")
 
-    elif path.endswith(".rod"):
-        return path.startswith("nim")
+        elif path.endswith(".rod"):
+            return path.startswith("nim")
+
+        else:
+            return False
 
     else:
-        return False
+        return True
 
 
 # You can use module-level variables to have some persistent data stored between predicate runs

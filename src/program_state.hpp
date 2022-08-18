@@ -135,7 +135,7 @@ struct walker_state {
     }
 
     /// List of commits that were selected for the processing run
-    std::unordered_set<git_oid> sampled_commits;
+    std::unordered_map<git_oid, ir::CommitId> sampled_commits;
 
     std::mutex           m;
     ir::content_manager* content;

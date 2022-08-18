@@ -100,7 +100,7 @@ struct Commit {
     Str      hash;     /// git hash of the commit
     int      period; /// Number of the period that commit was attributed to
     Str      message; /// Commit message
-    Vec<FileId> files;
+    Vec<Pair<ir::StringId, Opt<ir::DirectoryId>>> changed_files;
 };
 
 
@@ -349,6 +349,12 @@ struct orm_changed_range : LinePeriods {
     int    index;
 };
 
+struct orm_edited_files {
+    CommitId         commit;
+    Opt<DirectoryId> dir;
+    StringId         path;
+};
+
 /// \brief Instantiate database connection
 inline auto create_db(CR<Str> storagePath) {
     auto storage = make_storage(
@@ -375,6 +381,11 @@ inline auto create_db(CR<Str> storagePath) {
             make_column("id", &orm_author::id, primary_key()),
             make_column("name", &orm_author::name),
             make_column("email", &orm_author::email)),
+        make_table<orm_edited_files>(
+            "edited_files",
+            make_column("commit", &orm_edited_files::commit),
+            make_column("dir", &orm_edited_files::dir),
+            make_column("path", &orm_edited_files::path)),
         make_table<orm_line>(
             "line",
             make_column("id", &orm_line::id, primary_key()),

@@ -5,6 +5,9 @@ set -o errexit
 
 PER_YEAR=1
 
+TARGET=fusion
+BRANCH=master
+
 function py_plotter() {
     ./scripts/table_per_period.py /tmp/db.sqlite /tmp/db.png --per-year=$PER_YEAR
     echo "py plotter ok"
@@ -45,7 +48,7 @@ bin=./build/bin/code_forensics
 
 function debug_run() {
     echo "git user compile ok"
-    OPTS="/tmp/nimskull --branch=devel --filter-script=scripts/code_filter.py --filter-args=--per-year=$PER_YEAR"
+    OPTS="/tmp/$TARGET --branch=$BRANCH --filter-script=scripts/code_filter.py --filter-args=--per-year=$PER_YEAR --filter-args=--target=$TARGET"
     $bin --help || gdb_cmd $bin --help
     $bin $OPTS || gdb_cmd $bin $OPTS
     echo "git user run ok"
@@ -94,8 +97,8 @@ function generate_docs() {
 
 # generate_docs
 # try_build
-build_git_wrapper
-wrap_git
+# build_git_wrapper
+# wrap_git
 # conan_install
 try_build
 debug_run

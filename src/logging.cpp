@@ -5,8 +5,7 @@ using namespace indicators;
 BlockProgressBar init_progress(int max) {
     return BlockProgressBar{
         option::BarWidth{60},
-        option::ForegroundColor{Color::white},
-        option::FontStyles{std::vector<FontStyle>{FontStyle::bold}},
+        option::ForegroundColor{Color::green},
         option::MaxProgress{max}};
 }
 
@@ -104,9 +103,9 @@ boost::shared_ptr<sink_t> create_std_sink() {
 void init_logger_properties() {
     // Add some attributes too
     logging::core::get()->add_global_attribute(
-                "TimeStamp", logging::attrs::local_clock());
+        "TimeStamp", logging::attrs::local_clock());
     logging::core::get()->add_global_attribute(
-                "RecordID", logging::attrs::counter<unsigned int>());
+        "RecordID", logging::attrs::counter<unsigned int>());
 
     logging::core::get()->add_global_attribute("File", MutLog<Str>(""));
     logging::core::get()->add_global_attribute("Func", MutLog<Str>(""));
