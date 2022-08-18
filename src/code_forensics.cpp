@@ -95,109 +95,65 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
         LOG_I(state) << "Incremental update, reusing the database";
     }
 
-    {
-        auto max = content.multi.store<ir::String>().size();
-        INIT_PROGRESS_BAR(strings, counter, max);
-        for (const auto& [id, string] :
-             content.multi.store<ir::String>().pairs()) {
-            storage.insert(ir::orm_string(id, ir::String{*string}));
-            if (state->config->log_progress_bars) {
-                tick_next(strings, counter, max, "strings");
-            }
-        }
-
-        if (state->config->log_progress_bars) {
-            strings.mark_as_completed();
-        }
+    for (auto strings = ScopedBar(
+             state, content.multi.store<ir::String>().size(), "strings");
+         const auto& [id, string] :
+         content.multi.store<ir::String>().pairs()) {
+        storage.insert(ir::orm_string(id, ir::String{*string}));
+        strings.tick();
     }
 
-    {
-        auto max = content.multi.store<ir::Author>().size();
-        INIT_PROGRESS_BAR(authors, counter, max);
-        for (const auto& [id, author] :
-             content.multi.store<ir::Author>().pairs()) {
-            storage.insert(ir::orm_author(id, *author));
-            if (state->config->log_progress_bars) {
-                tick_next(authors, counter, max, "authors");
-            }
-        }
-        if (state->config->log_progress_bars) {
-            authors.mark_as_completed();
-        }
+    for (auto bar = ScopedBar(
+             state, content.multi.store<ir::Author>().size(), "authors");
+         const auto& [id, author] :
+         content.multi.store<ir::Author>().pairs()) {
+        storage.insert(ir::orm_author(id, *author));
+        bar.tick();
     }
 
-    {
-
-        auto max = content.multi.store<ir::LineData>().size();
-        INIT_PROGRESS_BAR(authors, counter, max);
-        for (const auto& [id, line] :
-             content.multi.store<ir::LineData>().pairs()) {
-            storage.insert(ir::orm_line(id, *line));
-            if (state->config->log_progress_bars) {
-                tick_next(authors, counter, max, "unique lines");
-            }
-        }
-
-        if (state->config->log_progress_bars) {
-            authors.mark_as_completed();
-        }
+    for (auto bar = ScopedBar(
+             state,
+             content.multi.store<ir::LineData>().size(),
+             "unique lines");
+         const auto& [id, line] :
+         content.multi.store<ir::LineData>().pairs()) {
+        storage.insert(ir::orm_line(id, *line));
+        bar.tick();
     }
-    {
 
-        auto max = content.multi.store<ir::Commit>().size();
-        INIT_PROGRESS_BAR(authors, counter, max);
-        for (const auto& [id, commit] :
-             content.multi.store<ir::Commit>().pairs()) {
-            storage.insert(ir::orm_commit(id, *commit));
-            if (state->config->log_progress_bars) {
-                tick_next(authors, counter, max, "commits");
-            }
-        }
-
-        if (state->config->log_progress_bars) {
-            authors.mark_as_completed();
-        }
+    for (auto bar = ScopedBar(
+             state, content.multi.store<ir::Commit>().size(), "commits");
+         const auto& [id, commit] :
+         content.multi.store<ir::Commit>().pairs()) {
+        storage.insert(ir::orm_commit(id, *commit));
+        bar.tick();
     }
-    {
 
-        auto max = content.multi.store<ir::Directory>().size();
-        INIT_PROGRESS_BAR(authors, counter, max);
-        for (const auto& [id, dir] :
-             content.multi.store<ir::Directory>().pairs()) {
-            storage.insert(ir::orm_dir(id, *dir));
-            if (state->config->log_progress_bars) {
-                tick_next(authors, counter, max, "directories");
-            }
-        }
-
-        if (state->config->log_progress_bars) {
-            authors.mark_as_completed();
-        }
+    for (auto bar = ScopedBar(
+             state,
+             content.multi.store<ir::Directory>().size(),
+             "directories");
+         const auto& [id, dir] :
+         content.multi.store<ir::Directory>().pairs()) {
+        storage.insert(ir::orm_dir(id, *dir));
+        bar.tick();
     }
-    {
-        auto max = content.multi.store<ir::File>().size();
-        INIT_PROGRESS_BAR(authors, counter, max);
-        for (const auto& [id, file] :
-             content.multi.store<ir::File>().pairs()) {
-            storage.insert(ir::orm_file(id, *file));
-            for (int idx = 0; idx < file->lines.size(); ++idx) {
-                storage.insert(ir::orm_lines_table{
-                    .file = id, .index = idx, .line = file->lines[idx]});
-            }
 
-            for (int idx = 0; idx < file->changed_ranges.size(); ++idx) {
-                storage.insert(ir::orm_changed_range{
-                    file->changed_ranges[idx], .file = id, .index = idx});
-            }
-
-            if (state->config->log_progress_bars) {
-                tick_next(authors, counter, max, "files");
-            }
+    for (auto bar = ScopedBar(
+             state, content.multi.store<ir::File>().size(), "files");
+         const auto& [id, file] :
+         content.multi.store<ir::File>().pairs()) {
+        storage.insert(ir::orm_file(id, *file));
+        for (int idx = 0; idx < file->lines.size(); ++idx) {
+            storage.insert(ir::orm_lines_table{
+                .file = id, .index = idx, .line = file->lines[idx]});
         }
 
-        if (state->config->log_progress_bars) {
-            authors.mark_as_completed();
+        for (int idx = 0; idx < file->changed_ranges.size(); ++idx) {
+            storage.insert(ir::orm_changed_range{
+                file->changed_ranges[idx], .file = id, .index = idx});
         }
+        bar.tick();
     }
     storage.commit();
 }

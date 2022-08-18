@@ -27,16 +27,12 @@ indicators::BlockProgressBar init_progress(int max);
 using BarText = indicators::option::PostfixText;
 
 
-#define INIT_PROGRESS_BAR(name, counter, max)                             \
-    int  counter = 0;                                                     \
-    auto name    = init_progress(max);                                    \
-    logging::core::get()->flush();
-
 void tick_next(
     indicators::BlockProgressBar& bar,
     int&                          count,
     int                           max,
     CR<Str>                       name);
+
 
 namespace logging = boost::log;
 
@@ -44,6 +40,36 @@ namespace boost::log {
 namespace expr  = logging::expressions;
 namespace attrs = logging::attributes;
 }; // namespace boost::log
+
+
+struct ScopedBar {
+    int                          count = 0;
+    int                          max;
+    indicators::BlockProgressBar bar;
+    Str                          annotation;
+    walker_state*                state;
+
+    inline ScopedBar(walker_state* _state, int _max, CR<Str> _annotation)
+        : max(_max)
+        , bar(init_progress(_max))
+        , state(_state)
+        , annotation(_annotation) {
+        if (state->config->log_progress_bars) {
+            // Avoid verlap of the progress bar and the stdout logging.
+            logging::core::get()->flush();
+        }
+    }
+
+    inline ~ScopedBar() {
+        if (state->config->log_progress_bars) { bar.mark_as_completed(); }
+    }
+
+    inline void tick() {
+        if (state->config->log_progress_bars) {
+            tick_next(bar, count, max, annotation);
+        }
+    }
+};
 
 
 using Logger = logging::sources::severity_logger<

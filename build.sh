@@ -6,7 +6,7 @@ set -o errexit
 PER_YEAR=1
 
 function py_plotter() {
-    ./scripts/table_per_period.py /tmp/db.sqlite /tmp/db.png --per-year=$PER_YEAR -f=8091
+    ./scripts/table_per_period.py /tmp/db.sqlite /tmp/db.png --per-year=$PER_YEAR
     echo "py plotter ok"
 }
 
@@ -94,14 +94,14 @@ function generate_docs() {
 
 # generate_docs
 # try_build
-# build_git_wrapper
-# wrap_git
+build_git_wrapper
+wrap_git
 # conan_install
-# try_build
-# debug_run
+try_build
+debug_run
 # # export CI
-./tests/ci_compare_repo.sh
+# ./tests/ci_compare_repo.sh
 # sql_select
-py_plotter
+# py_plotter
 # cmake .
 # make -j 12

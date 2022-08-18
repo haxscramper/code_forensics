@@ -1552,10 +1552,13 @@ inline void diff_free(git_diff *diff) {
 
 
 
-inline void diff_tree_to_tree(git_diff **diff, git_repository *repo, git_tree *old_tree, git_tree *new_tree, const git_diff_options *opts) {
-    auto __result = git_diff_tree_to_tree(diff, repo, old_tree, new_tree, opts);
+inline git_diff *diff_tree_to_tree(git_repository *repo, git_tree *old_tree, git_tree *new_tree, const git_diff_options *opts) {
+    git_diff *diff;
+    auto __result = git_diff_tree_to_tree(&diff, repo, old_tree, new_tree, opts);
     if (__result < 0) {
         __GIT_THROW_EXCEPTION(__result, "git_diff_tree_to_tree");
+    } else {
+        return diff;
     }
 }
 

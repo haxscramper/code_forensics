@@ -419,7 +419,7 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     // All constructed information
     Vec<ir::CommitId> processed{};
     // Walk over every commit in the history
-    Vec<std::pair<git_oid, PTime>> full_commits{};
+    Vec<std::tuple<git_oid, PTime, git_commit*>> full_commits{};
     while (git::revwalk_next(&oid, state->walker) == 0) {
         // Get commit from the provided oid
         git_commit* commit = git::commit_lookup(state->repo, &oid);
@@ -427,9 +427,7 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
         PTime date = boost::posix_time::from_time_t(
             git::commit_time(commit));
 
-        // commit is no longer needed in this scope
-        git::commit_free(commit);
-        full_commits.push_back({oid, date});
+        full_commits.push_back({oid, date, commit});
         // check if we can process it
         //
         // FIXME `commit_author` returns invalid signature here that causes
@@ -451,35 +449,44 @@ Vec<ir::CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     std::reverse(full_commits.begin(), full_commits.end());
 
     // Push information about all known commits to the full list
-    for (const auto& [commit, date] : full_commits) {
+    for (const auto& [commit, date, _] : full_commits) {
         state->add_full_commit(
             commit, state->config->get_commit_period(date));
     }
 
-    Vec<SubTaskParams> params;
-    {
-        auto get_files = init_progress(state->sampled_commits.size());
 
-        int count = 0;
-        LOG_I(state)
-            << "Getting the list of files and commits to analyse ...";
-        // Avoid verlap of the progress bar and the stdout logging.
-        logging::core::get()->flush();
-        for (const auto& oid : state->sampled_commits) {
-            file_tasks(params, state, oid, process_commit(oid, state));
-            if (state->config->log_progress_bars) {
-                tick_next(
-                    get_files,
-                    count,
-                    state->sampled_commits.size(),
-                    "commits");
-            }
+    LOG_I(state) << "Getting list of files changed per each commit";
+    git_commit*      prev     = nullptr;
+    git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
+    for (auto bar =
+             ScopedBar(state, full_commits.size(), "commits to analyze");
+         const auto& [oid, date, commit] : full_commits) {
+        if (prev != nullptr) {
+            git_tree* prev_tree = git::commit_tree(prev);
+            git_tree* this_tree = git::commit_tree(commit);
+            finally   tree_free{[prev_tree, this_tree]() {
+                git::tree_free(prev_tree);
+                git::tree_free(this_tree);
+            }};
+
+            git_diff* diff = git::diff_tree_to_tree(
+                state->repo, prev_tree, this_tree, &diffopts);
         }
-        if (state->config->log_progress_bars) {
-            get_files.mark_as_completed();
-        }
-        LOG_I(state) << "Done. Total number of files: " << params.size();
+        bar.tick();
+        prev = commit;
     }
+
+    Vec<SubTaskParams> params;
+    LOG_I(state) << "Getting the list of files and commits for code "
+                    "origin information ...";
+    for (auto bar =
+             ScopedBar(state, state->sampled_commits.size(), "commits");
+         const auto& oid : state->sampled_commits) {
+        file_tasks(params, state, oid, process_commit(oid, state));
+        bar.tick();
+    }
+
+    LOG_I(state) << "Done. Total number of files: " << params.size();
 
     int index = 0;
     for (auto& param : params) {
