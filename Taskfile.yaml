@@ -41,7 +41,7 @@ tasks:
 
   ridgeline:
     deps: [ensure_test_db]
-    summary: Build top commiter activity ridgeline
+    summary: "Build top commiter activity ridgeline"
     cmds:
       - >
         ./scripts/author_ridgeline.py
@@ -52,13 +52,22 @@ tasks:
         --rename="Leorize=alaviss"
         --ignore="bors[bot]"
 
+  authorship:
+    deps: [ensure_test_db]
+    summary: "Burndown chart for the code ownership"
+    cmds:
+      - >
+        ./scripts/code_authorship.py
+        {{.DB_FILE}}
+        {{.PNG_FILE}}
+
   build_binary:
     dir: build
     deps: [conan_install]
     summary: "Build build the binary file"
-    sources:
-      - src/**/*.cpp
-      - src/**/*.hpp
+    # sources:
+    #   - src/**/*.cpp
+    #   - src/**/*.hpp
     cmds:
       - cmake ..
       - make -j12
@@ -102,4 +111,5 @@ tasks:
     deps: [build_git_wrapper]
 
   default:
-    deps: [ridgeline]
+    deps: [authorship]
+    # deps: [debug_run]

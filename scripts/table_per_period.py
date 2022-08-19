@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 from matplotlib import rcParams
+
+rcParams["font.family"] = "consolas"
+
 from pathlib import Path
 import argparse
 
-rcParams["font.family"] = "consolas"
 
 from copy import deepcopy
 import sqlite3
@@ -52,6 +54,7 @@ samples_table = {}
 # `<year><month>` with zero-padding to six digits). Or some periods had no
 # activity at all.
 all_change_periods = set()
+
 
 # Map commit period to the hash name
 hash_table = {}

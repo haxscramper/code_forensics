@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# https://tkf.github.io/2011/04/20/visualizing-git-and-hg-commit-activity.html
+# https://matplotlib.org/matplotblog/posts/create-ridgeplots-in-matplotlib/
 
 from matplotlib import rcParams
 import argparse
@@ -31,6 +33,14 @@ parser.add_argument(
 
 parser.add_argument(
     "--ignore", dest="ignore", type=str, action="append", help="List of users to ignore"
+)
+
+parser.add_argument(
+    "--top",
+    dest="top",
+    default=40,
+    type=int,
+    help="How many committers from the top to plot",
 )
 
 args = parser.parse_args()
@@ -68,7 +78,7 @@ for row in cur.execute("select author, time from commits;"):
 
 top_authors = sorted(list(authors.items()), key=lambda it: len(it[1]), reverse=True)
 
-topcount: int = 40
+topcount: int = args.top
 
 
 def from_timestamps(timestamps: List[int]):

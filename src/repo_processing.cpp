@@ -162,6 +162,7 @@ FileId stats_via_subprocess(
                         .author  = walker->content->add(author),
                         .time    = std::stol(time),
                         .content = walker->content->add(String{line}),
+                        .commit  = walker->get_id(line_changed),
                         .nesting = get_nesting(line)},
                     walker->consider_changed(commit_oid, line_changed),
                     walker->get_period(commit_oid, line_changed));
@@ -252,6 +253,7 @@ FileId stats_via_libgit(
                     .time   = hunk->final_signature->when.time,
                     // FIXME get slice of the string for the content
                     .content = state->content->add(String{str}),
+                    .commit  = state->get_id(hunk->final_commit_id),
                     .nesting = get_nesting(str)},
                 state->consider_changed(commit_oid, hunk->final_commit_id),
                 state->get_period(commit_oid, hunk->final_commit_id));
@@ -516,6 +518,8 @@ Vec<CommitId> launch_analysis(git_oid& oid, walker_state* state) {
 
         auto id = process_commit(oid, state);
         full_commits.push_back({oid, date, commit, id});
+        state->add_id_mapping(oid, id);
+
         // check if we can process it
         //
         // FIXME `commit_author` returns invalid signature here that causes

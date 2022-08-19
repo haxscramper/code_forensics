@@ -174,9 +174,10 @@ struct Author {
 /// some line. Interned in the main storage.
 struct LineData {
     using id_type = LineId;
-    AuthorId author;   /// Line author ID
-    i64      time;     /// Time line was written
-    StringId content;  /// Content of the line
+    AuthorId author;  /// Line author ID
+    i64      time;    /// Time line was written
+    StringId content; /// Content of the line
+    CommitId commit;
     int      nesting;  /// Line indentation depth
     int      category; /// Line category
 
@@ -329,7 +330,7 @@ struct orm_author : Author {
 struct orm_line : LineData {
     LineId id;
     inline orm_line()
-        : LineData{.author = AuthorId::Nil(), .content = StringId::Nil()}
+        : LineData{.author = AuthorId::Nil(), .content = StringId::Nil(), .commit = CommitId::Nil()}
         , id(LineId::Nil()) {}
 
     inline orm_line(LineId _id, CR<LineData> base)
@@ -392,6 +393,7 @@ inline auto create_db(CR<Str> storagePath) {
             make_column("author", &orm_line::author),
             make_column("time", &orm_line::time),
             make_column("content", &orm_line::content),
+            make_column("commit", &orm_line::commit),
             make_column("category", &orm_line::category),
             make_column("nesting", &orm_line::nesting)),
         make_table<orm_lines_table>(

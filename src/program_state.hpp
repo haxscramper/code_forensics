@@ -78,7 +78,8 @@ struct walker_state {
     git_repository* repo;
 
     /// Ordered list of commits that were considered for the processing run
-    Vec<git_oid> full_commits;
+    Vec<git_oid>                              full_commits;
+    std::unordered_map<git_oid, ir::CommitId> commit_ids;
     /// Mapping from the commit id to it's position in the whole list of
     /// considered commits
     std::unordered_map<git_oid, int> rev_index;
@@ -96,6 +97,13 @@ struct walker_state {
         rev_periods.insert({oid, period});
         full_commits.push_back(oid);
     }
+
+    void add_id_mapping(CR<git_oid> oid, ir::CommitId id) {
+        commit_ids.insert({oid, id});
+    }
+
+    ir::CommitId get_id(CR<git_oid> oid) { return commit_ids.at(oid); }
+
 
     /// Get period that commit is attributed to. May return 'none' option
     /// for commits that were not registered in the revese period index -
