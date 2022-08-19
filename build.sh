@@ -5,7 +5,7 @@ set -o errexit
 
 PER_YEAR=1
 
-TARGET=nimskull
+TARGET=nim
 BRANCH=devel
 
 function py_plotter() {
@@ -100,11 +100,11 @@ function generate_docs() {
 # build_git_wrapper
 # wrap_git
 # conan_install
-try_build
-debug_run
+# try_build
+# debug_run
 # # export CI
 # ./tests/ci_compare_repo.sh
 # sql_select
-py_plotter
+# py_plotter
 # cmake .
 # make -j 12

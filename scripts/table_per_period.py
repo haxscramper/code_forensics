@@ -4,7 +4,6 @@ from matplotlib import rcParams
 from pathlib import Path
 import argparse
 
-
 rcParams["font.family"] = "consolas"
 
 from copy import deepcopy

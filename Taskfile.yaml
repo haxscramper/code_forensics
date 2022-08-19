@@ -1,0 +1,98 @@
+version: 3
+
+vars:
+  PER_YEAR: 1
+  GH_ORG: "nim-works"
+  TARGET: nimskull
+  BRANCH: devel
+  DB_FILE: /tmp/db.sqlite
+  PNG_FILE: /tmp/db.png
+  BIN: ./build/bin/code_forensics
+  ROOT: |
+    {{env "PWD"}}
+  REL_CONAN: "build/dependencies/conan"
+  CONAN_DIR: |
+    {{env "PWD"}}/build/dependencies/conan
+
+tasks:
+  ensure_deps:
+    summary: "Ensure test directory exists"
+    status:
+      - test -e /tmp/{{.TARGET}}
+
+    cmds:
+      - echo "Running git clone"
+      - git clone https://github.com/{{.GH_ORG}}/{{.TARGET}}.git /tmp/{{.TARGET}}
+      - echo "Done git clone"
+
+  ensure_test_db:
+    summary: "Ensure test database exists"
+    deps: [ensure_deps]
+    status:
+      - test -s {{.DB_FILE}}
+    cmds:
+      - task: debug_run
+
+  burndown:
+    deps: [ensure_test_db]
+    summary: Build sampled burndown plot
+    cmds:
+      - "./scripts/table_per_period.py {{.DB_FILE}} {{.PNG_FILE}} --per-year={{.PER_YEAR}}"
+
+  ridgeline:
+    deps: [ensure_test_db]
+    summary: Build top commiter activity ridgeline
+    cmds:
+      - "./scripts/author_ridgeline.py {{.DB_FILE}} {{.PNG_FILE}}"
+
+  build_binary:
+    dir: build
+    deps: [conan_install]
+    summary: "Build build the binary file"
+    sources:
+      - src/**/*.cpp
+      - src/**/*.hpp
+    cmds:
+      - cmake ..
+      - make -j12
+
+  conan_install:
+    cmds:
+      - conan install . -if {{.REL_CONAN}} --build=missing --settings compiler.libcxx="libstdc++11"
+    status:
+      - test -e {{.CONAN_DIR}}
+
+  debug_run:
+    deps: [build_binary]
+    sources:
+      - "{{.BIN}}"
+    cmds:
+      - "{{.BIN}} --help || gdb_cmd {{.BIN}} --help"
+      - "{{.BIN}} {{.OPTS}} || gdb_cmd {{.BIN}} {{.OPTS}}"
+
+    vars:
+      OPTS: /tmp/{{.TARGET}}
+        --branch={{.BRANCH}}
+        --filter-script=scripts/code_filter.py
+        --filter-args=--per-year={{.PER_YEAR}}
+        --filter-args=--target={{.TARGET}}
+
+  build_git_wrapper:
+    cmd: clang++ generate_git_wrapper/genwrapper.cpp
+      -std=c++2a
+      -ferror-limit=1
+      -o genwrapper.bin
+      -fuse-ld=mold
+      -g
+      -lclang-cpp
+      -lLLVM
+      @{{.CONAN_DIR}}/conanbuildinfo.gcc
+
+  docs:
+    cmd: doxygen -q Doxyfile
+
+  wrap_git:
+    deps: [build_git_wrapper]
+
+  default:
+    deps: [ridgeline]
