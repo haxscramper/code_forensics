@@ -1,13 +1,26 @@
-SELECT
-  author.`name` as name,
-  commits.period AS period,
-  count(author.`name`) as lines
-from file_lines
-inner join line on file_lines.line = line.id
-inner join commits on line.`commit` = commits.id
-inner join author on commits.author == author.id
-group by
-  name,
-  period
-order by
-  lines DESC;
+SELECT tmp.name AS author_name,
+       commits.period AS sample_period,
+       sum(tmp.lines) AS lines
+  FROM (
+        SELECT author.name AS name,
+               file_lines.file AS FILE,
+               count(author.id) AS lines
+          FROM file_lines
+         INNER JOIN LINE
+            ON file_lines.line = line.id
+         INNER JOIN commits
+            ON line.`commit` = commits.id
+         INNER JOIN author
+            ON commits.author == author.id
+         GROUP BY name,
+                  FILE
+         ORDER BY lines DESC
+       ) AS tmp
+ INNER JOIN FILE
+    ON tmp.file = file.id
+ INNER JOIN commits
+    ON file.commit_id = commits.id
+ GROUP BY author_name,
+          sample_period
+ ORDER BY author_name ASC,
+          sample_period DESC;

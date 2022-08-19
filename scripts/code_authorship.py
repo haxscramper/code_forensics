@@ -8,7 +8,7 @@ import argparse
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
-import pprint
+from pprint import pprint
 
 parser = argparse.ArgumentParser(description="Process some integers.")
 parser.add_argument("database", type=str, help="Input database file")
@@ -44,13 +44,23 @@ for row in cur.execute(open(Path(__file__).parent / "code_authorship.sql").read(
         author_period_map[name] = {}
 
     total_writers[name] += line_count
-    author_period_map[name][period] = line_count
+    if period not in author_period_map[name]:
+        author_period_map[name][period] = 0
+
+    author_period_map[name][period] += line_count
 
 # pprint.pprint(total_writers)
 authors_ordered = sorted(total_writers.items(), key=lambda it: it[1], reverse=True)
 other_authors = {}
 
-for author, count in authors_ordered[11:-1]:
+per_period = {period: 0 for period in all_periods}
+for author, per_map in author_period_map.items():
+    for period, count in per_map.items():
+        per_period[period] += count
+
+top_n = 15
+
+for author, count in authors_ordered[(top_n) - 1 : -1]:
     for period in author_period_map[author]:
         if period not in other_authors:
             other_authors[period] = 0
@@ -74,25 +84,27 @@ for author_idx, (author, count) in enumerate(authors_ordered):
 sample_count: int = len(all_periods)
 author_count: int = len(author_period_map)
 
-print(f"authors: {author_count}, samples: {sample_count}")
-
 data = np.zeros([author_count, sample_count]).astype(int)
-
 indexed_authors = []
 
-for author_idx, author in enumerate(author_period_map.keys()):
+authors = [name for (name, _) in authors_ordered[:top_n]]
+
+for author_idx, author in enumerate(authors):
     indexed_authors.append(author)
     for period_idx, period in enumerate(sorted(author_period_map[author].keys())):
         lines = author_period_map[author][period]
         data[author_idx][period_idx] = lines
 
 offset = np.zeros(sample_count)
-index = np.arange(sample_count)
+index = list(sorted(all_periods))
 colors = plt.cm.rainbow(np.linspace(0, 0.8, author_count))
 
 fig = plt.figure(figsize=(10, 12), dpi=300, constrained_layout=True)
 
 for author_idx, samples in enumerate(data):
+    if top_n - 1 < author_idx:
+        break
+
     plt.bar(
         index,
         samples,
@@ -105,5 +117,5 @@ for author_idx, samples in enumerate(data):
 
     offset = offset + samples
 
-plt.legend(loc="upper right")
+plt.legend(loc="upper left")
 plt.savefig(args.outfile, bbox_inches="tight")
