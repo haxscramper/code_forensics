@@ -15,27 +15,60 @@ from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
 from matplotlib.dates import date2num
 from datetime import datetime
 import numpy as np
+import sys
 from typing import *
 
 parser = argparse.ArgumentParser(description="Process some integers.")
 parser.add_argument("database", type=str, help="Input database file")
 parser.add_argument("outfile", type=str, help="Output plot image")
+parser.add_argument(
+    "--rename",
+    dest="rename",
+    type=str,
+    action="append",
+    help="Name=Other pair for handling users with multiple names",
+)
+
+parser.add_argument(
+    "--ignore", dest="ignore", type=str, action="append", help="List of users to ignore"
+)
+
 args = parser.parse_args()
 
 con = sqlite3.connect(args.database)
 cur = con.cursor()
 
 authors = {}
+author_names = {}
+
+ignored_names = set(args.ignore)
+remap = [(it[0], it[1]) for it in [pair.split("=") for pair in args.rename]]
+
+
+def remap_name(name: str) -> str:
+    for (old, new) in remap:
+        if name == old:
+            return new
+
+    return name
+
+
+for row in cur.execute("select id, name from author;"):
+    author_names[row[0]] = remap_name(row[1])
 
 for row in cur.execute("select author, time from commits;"):
-    if row[0] not in authors:
-        authors[row[0]] = []
+    name = author_names[row[0]]
+    if name in ignored_names:
+        continue
 
-    authors[row[0]].append(row[1])
+    if name not in authors:
+        authors[name] = []
+
+    authors[name].append(row[1])
 
 top_authors = sorted(list(authors.items()), key=lambda it: len(it[1]), reverse=True)
 
-topcount: int = 10
+topcount: int = 40
 
 
 def from_timestamps(timestamps: List[int]):
@@ -46,35 +79,32 @@ def from_timestamps(timestamps: List[int]):
     return result
 
 
-# gs = gridspec.GridSpec(topcount, 1)
-# fig = plt.figure(figsize=(16, 9))
-
-
-# i = 0
-# axis_objects = []
-# for author, commits in top_authors[0:topcount]:
-#     print(commits)
-
-#     ax = fig.add_subplot(gs[i : i + 1, 0:])
-
-#     axis_objects.append(ax)
-
-#     i += 1
-
-
 def num_now():
     return date2num(datetime.now())
 
 
-def plot_datehist(ax, dates, bins, title=None):
-    (hist, bin_edges) = np.histogram(dates, 50)
-    width = bin_edges[1] - bin_edges[0]
+gs = gridspec.GridSpec(topcount, 1)
+fig = plt.figure(figsize=(16, 32), dpi=300)
 
-    ax.plot(bin_edges[:-1], hist / width)
-    ax.set_xlim(bin_edges[0], num_now())
-    ax.set_ylabel("Events [1/day]")
-    if title:
-        ax.set_title(title)
+min_date = None
+for author, commits in top_authors[0:topcount]:
+    for date in from_timestamps(commits):
+        if not min_date or date < min_date:
+            min_date = date
+
+
+i = 0
+axis_objects = []
+for author, commits in top_authors[0:topcount]:
+    ax = fig.add_subplot(gs[i : i + 1, 0:])
+
+    dates = from_timestamps(commits)
+
+    (hist, bin_edges) = np.histogram(dates, 60)
+
+    ax.plot(bin_edges[:-1], hist)
+    ax.set_xlim(min_date, num_now())
+    ax.set_ylabel(author, rotation=0)
 
     # set x-ticks in date
     # see: http://matplotlib.sourceforge.net/examples/api/date_demo.html
@@ -83,13 +113,18 @@ def plot_datehist(ax, dates, bins, title=None):
     ax.xaxis.set_minor_locator(MonthLocator())
     # format the coords message box
     ax.format_xdata = DateFormatter("%Y-%m-%d")
+    ax.set_yticklabels([])
+
+    spines = ["top", "right", "left", "bottom"]
+    for s in spines:
+        ax.spines[s].set_visible(False)
+
     ax.grid(True)
 
+    axis_objects.append(ax)
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
+    i += 1
+
+
 fig.autofmt_xdate()
-
-dates = from_timestamps(top_authors[0][1])
-plot_datehist(ax, dates, 50)
 plt.savefig(args.outfile, bbox_inches="tight")

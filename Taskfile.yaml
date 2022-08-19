@@ -43,7 +43,14 @@ tasks:
     deps: [ensure_test_db]
     summary: Build top commiter activity ridgeline
     cmds:
-      - "./scripts/author_ridgeline.py {{.DB_FILE}} {{.PNG_FILE}}"
+      - >
+        ./scripts/author_ridgeline.py
+        {{.DB_FILE}}
+        {{.PNG_FILE}}
+        --rename="Andreas Rumpf=Araq"
+        --rename="Dominik Picheta=dom96"
+        --rename="Leorize=alaviss"
+        --ignore="bors[bot]"
 
   build_binary:
     dir: build
