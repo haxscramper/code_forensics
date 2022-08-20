@@ -104,16 +104,6 @@ struct Commit {
 };
 
 
-/// \brief Continious span of lines in code with identical period
-/// \ingroup db_mapped
-struct LinePeriods {
-    int  begin;   ///< Starting line index
-    int  end;     ///< End line index
-    int  period;  ///< Period that commit was mapped to
-    bool changed; ///< Whether the range is considered 'changed' for commit
-                  ///< where it appeared in
-};
-
 /// \brief single version of the file that appeared in some commit
 /// \ingroup db_mapped
 struct File {
@@ -125,8 +115,7 @@ struct File {
     int         total_complexity; /// Total file complexity
     int         line_count;       /// Total line count for the commit
     bool        had_changes; /// Whether file had any changes in the commit
-    Vec<LinePeriods> changed_ranges; ///
-    Vec<LineId>      lines; /// List of all lines found in the file
+    Vec<LineId> lines;       /// List of all lines found in the file
 };
 
 
@@ -344,12 +333,6 @@ struct orm_lines_table {
     LineId line;
 };
 
-/// \brief ORM wrapper for the file change periods ir::File::changed_ranges
-struct orm_changed_range : LinePeriods {
-    FileId file;
-    int    index;
-};
-
 struct orm_edited_files {
     CommitId         commit;
     Opt<DirectoryId> dir;
@@ -401,14 +384,6 @@ inline auto create_db(CR<Str> storagePath) {
             make_column("file", &orm_lines_table::file),
             make_column("index", &orm_lines_table::index),
             make_column("line", &orm_lines_table::line)),
-        make_table<orm_changed_range>(
-            "changed_ranges",
-            make_column("file", &orm_changed_range::file),
-            make_column("index", &orm_changed_range::index),
-            make_column("begin", &orm_changed_range::begin),
-            make_column("end", &orm_changed_range::end),
-            make_column("period", &orm_changed_range::period),
-            make_column("changed", &orm_changed_range::changed)),
         make_table<orm_dir>(
             "dir",
             make_column("id", &orm_dir::id, primary_key()),

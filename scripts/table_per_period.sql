@@ -1,15 +1,26 @@
-SELECT
-  commits.period AS commmit_period,
-  changed_ranges.period AS change_period,
-  sum(
-    changed_ranges.`end` - changed_ranges.`begin` + 1
-  ) AS line_count,
-  commits.hash AS hash
-FROM commits
-INNER JOIN FILE ON commits.id == file.commit_id
-INNER JOIN changed_ranges ON file.id == changed_ranges.file
-GROUP BY
-  changed_ranges.period,
-  commits.period
-ORDER BY
-  commits.period;
+SELECT commits.period AS sample_period,
+       tmp.commit_period AS commit_period,
+       sum(tmp.lines) AS lines,
+       tmp.commit_hash AS hash
+  FROM (
+        SELECT commits.period AS commit_period,
+               commits.hash AS commit_hash,
+               file_lines.file AS FILE,
+               count(file_lines.line) AS lines
+          FROM file_lines
+         INNER JOIN LINE
+            ON file_lines.line = line.id
+         INNER JOIN commits
+            ON line.`commit` = commits.id
+         GROUP BY commit_period,
+                  FILE
+         ORDER BY lines DESC
+       ) AS tmp
+ INNER JOIN FILE
+    ON tmp.file = file.id
+ INNER JOIN commits
+    ON file.commit_id = commits.id
+ GROUP BY commit_period,
+          sample_period
+ ORDER BY commit_period ASC,
+          sample_period DESC;

@@ -65,9 +65,6 @@ tasks:
     dir: build
     deps: [conan_install]
     summary: "Build build the binary file"
-    # sources:
-    #   - src/**/*.cpp
-    #   - src/**/*.hpp
     cmds:
       - cmake ..
       - make -j12
@@ -80,8 +77,6 @@ tasks:
 
   debug_run:
     deps: [build_binary]
-    sources:
-      - "{{.BIN}}"
     cmds:
       - "{{.BIN}} --help || gdb_cmd {{.BIN}} --help"
       - "{{.BIN}} {{.OPTS}} || gdb_cmd {{.BIN}} {{.OPTS}}"
@@ -111,5 +106,6 @@ tasks:
     deps: [build_git_wrapper]
 
   default:
-    deps: [authorship]
-    # deps: [debug_run]
+    # deps: [authorship]
+    # deps: [burndown]
+    deps: [debug_run]

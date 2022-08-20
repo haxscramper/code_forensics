@@ -75,8 +75,6 @@ using ~ir::~ [[https://haxscramper.github.io/code_forensics/group__db__mapped.ht
 - files :: full list of all processed files - each separate version of the
   file is represented as a different database entry, with new ID,
   statistics etc.
-- changed_ranges :: auxiliary table for storing ranges of the source code
-  changes
 - file lines :: auxiliary table for data found in the analyzed files.
   ~.file~ refers to the ~files~ table, ~index~ shows the position in the
   file and the ~.line~ refers to the information in the ~line~ table.

@@ -87,7 +87,6 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
         storage.remove_all<ir::orm_file>();
         storage.remove_all<ir::orm_commit>();
         storage.remove_all<ir::orm_lines_table>();
-        storage.remove_all<ir::orm_changed_range>();
         storage.remove_all<ir::orm_dir>();
         storage.remove_all<ir::orm_author>();
         storage.remove_all<ir::orm_string>();
@@ -154,10 +153,6 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
                 .file = id, .index = idx, .line = file->lines[idx]});
         }
 
-        for (int idx = 0; idx < file->changed_ranges.size(); ++idx) {
-            storage.insert(ir::orm_changed_range{
-                file->changed_ranges[idx], .file = id, .index = idx});
-        }
         bar.tick();
     }
 

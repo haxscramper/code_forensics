@@ -32,23 +32,7 @@ void push_line(
     CR<LineData>  line,
     bool          changed,
     int           period) {
-    auto& file      = walker->content->at(id);
-    int   new_index = file.lines.size();
-    auto& ranges    = file.changed_ranges;
-
-    if (changed) { file.had_changes = true; }
-
-    if (!ranges.empty() && (ranges.back().end + 1 == new_index) &&
-        (ranges.back().period == period)) {
-        ranges.back().end = new_index;
-    } else {
-        ranges.push_back(
-            {.begin   = new_index,
-             .end     = new_index,
-             .period  = period,
-             .changed = changed});
-    }
-
+    auto& file = walker->content->at(id);
     file.lines.push_back(walker->content->add(line));
     file.total_complexity += line.nesting;
     file.line_count += 1;
