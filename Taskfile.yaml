@@ -106,6 +106,6 @@ tasks:
     deps: [build_git_wrapper]
 
   default:
-    # deps: [authorship]
+    deps: [authorship, burndown]
     # deps: [burndown]
-    deps: [debug_run]
+    # deps: [debug_run]

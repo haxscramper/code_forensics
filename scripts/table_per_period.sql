@@ -11,7 +11,7 @@ SELECT commits.period AS sample_period,
          INNER JOIN LINE
             ON file_lines.line = line.id
          INNER JOIN commits
-            ON line.`commit` = commits.id
+            ON line.rcommit = commits.id
          GROUP BY commit_period,
                   FILE
          ORDER BY lines DESC
@@ -19,7 +19,7 @@ SELECT commits.period AS sample_period,
  INNER JOIN FILE
     ON tmp.file = file.id
  INNER JOIN commits
-    ON file.commit_id = commits.id
+    ON file.rcommit = commits.id
  GROUP BY commit_period,
           sample_period
  ORDER BY commit_period ASC,

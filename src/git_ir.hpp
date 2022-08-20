@@ -112,8 +112,7 @@ struct File {
                         /// recorded in
     DirectoryId parent; /// parent directory
     StringId    name;   /// file name
-    bool        had_changes; /// Whether file had any changes in the commit
-    Vec<LineId> lines;       /// List of all lines found in the file
+    Vec<LineId> lines;  /// List of all lines found in the file
 };
 
 
@@ -342,7 +341,7 @@ inline auto create_db(CR<Str> storagePath) {
     auto storage = make_storage(
         storagePath,
         make_table<orm_commit>(
-            "commits",
+            "rcommit",
             make_column("id", &orm_commit::id, primary_key()),
             make_column("author", &orm_commit::author),
             make_column("time", &orm_commit::time),
@@ -353,9 +352,8 @@ inline auto create_db(CR<Str> storagePath) {
         make_table<orm_file>(
             "file",
             make_column("id", &orm_file::id, primary_key()),
-            make_column("commit_id", &orm_file::commit_id),
-            make_column("name", &orm_file::name),
-            make_column("had_changes", &orm_file::had_changes)),
+            make_column("rcommit", &orm_file::commit_id),
+            make_column("name", &orm_file::name)),
         make_table<orm_author>(
             "author",
             make_column("id", &orm_author::id, primary_key()),
@@ -363,7 +361,7 @@ inline auto create_db(CR<Str> storagePath) {
             make_column("email", &orm_author::email)),
         make_table<orm_edited_files>(
             "edited_files",
-            make_column("commit", &orm_edited_files::commit),
+            make_column("rcommit", &orm_edited_files::commit),
             make_column("dir", &orm_edited_files::dir),
             make_column("path", &orm_edited_files::path)),
         make_table<orm_line>(
@@ -372,13 +370,13 @@ inline auto create_db(CR<Str> storagePath) {
             make_column("author", &orm_line::author),
             make_column("time", &orm_line::time),
             make_column("content", &orm_line::content),
-            make_column("commit", &orm_line::commit),
+            make_column("rcommit", &orm_line::commit),
             make_column("category", &orm_line::category),
             make_column("nesting", &orm_line::nesting)),
         make_table<orm_lines_table>(
             "file_lines",
             make_column("file", &orm_lines_table::file),
-            make_column("index", &orm_lines_table::index),
+            make_column("idx", &orm_lines_table::index),
             make_column("line", &orm_lines_table::line)),
         make_table<orm_dir>(
             "dir",

@@ -468,67 +468,9 @@ void for_each_commit(
     }
 }
 
-Vec<CommitId> launch_analysis(git_oid& oid, walker_state* state) {
-    // All constructed information
-    Vec<CommitId> processed{};
-    // Walk over every commit in the history
-    Vec<FullCommitData> full_commits;
-    while (git::revwalk_next(&oid, state->walker) == 0) {
-        // Get commit from the provided oid
-        git_commit* commit = git::commit_lookup(state->repo, &oid);
-        // Convert from unix timestamp used by git to humane format
-        PTime date = boost::posix_time::from_time_t(
-            git::commit_time(commit));
-
-        auto id = process_commit(oid, state);
-        full_commits.push_back({oid, date, commit, id});
-        state->add_id_mapping(oid, id);
-
-        // check if we can process it
-        //
-        // FIXME `commit_author` returns invalid signature here that causes
-        // a segfault during conversion to a string. Otherwise
-        // `commit_author(commit)->name` is the correct way (according to
-        // the documentation least).
-        if (state->config->allow_sample(date, "", oid_tostr(oid))) {
-            int period = state->config->get_commit_period(date);
-            // Store in the list of commits for sampling
-            state->sampled_commits.insert({oid, id});
-            LOG_T(state) << fmt::format(
-                "Processing commit {} at {} into period {}",
-                oid,
-                date,
-                period);
-        }
-    }
-
-    std::reverse(full_commits.begin(), full_commits.end());
-
-    // Push information about all known commits to the full list
-    for (const auto& [commit, date, _, __] : full_commits) {
-        state->add_full_commit(
-            commit, state->config->get_commit_period(date));
-    }
-
-
-    for_each_commit(state, full_commits);
-
-    for (auto& [oid, date, commit, _] : full_commits) {
-        git::commit_free(commit);
-    }
-
-    Vec<SubTaskParams> params;
-    LOG_I(state) << "Getting the list of files and commits for code "
-                    "origin information ...";
-    for (auto bar =
-             ScopedBar(state, state->sampled_commits.size(), "commits");
-         const auto& [oid, id] : state->sampled_commits) {
-        file_tasks(params, state, oid, id);
-        bar.tick();
-    }
-
-    LOG_I(state) << "Done. Total number of files: " << params.size();
-
+void sample_blame_commits(
+    walker_state*       state,
+    Vec<SubTaskParams>& params) {
     int index = 0;
     for (auto& param : params) {
         param.index     = index;
@@ -596,29 +538,87 @@ Vec<CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     }
 
     LOG_I(state) << "All commits finished";
+}
+
+void post_line_hooks(walker_state* state) {
+    LOG_I(state) << "Assigning line categories";
+    auto& multi = state->content->multi;
+    for (auto bar = ScopedBar(
+             state, multi.store<LineData>().size(), "unique lines");
+         auto& line : multi.store<LineData>().items()) {
+        line->category = state->config->classify_line(
+            multi.store<String>().at(line->content).text);
+
+        bar.tick();
+    }
+}
+
+Vec<CommitId> launch_analysis(git_oid& oid, walker_state* state) {
+    // All constructed information
+    Vec<CommitId> processed{};
+    // Walk over every commit in the history
+    Vec<FullCommitData> full_commits;
+    while (git::revwalk_next(&oid, state->walker) == 0) {
+        // Get commit from the provided oid
+        git_commit* commit = git::commit_lookup(state->repo, &oid);
+        // Convert from unix timestamp used by git to humane format
+        PTime date = boost::posix_time::from_time_t(
+            git::commit_time(commit));
+
+        auto id = process_commit(oid, state);
+        full_commits.push_back({oid, date, commit, id});
+        state->add_id_mapping(oid, id);
+
+        // check if we can process it
+        //
+        // FIXME `commit_author` returns invalid signature here that causes
+        // a segfault during conversion to a string. Otherwise
+        // `commit_author(commit)->name` is the correct way (according to
+        // the documentation least).
+        if (state->config->allow_sample(date, "", oid_tostr(oid))) {
+            int period = state->config->get_commit_period(date);
+            // Store in the list of commits for sampling
+            state->sampled_commits.insert({oid, id});
+            LOG_T(state) << fmt::format(
+                "Processing commit {} at {} into period {}",
+                oid,
+                date,
+                period);
+        }
+    }
+
+    std::reverse(full_commits.begin(), full_commits.end());
+
+    // Push information about all known commits to the full list
+    for (const auto& [commit, date, _, __] : full_commits) {
+        state->add_full_commit(
+            commit, state->config->get_commit_period(date));
+    }
+
+
+    for_each_commit(state, full_commits);
+
+    for (auto& [oid, date, commit, _] : full_commits) {
+        git::commit_free(commit);
+    }
+
+    Vec<SubTaskParams> params;
+    LOG_I(state) << "Getting the list of files and commits for code "
+                    "origin information ...";
+    for (auto bar =
+             ScopedBar(state, state->sampled_commits.size(), "commits");
+         const auto& [oid, id] : state->sampled_commits) {
+        file_tasks(params, state, oid, id);
+        bar.tick();
+    }
+
+    LOG_I(state) << "Done. Total number of files: " << params.size();
+
+    sample_blame_commits(state, params);
 
     for (auto& param : params) {
         git::tree_entry_free(param.entry);
     }
 
-    {
-        LOG_I(state) << "Assigning line categories";
-        auto& multi       = state->content->multi;
-        auto  max_size    = multi.store<LineData>().size();
-        auto  line_assign = init_progress(max_size);
-        int   count       = 0;
-        logging::core::get()->flush();
-        for (auto& line : multi.store<LineData>().items()) {
-            line->category = state->config->classify_line(
-                multi.store<String>().at(line->content).text);
-
-            if (state->config->log_progress_bars) {
-                tick_next(line_assign, ++count, max_size, "unqiue lines");
-            }
-        }
-        if (state->config->log_progress_bars) {
-            line_assign.mark_as_completed();
-        }
-    }
     return processed;
 }

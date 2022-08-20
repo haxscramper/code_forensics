@@ -9,7 +9,7 @@ SELECT tmp.name AS author_name,
          INNER JOIN LINE
             ON file_lines.line = line.id
          INNER JOIN commits
-            ON line.`commit` = commits.id
+            ON line.rcommit = commits.id
          INNER JOIN author
             ON commits.author == author.id
          GROUP BY name,
@@ -19,7 +19,7 @@ SELECT tmp.name AS author_name,
  INNER JOIN FILE
     ON tmp.file = file.id
  INNER JOIN commits
-    ON file.commit_id = commits.id
+    ON file.rcommit = commits.id
  GROUP BY author_name,
           sample_period
  ORDER BY author_name ASC,
