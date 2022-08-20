@@ -112,8 +112,6 @@ struct File {
                         /// recorded in
     DirectoryId parent; /// parent directory
     StringId    name;   /// file name
-    int         total_complexity; /// Total file complexity
-    int         line_count;       /// Total line count for the commit
     bool        had_changes; /// Whether file had any changes in the commit
     Vec<LineId> lines;       /// List of all lines found in the file
 };
@@ -357,8 +355,6 @@ inline auto create_db(CR<Str> storagePath) {
             make_column("id", &orm_file::id, primary_key()),
             make_column("commit_id", &orm_file::commit_id),
             make_column("name", &orm_file::name),
-            make_column("line_count", &orm_file::line_count),
-            make_column("total_complexity", &orm_file::total_complexity),
             make_column("had_changes", &orm_file::had_changes)),
         make_table<orm_author>(
             "author",

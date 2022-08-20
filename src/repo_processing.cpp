@@ -26,18 +26,6 @@ int get_nesting(CR<Str> line) {
     return result;
 }
 
-void push_line(
-    FileId        id,
-    walker_state* walker,
-    CR<LineData>  line,
-    bool          changed,
-    int           period) {
-    auto& file = walker->content->at(id);
-    file.lines.push_back(walker->content->add(line));
-    file.total_complexity += line.nesting;
-    file.line_count += 1;
-}
-
 FileId stats_via_subprocess(
     git_oid       commit_oid,
     walker_state* walker,
@@ -139,17 +127,13 @@ FileId stats_via_subprocess(
                 SLock   lock{walker->m};
                 git_oid line_changed = git::oid_fromstr(
                     changed_at.c_str());
-                push_line(
-                    result,
-                    walker,
-                    LineData{
+                walker->content->at(result).lines.push_back(
+                    walker->content->add(LineData{
                         .author  = walker->content->add(author),
                         .time    = std::stol(time),
                         .content = walker->content->add(String{line}),
                         .commit  = walker->get_id(line_changed),
-                        .nesting = get_nesting(line)},
-                    walker->consider_changed(commit_oid, line_changed),
-                    walker->get_period(commit_oid, line_changed));
+                        .nesting = get_nesting(line)}));
                 ++line_counter;
                 break;
             }
@@ -229,18 +213,14 @@ FileId stats_via_libgit(
 
             Str   str{rawdata + i, size};
             SLock lock{state->m};
-            push_line(
-                result,
-                state,
-                LineData{
+            state->content->at(result).lines.push_back(
+                state->content->add(LineData{
                     .author = state->content->add(Author{}),
                     .time   = hunk->final_signature->when.time,
                     // FIXME get slice of the string for the content
                     .content = state->content->add(String{str}),
                     .commit  = state->get_id(hunk->final_commit_id),
-                    .nesting = get_nesting(str)},
-                state->consider_changed(commit_oid, hunk->final_commit_id),
-                state->get_period(commit_oid, hunk->final_commit_id));
+                    .nesting = get_nesting(str)}));
         }
 
         // Advance over raw data
