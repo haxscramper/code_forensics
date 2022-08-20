@@ -85,13 +85,13 @@ inline void tree_walk(
 
 struct DiffForeachParams {
     /// Callback function to make per file in the diff.
-    using file_cb_t = Func<int(const git_diff_delta*, float, void*)>;
+    using file_cb_t = Func<int(const git_diff_delta*, float)>;
 
     file_cb_t file_cb;
 
     /// Optional callback to make for binary files.
     using binary_cb_t = Func<
-        int(const git_diff_delta*, const git_diff_binary*, void*)>;
+        int(const git_diff_delta*, const git_diff_binary*)>;
 
     binary_cb_t binary_cb;
 
@@ -99,7 +99,7 @@ struct DiffForeachParams {
     /// called to describe a range of lines in the diff. It will not be
     /// issued for binary files.
     using hunk_cb_t = Func<
-        int(const git_diff_delta*, const git_diff_hunk*, void*)>;
+        int(const git_diff_delta*, const git_diff_hunk*)>;
 
     hunk_cb_t hunk_cb;
 
@@ -109,8 +109,7 @@ struct DiffForeachParams {
     using line_cb_t = Func<int(
         const git_diff_delta*,
         const git_diff_hunk*,
-        const git_diff_line*,
-        void*)>;
+        const git_diff_line*)>;
 
     line_cb_t line_cb;
 };
@@ -124,7 +123,7 @@ inline void diff_foreach(
         [](const git_diff_delta* delta, float progress, void* payload) {
             auto l = static_cast<DiffForeachParams*>(payload);
             if (l->file_cb) {
-                return l->file_cb(delta, progress, nullptr);
+                return l->file_cb(delta, progress);
             } else {
                 return 0;
             }
@@ -134,7 +133,7 @@ inline void diff_foreach(
            void*                  payload) {
             auto l = static_cast<DiffForeachParams*>(payload);
             if (l->binary_cb) {
-                return l->binary_cb(delta, binary, nullptr);
+                return l->binary_cb(delta, binary);
             } else {
                 return 0;
             }
@@ -144,7 +143,7 @@ inline void diff_foreach(
            void*                 payload) {
             auto l = static_cast<DiffForeachParams*>(payload);
             if (l->hunk_cb) {
-                return l->hunk_cb(delta, hunk, nullptr);
+                return l->hunk_cb(delta, hunk);
             } else {
                 return 0;
             }
@@ -155,7 +154,7 @@ inline void diff_foreach(
            void*                 payload) {
             auto l = static_cast<DiffForeachParams*>(payload);
             if (l->line_cb) {
-                return l->line_cb(delta, hunk, line, nullptr);
+                return l->line_cb(delta, hunk, line);
             } else {
                 return 0;
             }

@@ -100,6 +100,8 @@ struct Commit {
     Str      hash;     /// git hash of the commit
     int      period; /// Number of the period that commit was attributed to
     Str      message; /// Commit message
+    int      added_lines;
+    int      removed_lines;
     Vec<Pair<ir::StringId, Opt<ir::DirectoryId>>> changed_files;
 };
 
@@ -347,6 +349,8 @@ inline auto create_db(CR<Str> storagePath) {
             make_column("time", &orm_commit::time),
             make_column("hash", &orm_commit::hash),
             make_column("period", &orm_commit::period),
+            make_column("added", &orm_commit::added_lines),
+            make_column("removed", &orm_commit::removed_lines),
             make_column("timezone", &orm_commit::timezone),
             make_column("message", &orm_commit::message)),
         make_table<orm_file>(

@@ -23,11 +23,7 @@ parser.add_argument(
     help="How many committers from the top to plot",
 )
 args = parser.parse_args()
-import sqlite3
-
-con = sqlite3.connect(args.database)
-cur = con.cursor()
-
+cur = open_db(args)
 
 total_writers = {}
 all_periods = set()

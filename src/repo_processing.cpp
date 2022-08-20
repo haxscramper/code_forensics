@@ -382,8 +382,8 @@ void open_walker(git_oid& oid, walker_state& state) {
     // Initialize revision walker
     state.walker = git::revwalk_new(state.repo);
     // Iterate all commits in the topological order
-    git::revwalk_sorting(state.walker, GIT_SORT_TOPOLOGICAL);
-    git::revwalk_push(state.walker, &oid);
+    git::revwalk_sorting(state.walker, GIT_SORT_NONE);
+    git::revwalk_push_head(state.walker);
 }
 
 
@@ -403,6 +403,8 @@ void for_each_commit(
 
     struct CommitTask {
         CommitId  id;
+        Str       hash;
+        Str       prev_hash;
         git_tree* prev_tree;
         git_tree* this_tree;
     };
@@ -410,51 +412,81 @@ void for_each_commit(
     Vec<git_tree*>  trees;
     Vec<CommitTask> tasks;
     git_tree*       prev_tree = nullptr;
+    Str             prev_hash;
 
     for (const auto& [oid, date, git_commit, oid_commit] : full_commits) {
         git_tree* this_tree = git::commit_tree(git_commit);
-        tasks.push_back({oid_commit, prev_tree, this_tree});
+        Str       hash      = oid_tostr(oid);
+        LOG_T(state) << fmt::format(
+            "diff {} at index {}, id {}", hash, tasks.size(), oid_commit);
+        tasks.push_back(
+            {oid_commit, hash, prev_hash, prev_tree, this_tree});
         trees.push_back(this_tree);
         prev_tree = this_tree;
+        prev_hash = hash;
 
         prev = git_commit;
     }
 
-    auto bar = ScopedBar(
-        state, full_commits.size(), "commits to analyze", true, 40);
-
     std::mutex tick_mutex;
-    auto       task_executor = [state, &tick_mutex, &diffopts, &bar](
-                             CR<CommitTask> task) {
-        git_diff* diff = git::diff_tree_to_tree(
-            state->repo, task.prev_tree, task.this_tree, &diffopts);
+    auto       task_executor =
+        [state, &tick_mutex, &diffopts](CR<CommitTask> task) {
+            // if ("7fa399f51c39e6661876223009d5003cd2e0cf99" != task.hash)
+            // {
+            //     return;
+            // }
 
-        auto     id_commit = task.id;
-        Vec<Str> paths;
-        diff_foreach(
-            diff,
-            DiffForeachParams{
-                .file_cb = [state, id_commit, &tick_mutex, &bar, &paths](
-                               const git_diff_delta* delta,
-                               float                 progress,
-                               void*                 payload) {
-                    paths.push_back(delta->new_file.path);
-                    return GIT_OK;
-                }});
+            git_diff* diff = git::diff_tree_to_tree(
+                state->repo, task.prev_tree, task.this_tree, &diffopts);
 
-        SLock lock{tick_mutex};
-        for (const auto& path : paths) {
-            state->content->at(id_commit).changed_files.push_back(
-                {state->content->add(String{path}),
-                 state->content->parentDirectory(path)});
-        }
-    };
+
+            int      added = 0, removed = 0, changed = 0;
+            auto     id_commit = task.id;
+            Vec<Str> paths;
+            diff_foreach(
+                diff,
+                DiffForeachParams{
+                    .file_cb = [state, id_commit, &tick_mutex, &paths](
+                                   const git_diff_delta* delta,
+                                   float                 progress) -> int {
+                        paths.push_back(delta->new_file.path);
+                        return GIT_OK;
+                    },
+                    .line_cb = [state, &added, &removed](
+                                   const git_diff_delta* delta,
+                                   const git_diff_hunk*  hunk,
+                                   const git_diff_line*  line) -> int {
+                        // fmt::print("line {}\n", line->origin);
+                        // fwrite(line->content, 1, line->content_len,
+                        // stdout);
+
+                        switch (line->origin) {
+                            case GIT_DIFF_LINE_CONTEXT: ++added; break;
+                            case GIT_DIFF_LINE_DELETION: ++removed; break;
+                            default: break;
+                        }
+
+                        return GIT_OK;
+                    }});
+
+            SLock lock{tick_mutex};
+            state->content->at(id_commit).removed_lines = removed;
+            state->content->at(id_commit).added_lines   = added;
+
+            for (const auto& path : paths) {
+                state->content->at(id_commit).changed_files.push_back(
+                    {state->content->add(String{path}),
+                     state->content->parentDirectory(path)});
+            }
+        };
 
     const int                             max_parallel = 16;
     std::counting_semaphore<max_parallel> counting{max_parallel};
     Vec<std::future<void>>                executed;
 
-    for (const auto& task : tasks) {
+    for (auto bar = ScopedBar(
+             state, full_commits.size(), "commits to analyze", true, 40);
+         const auto& task : tasks) {
         bar.tick();
         counting.acquire();
         executed.push_back(std::async([task, &counting, &task_executor]() {

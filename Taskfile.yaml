@@ -121,5 +121,5 @@ tasks:
   default:
     # deps: [compare]
     # deps: [authorship, burndown]
-    deps: [burndown]
-    # deps: [debug_run]
+    # deps: [burndown]
+    deps: [debug_run]
