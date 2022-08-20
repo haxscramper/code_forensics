@@ -23,8 +23,13 @@ ax = fig.add_subplot()
 cap_max = df["len"].quantile(0.99)
 df = df[df["len"] < cap_max]
 
-plt.plot(df["time"], df["len"].ewm(span=3600).mean())
-df.to_csv("/tmp/pandas_pure.csv")
+plt.plot(df["time"], df["len"].ewm(span=40).mean())
+plt.grid(True)
+plt.ylabel("Character count")
+plt.title(
+    "Number of characters in the commit message, 99th percentile, rolling 50 average"
+)
+
 format_x_dates(ax)
 fig.autofmt_xdate()
 plt.savefig(args.outfile, bbox_inches="tight")
