@@ -46,13 +46,13 @@ cur = con.cursor()
 authors = {}
 author_names = {}
 
-ignored_names = set(args.ignore)
+ignored_names = set(args.ignore or [])
 
 
 for row in cur.execute("select id, name from author;"):
     author_names[row[0]] = remap_name(args, row[1])
 
-for row in cur.execute("select author, time from commits;"):
+for row in cur.execute("select author, time from rcommit;"):
     name = author_names[row[0]]
     if name in ignored_names:
         continue
@@ -100,7 +100,7 @@ for author, commits in top_authors[0:topcount]:
 
     ax.plot(bin_edges[:-1], hist)
     ax.set_xlim(min_date, num_now())
-    ax.set_ylabel(author, rotation=0)
+    ax.set_ylabel(f"{author}\n{len(commits)} total", rotation=0)
 
     # set x-ticks in date
     # see: http://matplotlib.sourceforge.net/examples/api/date_demo.html
