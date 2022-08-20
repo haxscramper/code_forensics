@@ -409,3 +409,4 @@ docs
 **/*.sqlite
 **/*.png
 .task
+perf.data*

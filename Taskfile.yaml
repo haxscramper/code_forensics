@@ -61,6 +61,10 @@ tasks:
         {{.DB_FILE}}
         {{.PNG_FILE}}
 
+  compare:
+    cmds:
+      - ./tests/ci_compare_repo.sh
+
   build_binary:
     dir: build
     deps: [conan_install]
@@ -74,6 +78,15 @@ tasks:
       - conan install . -if {{.REL_CONAN}} --build=missing --settings compiler.libcxx="libstdc++11"
     status:
       - test -e {{.CONAN_DIR}}
+
+  perf_run:
+    deps: [build_binary]
+    cmds:
+      - "perf record {{.BIN}} {{.OPTS}}"
+    vars:
+      OPTS: /tmp/{{.TARGET}}
+        --branch={{.BRANCH}}
+        --filter-script=scripts/code_filter.py
 
   debug_run:
     deps: [build_binary]
@@ -106,6 +119,7 @@ tasks:
     deps: [build_git_wrapper]
 
   default:
-    deps: [authorship, burndown]
-    # deps: [burndown]
+    # deps: [compare]
+    # deps: [authorship, burndown]
+    deps: [burndown]
     # deps: [debug_run]

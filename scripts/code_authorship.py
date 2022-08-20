@@ -9,23 +9,24 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 from pprint import pprint
+from cli_common import *
 
 parser = argparse.ArgumentParser(description="Process some integers.")
 parser.add_argument("database", type=str, help="Input database file")
 parser.add_argument("outfile", type=str, help="Output plot image")
+add_rename_args(parser)
+parser.add_argument(
+    "--top",
+    dest="top",
+    default=15,
+    type=int,
+    help="How many committers from the top to plot",
+)
 args = parser.parse_args()
 import sqlite3
 
 con = sqlite3.connect(args.database)
 cur = con.cursor()
-
-
-def map_name(name: str) -> str:
-    if name == "Andreas Rumpf":
-        return "Araq"
-
-    else:
-        return name
 
 
 total_writers = {}
@@ -36,7 +37,7 @@ author_period_map = {}
 for row in cur.execute(open(Path(__file__).parent / "code_authorship.sql").read()):
     (author, period, line_count) = row
     all_periods.add(period)
-    name = map_name(author)
+    name = remap_name(args, author)
     if name not in total_writers:
         total_writers[name] = 0
 
@@ -58,7 +59,7 @@ for author, per_map in author_period_map.items():
     for period, count in per_map.items():
         per_period[period] += count
 
-top_n = 15
+top_n = args.top
 
 for author, count in authors_ordered[(top_n) - 1 : -1]:
     for period in author_period_map[author]:
@@ -79,6 +80,11 @@ for author_idx, (author, count) in enumerate(authors_ordered):
         for period in sorted(all_periods):
             if period not in author_period_map[author]:
                 author_period_map[author][period] = 0
+
+full_count = sum([count for _, count in total_writers.items()])
+global_percentage = {  #
+    name: 100 * (count / full_count) for name, count in total_writers.items()
+}
 
 
 sample_count: int = len(all_periods)
@@ -104,7 +110,7 @@ fig = plt.figure(figsize=(10, 12), dpi=300, constrained_layout=True)
 for author_idx, samples in enumerate(data):
     if top_n - 1 < author_idx:
         break
-
+    name = indexed_authors[author_idx]
     plt.bar(
         index,
         samples,
@@ -112,7 +118,7 @@ for author_idx, samples in enumerate(data):
         bottom=offset,
         color=colors[author_idx],
         edgecolor="black",
-        label=indexed_authors[author_idx],
+        label=f"{name} ({global_percentage[name]:4.2f}%)",
     )
 
     offset = offset + samples

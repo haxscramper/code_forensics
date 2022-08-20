@@ -19,18 +19,13 @@ from datetime import datetime
 import numpy as np
 import sys
 from typing import *
+from cli_common import *
+
 
 parser = argparse.ArgumentParser(description="Process some integers.")
 parser.add_argument("database", type=str, help="Input database file")
 parser.add_argument("outfile", type=str, help="Output plot image")
-parser.add_argument(
-    "--rename",
-    dest="rename",
-    type=str,
-    action="append",
-    help="Name=Other pair for handling users with multiple names",
-)
-
+add_rename_args(parser)
 parser.add_argument(
     "--ignore", dest="ignore", type=str, action="append", help="List of users to ignore"
 )
@@ -52,19 +47,10 @@ authors = {}
 author_names = {}
 
 ignored_names = set(args.ignore)
-remap = [(it[0], it[1]) for it in [pair.split("=") for pair in args.rename]]
-
-
-def remap_name(name: str) -> str:
-    for (old, new) in remap:
-        if name == old:
-            return new
-
-    return name
 
 
 for row in cur.execute("select id, name from author;"):
-    author_names[row[0]] = remap_name(row[1])
+    author_names[row[0]] = remap_name(args, row[1])
 
 for row in cur.execute("select author, time from commits;"):
     name = author_names[row[0]]
