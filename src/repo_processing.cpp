@@ -431,11 +431,6 @@ void for_each_commit(
     std::mutex tick_mutex;
     auto       task_executor =
         [state, &tick_mutex, &diffopts](CR<CommitTask> task) {
-            // if ("7fa399f51c39e6661876223009d5003cd2e0cf99" != task.hash)
-            // {
-            //     return;
-            // }
-
             git_diff* diff = git::diff_tree_to_tree(
                 state->repo, task.prev_tree, task.this_tree, &diffopts);
 
@@ -456,10 +451,6 @@ void for_each_commit(
                                    const git_diff_delta* delta,
                                    const git_diff_hunk*  hunk,
                                    const git_diff_line*  line) -> int {
-                        // fmt::print("line {}\n", line->origin);
-                        // fwrite(line->content, 1, line->content_len,
-                        // stdout);
-
                         switch (line->origin) {
                             case GIT_DIFF_LINE_CONTEXT: ++added; break;
                             case GIT_DIFF_LINE_DELETION: ++removed; break;
@@ -628,29 +619,39 @@ Vec<CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     }
 
 
-    for_each_commit(state, full_commits);
+    if (state->config->use_analytics(Analytics::CommitDiffInfo)) {
+        for_each_commit(state, full_commits);
+    } else {
+        LOG_W(state) << "Diff analytics was not enabled, skipping";
+    }
 
     for (auto& [oid, date, commit, _] : full_commits) {
         git::commit_free(commit);
     }
 
-    Vec<SubTaskParams> params;
-    LOG_I(state) << "Getting the list of files and commits for code "
-                    "origin information ...";
-    for (auto bar =
-             ScopedBar(state, state->sampled_commits.size(), "commits");
-         const auto& [oid, id] : state->sampled_commits) {
-        file_tasks(params, state, oid, id);
-        bar.tick();
+    if (state->config->use_analytics(Analytics::BlameBurndown)) {
+
+        Vec<SubTaskParams> params;
+        LOG_I(state) << "Getting the list of files and commits for code "
+                        "origin information ...";
+        for (auto bar = ScopedBar(
+                 state, state->sampled_commits.size(), "commits");
+             const auto& [oid, id] : state->sampled_commits) {
+            file_tasks(params, state, oid, id);
+            bar.tick();
+        }
+
+        LOG_I(state) << "Done. Total number of files: " << params.size();
+
+        sample_blame_commits(state, params);
+        for (auto& param : params) {
+            git::tree_entry_free(param.entry);
+        }
+
+    } else {
+        LOG_W(state) << "Blame analytics was not enabled, skipping";
     }
 
-    LOG_I(state) << "Done. Total number of files: " << params.size();
-
-    sample_blame_commits(state, params);
-
-    for (auto& param : params) {
-        git::tree_entry_free(param.entry);
-    }
 
     return processed;
 }

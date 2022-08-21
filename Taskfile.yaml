@@ -13,6 +13,17 @@ vars:
   REL_CONAN: "build/dependencies/conan"
   CONAN_DIR: |
     {{env "PWD"}}/build/dependencies/conan
+  GDB_CMD: gdb
+    -batch
+    -nx
+    -ex "source {{env "PWD"}}/gdb_decorator.py"
+    -ex "set print address off"
+    -ex "set print frame-arguments none"
+    -ex "set print frame-info source-and-location"
+    -ex "set filename-display basename"
+    -ex "run"
+    -ex "bt"
+    --args
 
 tasks:
   ensure_deps:
@@ -92,7 +103,7 @@ tasks:
     deps: [build_binary]
     cmds:
       - "{{.BIN}} --help || gdb_cmd {{.BIN}} --help"
-      - "{{.BIN}} {{.OPTS}} || gdb_cmd {{.BIN}} {{.OPTS}}"
+      - "{{.BIN}} {{.OPTS}} || {{.GDB_CMD}} {{.BIN}} {{.OPTS}}"
 
     vars:
       OPTS: /tmp/{{.TARGET}}
@@ -100,6 +111,7 @@ tasks:
         --filter-script=scripts/code_filter.py
         --filter-args=--per-year={{.PER_YEAR}}
         --filter-args=--target={{.TARGET}}
+        --analytics=Commits
 
   build_git_wrapper:
     cmd: clang++ generate_git_wrapper/genwrapper.cpp

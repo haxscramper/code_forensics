@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(code_forensics LANGUAGES CXX)
 
+set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CONAN_DISABLE_CHECK_COMPILER ON)
@@ -16,6 +17,7 @@ set(CONAN_SYSTEM_INCLUDES ON)
 # Otherwise boost compilation fails to work due to internal compilation errors.
 # No, 'SYSTEM_INCLUDES' does not help.
 add_compile_options(-Wno-c++11-narrowing)
+add_compile_options(-glldb)
 add_compile_options(-Wno-deprecated-declarations)
 
 set(DEPS_DIR ${CMAKE_SOURCE_DIR}/build/dependencies/conan)

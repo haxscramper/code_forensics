@@ -16,7 +16,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
-
+#include <range/v3/all.hpp>
 
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/lock_guard.hpp>
@@ -27,10 +27,7 @@
 #include "logging.hpp"
 #include "repo_processing.hpp"
 
-using namespace boost;
-
-
-using namespace git;
+namespace rv = ranges::views;
 
 
 #define GIT_SUCCESS 0
@@ -335,7 +332,7 @@ auto main(int argc, const char** argv) -> int {
     auto file_sink = create_file_sink(vm["logfile"].as<Str>());
     auto out_sink  = create_std_sink();
 
-    out_sink->set_filter(severity >= log::severity::info);
+    out_sink->set_filter(severity >= boost::log::severity::info);
 
     finally close_out_sink{[&out_sink]() {
         out_sink->stop();
@@ -354,8 +351,8 @@ auto main(int argc, const char** argv) -> int {
     Str in_outfile = vm.count("outfile") ? vm["outfile"].as<Str>()
                                          : "/tmp/db.sqlite";
 
-    log::core::get()->add_sink(file_sink);
-    log::core::get()->add_sink(out_sink);
+    boost::log::core::get()->add_sink(file_sink);
+    boost::log::core::get()->add_sink(out_sink);
     init_logger_properties();
 
     const bool use_fusion = false;
@@ -376,9 +373,12 @@ auto main(int argc, const char** argv) -> int {
     auto config = UPtr<walker_config>(new walker_config{
         .use_subprocess = in_blame_subprocess,
         // Full process parallelization
-        .use_threading     = walker_config::async,
-        .repo              = in_repo,
-        .heads             = fmt::format(".git/refs/heads/{}", in_branch),
+        .use_threading = walker_config::async,
+        .repo          = in_repo,
+        .heads         = fmt::format(".git/refs/heads/{}", in_branch),
+        .analytics     = vm["analytics"].as<Vec<EnumOption<Analytics>>>() |
+                     rv::transform([](auto it) { return it.get(); }) |
+                     ranges::to_vector,
         .db_path           = in_outfile,
         .try_incremental   = vm["incremental"].as<BoolOption>(),
         .log_progress_bars = vm["log-progress"].as<BoolOption>(),
@@ -425,9 +425,9 @@ auto main(int argc, const char** argv) -> int {
             }
         }});
 
-    libgit2_init();
+    git::libgit2_init();
     // Check whether threads can be enabled
-    assert(libgit2_features() & GIT_FEATURE_THREADS);
+    assert(git::libgit2_features() & GIT_FEATURE_THREADS);
 
     auto heads_path = Path{config->repo} / config->heads;
     if (!fs::exists(config->repo)) {
@@ -445,8 +445,8 @@ auto main(int argc, const char** argv) -> int {
     ir::content_manager content;
     // Create main walker state used in the whole commit analysis state
     auto state = UPtr<walker_state>(new walker_state{
-        .config  = config.get(),
-        .repo    = repository_open_ext(config->repo.c_str(), 0, nullptr),
+        .config = config.get(),
+        .repo = git::repository_open_ext(config->repo.c_str(), 0, nullptr),
         .content = &content,
         .logger  = logger});
 

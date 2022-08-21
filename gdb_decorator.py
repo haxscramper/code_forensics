@@ -108,14 +108,37 @@ class UserFrameDecorator(gdb.FrameDecorator.FrameDecorator):
             except ValueError:
                 name = sym_name
 
+        # FIXME HACK this approach is error-prone. Instead all convesions
+        # should be done using tree-sitter - python has general wrappers,
+        # but I need to compile/configure each language separately, so for
+        # now I will use this, it is "good enough (TM)"
+        #
+        # Better approach would be to parse the whole structure of the
+        # input procedure, /maybe/ also parse project configuration (or
+        # provide helper script to populate the rename table) and merge
+        # them together.
         for (namespace, alias) in [
             ("boost::python", "py"),
             ("boost::posix_time::ptime", "PTime"),
+            ("boost::program_options", "po"),
+            ("std::vector", "Vec"),
             ("std::__cxx11::basic_string<char>", "Str"),
+            ("std::__cxx11::basic_string<char, *std::char_traits<char>>", "Str"),
             (
                 "std::__cxx11::basic_string<char, *std::char_traits<char>, *std::allocator<char> *>",
                 "Str",
             ),
+            # NOTE yes, I know this is terrible, but if function accepts
+            # const reference most likely there won't be overload that also
+            # copes or mutates things in-place.
+            (" *const&", ""),
+            # 'const' method annotations
+            (r"\) const", ")"),
+            (r", std::allocator<.*?> *", ""),
+            # Old-style template parameter spacing - really distracting
+            (" +>", ">"),
+            # Trailing in-function offset
+            (r"\) \+ 0x\d+", ")"),
         ]:
             name = re.sub(namespace, alias, name)
 

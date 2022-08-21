@@ -5,12 +5,13 @@
 #define PROGRAM_STATE_HPP
 
 #include <unordered_set>
+#include <algorithm>
 #include <chrono>
 
 #include <boost/log/trivial.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-
+#include <boost/describe.hpp>
 
 #include "common.hpp"
 #include "git_interface.hpp"
@@ -23,6 +24,20 @@ using Date         = boost::gregorian::date;
 using PTime        = boost::posix_time::ptime;
 using TimeDuration = boost::posix_time::time_duration;
 namespace stime    = std::chrono;
+namespace bd       = boost::describe;
+
+enum class Analytics {
+    BlameBurndown,  /// Use git blame for commits allowed by the
+                    /// filter script
+    CommitDiffInfo, /// Which files where touched in each commit,
+                    /// how many lines were edited
+    Commits         /// Only information about commits
+};
+
+BOOST_DESCRIBE_ENUM(Analytics, BlameBurndown, Commits, CommitDiffInfo);
+
+template <typename E>
+concept IsDescribedEnum = bd::has_describe_enumerators<E>::value;
 
 template <>
 struct fmt::formatter<Date> : fmt::formatter<Str> {
@@ -48,8 +63,9 @@ struct walker_config {
     enum threading_mode { async, defer, sequential };
     threading_mode use_threading = threading_mode::async;
     /// Current project root path (absolute path)
-    Str repo;
-    Str heads;
+    Str            repo;
+    Str            heads;
+    Vec<Analytics> analytics;
 
     Str  db_path;
     bool try_incremental;
@@ -63,6 +79,12 @@ struct walker_config {
     /// Check whether commits at the specified date should be analysed
     Func<bool(CR<PTime>, CR<Str>, CR<Str>)> allow_sample;
     Func<int(CR<Str>)>                      classify_line;
+
+    bool use_analytics(Analytics which) const {
+        return analytics.empty() ||
+               std::find(analytics.begin(), analytics.end(), which) !=
+                   analytics.end();
+    }
 };
 
 
