@@ -563,19 +563,6 @@ void sample_blame_commits(
     LOG_I(state) << "All commits finished";
 }
 
-void post_line_hooks(walker_state* state) {
-    LOG_I(state) << "Assigning line categories";
-    auto& multi = state->content->multi;
-    for (auto bar = ScopedBar(
-             state, multi.store<LineData>().size(), "unique lines");
-         auto& line : multi.store<LineData>().items()) {
-        line->category = state->config->classify_line(
-            multi.store<String>().at(line->content).text);
-
-        bar.tick();
-    }
-}
-
 Vec<CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     // All constructed information
     Vec<CommitId> processed{};

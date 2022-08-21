@@ -167,7 +167,6 @@ struct walker_config {
     Func<int(CR<PTime>)> get_sampled_period;
     /// Check whether commits at the specified date should be analysed
     Func<bool(CR<PTime>, CR<Str>, CR<Str>)> allow_sample;
-    Func<int(CR<Str>)>                      classify_line;
 
     bool use_analytics(Analytics which) const {
         return analytics.empty() ||

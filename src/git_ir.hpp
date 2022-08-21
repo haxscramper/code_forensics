@@ -166,8 +166,7 @@ struct LineData {
     i64      time;    /// Time line was written
     StringId content; /// Content of the line
     CommitId commit;
-    int      nesting;  /// Line indentation depth
-    int      category; /// Line category
+    int      nesting; /// Line indentation depth
 
     auto operator==(CR<LineData> other) const -> bool {
         return author == other.author && time == other.time &&
@@ -375,7 +374,6 @@ inline auto create_db(CR<Str> storagePath) {
             make_column("time", &orm_line::time),
             make_column("content", &orm_line::content),
             make_column("rcommit", &orm_line::commit),
-            make_column("category", &orm_line::category),
             make_column("nesting", &orm_line::nesting)),
         make_table<orm_lines_table>(
             "file_lines",

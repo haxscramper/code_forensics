@@ -20,7 +20,6 @@ class PyForensics {
     py::object   commit_period_mapping;
     py::object   sample_period_mapping;
     py::object   sample_predicate;
-    py::object   line_classifier;
     py::object   post_analyze;
     SPtr<Logger> logger;
 
@@ -43,11 +42,6 @@ class PyForensics {
 
     /// \brief set post-analyze hook implementation
     void set_post_analyze(py::object post) { post_analyze = post; }
-
-    /// \brief set line classification callback for the #classify_line
-    void set_line_classifier(py::object classifier) {
-        line_classifier = classifier;
-    }
 
     /// \brief set path filtering predicate for the #allow_path predicate
     void set_path_predicate(py::object predicate) {
@@ -107,15 +101,6 @@ class PyForensics {
             return py::extract<bool>(sample_predicate(date, author, id));
         } else {
             return true;
-        }
-    }
-
-    /// \brief get line category
-    int classify_line(CR<Str> line) const {
-        if (line_classifier) {
-            return py::extract<int>(line_classifier(line));
-        } else {
-            return 0;
         }
     }
 
@@ -236,10 +221,6 @@ BOOST_PYTHON_MODULE(forensics) {
             .def("log_debug", &PyForensics::log_debug, py::args("text"))
             .def("log_error", &PyForensics::log_error, py::args("text"))
             .def("log_fatal", &PyForensics::log_fatal, py::args("text"))
-            .def(
-                "set_line_classifier",
-                &PyForensics::set_line_classifier,
-                py::args("classifier"))
             .def(
                 "set_post_analyze",
                 &PyForensics::set_post_analyze,

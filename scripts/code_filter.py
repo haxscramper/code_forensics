@@ -79,13 +79,6 @@ def commit_period_mapping(date) -> bool:
     return date.year
 
 
-def classify_line(line: str) -> int:
-    if line.startswith(" "):
-        return 1
-    else:
-        return 0
-
-
 def post_analyze():
     config.log_info("Post-analysis hook")
 
@@ -94,5 +87,4 @@ config.set_path_predicate(path_predicate)
 config.set_sample_predicate(sample_predicate)
 config.set_commit_period_mapping(commit_period_mapping)
 config.set_sample_period_mapping(sample_period_mapping)
-config.set_line_classifier(classify_line)
 config.set_post_analyze(post_analyze)

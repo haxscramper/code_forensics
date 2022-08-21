@@ -2,6 +2,7 @@
 #include "git_ir.hpp"
 
 #include <exception>
+#include <signal.h>
 #include <string>
 #include <map>
 #include <fstream>
@@ -16,6 +17,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
+
 #include <range/v3/all.hpp>
 
 #include <boost/thread/mutex.hpp>
@@ -326,7 +328,17 @@ PyForensics* exec_python_filter(
 }
 
 
+void signal_handler(int signum) {
+    std::cerr
+        << "SIGINT signal was sent to the application, aborting execution"
+        << std::endl;
+    exit(signum);
+}
+
+
 auto main(int argc, const char** argv) -> int {
+    signal(SIGINT, signal_handler);
+
     auto vm = parse_cmdline(argc, argv);
     {
         any_visitor v{};
@@ -420,14 +432,6 @@ auto main(int argc, const char** argv) -> int {
             } catch (py::error_already_set& err) {
                 LOG_PY_ERROR(logger);
                 return false;
-            }
-        },
-        .classify_line = [&logger, forensics](CR<Str> line) -> int {
-            try {
-                return forensics->classify_line(line);
-            } catch (py::error_already_set& err) {
-                LOG_PY_ERROR(logger);
-                return 0;
             }
         }});
 
