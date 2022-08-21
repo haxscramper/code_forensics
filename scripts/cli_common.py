@@ -1,6 +1,7 @@
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 from typing import *
 
 from datetime import datetime
@@ -93,3 +94,37 @@ def remap_name(args, name: str) -> str:
             return new
 
     return name
+
+
+def add_config_args(parser):
+    parser.add_argument(
+        "--config",
+        action="append",
+        type=str,
+        dest="config",
+        default=None,
+        help="One or more configuration files to read options from",
+    )
+
+
+def read_configs(parser, args):
+    if args.config:
+        options = []
+        for path in args.config:
+            with open(path, "r") as file:
+                for line in file.read().split("\n"):
+                    line = line.strip()
+                    if not (line.startswith("#") or len(line) == 0):
+                        options.append(line)
+
+        new = sys.argv[1:-1] + options
+        new_args = parser.parse_args(new)
+        return new_args
+
+    else:
+        return args
+
+
+def parse_args_with_config(parser):
+    args = parser.parse_args()
+    return read_configs(parser, args)

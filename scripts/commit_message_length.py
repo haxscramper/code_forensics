@@ -9,6 +9,7 @@ import sqlite3
 parser = init_parser()
 add_rename_args(parser)
 add_ignore_args(parser)
+add_config_args(parser)
 parser.add_argument(
     "--mode",
     dest="mode",
@@ -17,7 +18,8 @@ parser.add_argument(
     choices=["per-user", "over-time"],
     help="Wich percentile plot to produce",
 )
-args = parser.parse_args()
+
+args = parse_args_with_config(parser)
 
 df = pd.read_sql_query(
     """
@@ -47,8 +49,7 @@ df = df.loc[
     lambda row: row["name"].apply(lambda name: name not in set(args.ignore or []))
 ]
 
-cap_max = df["len"].quantile(0.999)
-df = df[df["len"] < cap_max]
+df = df[df["len"] < df["len"].quantile(0.999)]
 fig, ax = plt.subplots(figsize=(16, 16))
 
 
