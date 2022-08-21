@@ -166,7 +166,8 @@ po::variables_map parse_cmdline(int argc, const char** argv) {
          "User-provided python script that configures code forensics "
          "filter") //
         ("analytics",
-         po::value<Vec<EnumOption<Analytics>>>(),
+         po::value<Vec<EnumOption<Analytics>>>()->default_value(
+             Vec<EnumOption<Analytics>>(), "all"),
          "Which group of analytics to enable (default- all)") //
         ("filter-args",
          po::value<Vec<Str>>(),
