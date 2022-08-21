@@ -26,9 +26,7 @@ from cli_common import *
 parser = init_parser()
 
 add_rename_args(parser)
-parser.add_argument(
-    "--ignore", dest="ignore", type=str, action="append", help="List of users to ignore"
-)
+add_ignore_args(parser)
 
 parser.add_argument(
     "--top",

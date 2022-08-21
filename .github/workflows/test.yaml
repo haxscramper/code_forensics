@@ -40,6 +40,5 @@ jobs:
         with:
           name: burndown-plots
           path: |
-            nim.png
-            nimskull.png
+            *.png
             nimskull.sqlite

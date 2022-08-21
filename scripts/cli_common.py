@@ -75,6 +75,16 @@ def add_rename_args(parser):
     )
 
 
+def add_ignore_args(parser):
+    parser.add_argument(
+        "--ignore",
+        dest="ignore",
+        type=str,
+        action="append",
+        help="List of users to ignore",
+    )
+
+
 def remap_name(args, name: str) -> str:
     rename = [] if not args.rename else args.rename
     remap = [(it[0], it[1]) for it in [pair.split("=") for pair in rename]]
