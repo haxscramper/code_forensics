@@ -29,42 +29,47 @@ Str lexical_cast<Str, BoolOption>(CR<BoolOption> b) {
 } // namespace boost
 
 
-void print_variables_map(std::ostream& out, const po::variables_map vm) {
+void print_variables_map(
+    CR<any_visitor>         visitor,
+    std::ostream&           out,
+    const po::variables_map vm) {
     for (auto& it : vm) {
         out << "> " << it.first;
-        if (((boost::any)it.second.value()).empty()) { out << "(empty)"; }
+        auto val = it.second.value();
+        if (((boost::any)val).empty()) { out << "(empty)"; }
         if (vm[it.first].defaulted() || it.second.defaulted()) {
             out << "(default)";
         }
         out << "=";
+        if (visitor(val)) {
+            out << "\n";
+            continue;
+        }
 
         bool is_char;
         try {
-            boost::any_cast<const char*>(it.second.value());
+            boost::any_cast<const char*>(val);
             is_char = true;
         } catch (const boost::bad_any_cast&) { is_char = false; }
         bool is_str;
         try {
-            boost::any_cast<std::string>(it.second.value());
+            boost::any_cast<Str>(val);
             is_str = true;
         } catch (const boost::bad_any_cast&) { is_str = false; }
 
-        if (((boost::any)it.second.value()).type() == typeid(int)) {
+        if (((boost::any)val).type() == typeid(int)) {
             out << vm[it.first].as<int>() << std::endl;
-        } else if (
-            ((boost::any)it.second.value()).type() == typeid(bool)) {
+        } else if (((boost::any)val).type() == typeid(bool)) {
             out << vm[it.first].as<bool>() << std::endl;
-        } else if (
-            ((boost::any)it.second.value()).type() == typeid(BoolOption)) {
+        } else if (((boost::any)val).type() == typeid(BoolOption)) {
             out << std::boolalpha << vm[it.first].as<BoolOption>()
                 << std::endl;
-        } else if (
-            ((boost::any)it.second.value()).type() == typeid(double)) {
+        } else if (((boost::any)val).type() == typeid(double)) {
             out << vm[it.first].as<double>() << std::endl;
         } else if (is_char) {
             out << vm[it.first].as<const char*>() << std::endl;
         } else if (is_str) {
-            std::string temp = vm[it.first].as<std::string>();
+            Str temp = vm[it.first].as<Str>();
             if (temp.size()) {
                 out << temp << std::endl;
             } else {
@@ -72,19 +77,17 @@ void print_variables_map(std::ostream& out, const po::variables_map vm) {
             }
         } else { // Assumes that the only remainder is vector<string>
             try {
-                std::vector<std::string>
-                     vect = vm[it.first].as<std::vector<std::string>>();
-                uint i    = 0;
-                for (std::vector<std::string>::iterator oit = vect.begin();
+                Vec<Str> vect = vm[it.first].as<Vec<Str>>();
+                uint     i    = 0;
+                for (Vec<Str>::iterator oit = vect.begin();
                      oit != vect.end();
                      oit++, ++i) {
                     out << "\r> " << it.first << "[" << i << "]=" << (*oit)
                         << std::endl;
                 }
             } catch (const boost::bad_any_cast&) {
-                out << "UnknownType("
-                    << ((boost::any)it.second.value()).type().name() << ")"
-                    << std::endl;
+                out << "UnknownType(" << ((boost::any)val).type().name()
+                    << ")" << std::endl;
             }
         }
     }

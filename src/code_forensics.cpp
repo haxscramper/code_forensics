@@ -328,7 +328,13 @@ PyForensics* exec_python_filter(
 
 auto main(int argc, const char** argv) -> int {
     auto vm = parse_cmdline(argc, argv);
-    print_variables_map(std::cout, vm);
+    {
+        any_visitor v{};
+        v.insert_visitor<Vec<EnumOption<Analytics>>>(
+            [](auto it) { std::cout << fmt::format("{}", it); });
+
+        print_variables_map(v, std::cout, vm);
+    }
     auto file_sink = create_file_sink(vm["logfile"].as<Str>());
     auto out_sink  = create_std_sink();
 

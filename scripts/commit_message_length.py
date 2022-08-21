@@ -10,6 +10,8 @@ parser = init_parser()
 add_rename_args(parser)
 add_ignore_args(parser)
 add_config_args(parser)
+add_title_args(parser, None)
+
 parser.add_argument(
     "--mode",
     dest="mode",
@@ -17,6 +19,14 @@ parser.add_argument(
     default="per-user",
     choices=["per-user", "over-time"],
     help="Wich percentile plot to produce",
+)
+
+parser.add_argument(
+    "--top-contributors",
+    dest="top_contributors",
+    type=float,
+    default=0.10,
+    help="Top percentile of the controibutors to plot",
 )
 
 args = parse_args_with_config(parser)
@@ -75,7 +85,7 @@ if args.mode == "per-user":
 
     gb["mix"] = gb.apply(lambda row: row["mean"] * row["count"], axis=1)
 
-    gb = gb[gb["count"].quantile(0.90) < gb["count"]]
+    gb = gb[gb["count"].quantile(1 - args.top_contributors) < gb["count"]]
     print(gb)
 
     gb = gb.sort_values(by="mean")
@@ -98,8 +108,11 @@ if args.mode == "per-user":
     ax.plot(gb["clearlen_mean"], gb["labels"], "r", label="without 'fixes #' noise")
 
     ax.set_title(
-        "average commit message length per contributor "
-        + "(.999th commit length percentile)"
+        args.title
+        or (
+            "average commit message length per contributor "
+            + "(.999th commit length percentile)"
+        )
     )
     ax.set_ylabel("author name, total commit count + " + "mean/min/max length")
     ax.set_xlabel("message character count")
@@ -110,7 +123,8 @@ else:
     df.plot(x="time", y="len", ax=ax)
     ax.set_ylabel("Character count")
     ax.set_title(
-        "Number of characters in the commit message, 99th percentile, rolling 50 average"
+        args.title
+        or "Number of characters in the commit message, 99th percentile, rolling 50 average"
     )
 
 ax.grid(True)

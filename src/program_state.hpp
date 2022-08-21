@@ -12,6 +12,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/describe.hpp>
+#include <boost/mp11.hpp>
 
 #include "common.hpp"
 #include "git_interface.hpp"
@@ -25,6 +26,94 @@ using PTime        = boost::posix_time::ptime;
 using TimeDuration = boost::posix_time::time_duration;
 namespace stime    = std::chrono;
 namespace bd       = boost::describe;
+
+template <class T>
+struct fmt::formatter<
+    T,
+    char,
+    std::enable_if_t<
+        boost::describe::has_describe_bases<T>::value &&
+        boost::describe::has_describe_members<T>::value &&
+        !std::is_union<T>::value>> {
+    constexpr auto parse(format_parse_context& ctx) {
+        auto it = ctx.begin(), end = ctx.end();
+
+        if (it != end && *it != '}') {
+            ctx.error_handler().on_error("invalid format");
+        }
+
+        return it;
+    }
+
+    auto format(T const& t, format_context& ctx) const {
+        using namespace boost::describe;
+
+        using Bd = describe_bases<T, mod_any_access>;
+        using Md = describe_members<T, mod_any_access>;
+
+        auto out = ctx.out();
+
+        *out++ = '{';
+
+        bool first = true;
+
+        boost::mp11::mp_for_each<Bd>([&](auto D) {
+            if (!first) { *out++ = ','; }
+
+            first = false;
+
+            out = fmt::format_to(
+                out, " {}", (typename decltype(D)::type const&)t);
+        });
+
+        boost::mp11::mp_for_each<Md>([&](auto D) {
+            if (!first) { *out++ = ','; }
+
+            first = false;
+
+            out = fmt::format_to(out, " .{}={}", D.name, t.*D.pointer);
+        });
+
+        if (!first) { *out++ = ' '; }
+
+        *out++ = '}';
+
+        return out;
+    }
+};
+
+template <class T>
+struct fmt::formatter<
+    T,
+    char,
+    std::enable_if_t<
+        boost::describe::has_describe_enumerators<T>::value>> {
+  private:
+    using U = std::underlying_type_t<T>;
+
+    fmt::formatter<fmt::string_view, char> sf_;
+    fmt::formatter<U, char>                nf_;
+
+  public:
+    constexpr auto parse(format_parse_context& ctx) {
+        auto i1 = sf_.parse(ctx);
+        auto i2 = nf_.parse(ctx);
+
+        if (i1 != i2) { ctx.error_handler().on_error("invalid format"); }
+
+        return i1;
+    }
+
+    auto format(T const& t, format_context& ctx) const {
+        char const* s = boost::describe::enum_to_string(t, 0);
+
+        if (s) {
+            return sf_.format(s, ctx);
+        } else {
+            return nf_.format(static_cast<U>(t), ctx);
+        }
+    }
+};
 
 enum class Analytics {
     BlameBurndown,  /// Use git blame for commits allowed by the

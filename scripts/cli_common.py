@@ -107,6 +107,12 @@ def add_config_args(parser):
     )
 
 
+def add_title_args(parser, default: str):
+    parser.add_argument(
+        "--title", type=str, dest="title", default=default, help="Resulting plot title"
+    )
+
+
 def read_configs(parser, args):
     if args.config:
         options = []
@@ -115,9 +121,15 @@ def read_configs(parser, args):
                 for line in file.read().split("\n"):
                     line = line.strip()
                     if not (line.startswith("#") or len(line) == 0):
-                        options.append(line)
+                        split = line.split("=")
+                        if 1 < len(split):
+                            options.append(
+                                split[0] + "=" + "=".join(split[1:]).strip('"')
+                            )
+                        else:
+                            options.append(split[0])
 
-        new = sys.argv[1:-1] + options
+        new = sys.argv[1:] + options
         new_args = parser.parse_args(new)
         return new_args
 

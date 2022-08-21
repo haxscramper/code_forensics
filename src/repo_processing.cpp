@@ -581,6 +581,8 @@ Vec<CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     Vec<CommitId> processed{};
     // Walk over every commit in the history
     Vec<FullCommitData> full_commits;
+    // TODO get commit count and tick here instead of `full_commit`
+    // addition.
     while (git::revwalk_next(&oid, state->walker) == 0) {
         // Get commit from the provided oid
         git_commit* commit = git::commit_lookup(state->repo, &oid);
@@ -613,9 +615,12 @@ Vec<CommitId> launch_analysis(git_oid& oid, walker_state* state) {
     std::reverse(full_commits.begin(), full_commits.end());
 
     // Push information about all known commits to the full list
-    for (const auto& [commit, date, _, __] : full_commits) {
+    for (auto bar = ScopedBar(
+             state, full_commits.size(), "found commits", true, 40);
+         const auto& [commit, date, _, __] : full_commits) {
         state->add_full_commit(
             commit, state->config->get_commit_period(date));
+        bar.tick();
     }
 
 
