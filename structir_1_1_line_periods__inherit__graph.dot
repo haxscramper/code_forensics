@@ -1,9 +1,0 @@
-digraph "ir::LinePeriods"
-{
- // LATEX_PDF_SIZE
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  Node1 [label="ir::LinePeriods",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Continious span of lines in code with identical period."];
-  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node2 [label="ir::orm_changed_range",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1orm__changed__range.html",tooltip="ORM wrapper for the file change periods ir::File::changed_ranges."];
-}

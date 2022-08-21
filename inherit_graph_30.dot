@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="is_in_pack\< V, V, T... \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structis__in__pack_3_01_v_00_01_v_00_01_t_8_8_8_01_4.html",tooltip=" "];
+  Node0 [label="is_in_pack\< V \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structis__in__pack_3_01_v_01_4.html",tooltip=" "];
 }

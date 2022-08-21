@@ -106,6 +106,10 @@ Collaboration diagram for walker_state:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad81de230fbe18406483b5007640d5d8b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ad81de230fbe18406483b5007640d5d8b">add_full_commit</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; oid, int period)</td></tr>
 <tr class="separator:ad81de230fbe18406483b5007640d5d8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bf6b3071faecf11fdb0aea85c1a6d8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a7bf6b3071faecf11fdb0aea85c1a6d8f">add_id_mapping</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; oid, ir::CommitId id)</td></tr>
+<tr class="separator:a7bf6b3071faecf11fdb0aea85c1a6d8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2623bc430daef94d1df48e0307e49c3"><td class="memItemLeft" align="right" valign="top">ir::CommitId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ad2623bc430daef94d1df48e0307e49c3">get_id</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; oid)</td></tr>
+<tr class="separator:ad2623bc430daef94d1df48e0307e49c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22e666a8188e9317791d0d3f20f0a1a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a831800a61c1b662adafb727abe4ef552">Opt</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a22e666a8188e9317791d0d3f20f0a1a1">get_period</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; commit) const noexcept</td></tr>
 <tr class="separator:a22e666a8188e9317791d0d3f20f0a1a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a944e7933895be2cc42e4c4c0774be923"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a944e7933895be2cc42e4c4c0774be923">get_period</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; commit, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; line) const noexcept</td></tr>
@@ -125,14 +129,16 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a66a31e5b9d09a62f815f4de9d4de0af6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt; git_oid &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a66a31e5b9d09a62f815f4de9d4de0af6">full_commits</a></td></tr>
 <tr class="memdesc:a66a31e5b9d09a62f815f4de9d4de0af6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ordered list of commits that were considered for the processing run.  <a href="structwalker__state.html#a66a31e5b9d09a62f815f4de9d4de0af6">More...</a><br /></td></tr>
 <tr class="separator:a66a31e5b9d09a62f815f4de9d4de0af6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9824ad10b26625a021ee2a332288c34"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; git_oid, ir::CommitId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ad9824ad10b26625a021ee2a332288c34">commit_ids</a></td></tr>
+<tr class="separator:ad9824ad10b26625a021ee2a332288c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae567fb758b615564846fd0e064f25ba2"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; git_oid, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ae567fb758b615564846fd0e064f25ba2">rev_index</a></td></tr>
 <tr class="separator:ae567fb758b615564846fd0e064f25ba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a5cf7182baaff7b33dabd25db4d08a2"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; git_oid, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a9a5cf7182baaff7b33dabd25db4d08a2">rev_periods</a></td></tr>
 <tr class="memdesc:a9a5cf7182baaff7b33dabd25db4d08a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mapping from the commits to the analysis periods they are in.  <a href="structwalker__state.html#a9a5cf7182baaff7b33dabd25db4d08a2">More...</a><br /></td></tr>
 <tr class="separator:a9a5cf7182baaff7b33dabd25db4d08a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4582d24fdc6f6ae70c0536ac26451bd6"><td class="memItemLeft" align="right" valign="top">std::unordered_set&lt; git_oid &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a4582d24fdc6f6ae70c0536ac26451bd6">sampled_commits</a></td></tr>
-<tr class="memdesc:a4582d24fdc6f6ae70c0536ac26451bd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of commits that were selected for the processing run.  <a href="structwalker__state.html#a4582d24fdc6f6ae70c0536ac26451bd6">More...</a><br /></td></tr>
-<tr class="separator:a4582d24fdc6f6ae70c0536ac26451bd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab561688122ed9ce1aa30f4e4d9708444"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; git_oid, ir::CommitId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ab561688122ed9ce1aa30f4e4d9708444">sampled_commits</a></td></tr>
+<tr class="memdesc:ab561688122ed9ce1aa30f4e4d9708444"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of commits that were selected for the processing run.  <a href="structwalker__state.html#ab561688122ed9ce1aa30f4e4d9708444">More...</a><br /></td></tr>
+<tr class="separator:ab561688122ed9ce1aa30f4e4d9708444"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a161ce5118cda3eab460d27a193637251"><td class="memItemLeft" align="right" valign="top">std::mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a161ce5118cda3eab460d27a193637251">m</a></td></tr>
 <tr class="separator:a161ce5118cda3eab460d27a193637251"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a808b305b6826411c16d21db04ad7c15f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structir_1_1content__manager.html">ir::content_manager</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a808b305b6826411c16d21db04ad7c15f">content</a></td></tr>
@@ -187,6 +193,42 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a7bf6b3071faecf11fdb0aea85c1a6d8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bf6b3071faecf11fdb0aea85c1a6d8f">&#9670;&nbsp;</a></span>add_id_mapping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void walker_state::add_id_mapping </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramname"><em>oid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ir::CommitId&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ac0f44c43ce52bc9bdd3ddcc2991f2c26"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac0f44c43ce52bc9bdd3ddcc2991f2c26">&#9670;&nbsp;</a></span>consider_changed()</h2>
 
@@ -225,6 +267,32 @@ Public Attributes</h2></td></tr>
 <li>line_changed_id).</li>
 </ul>
 <p>If line comes from an unknow commit (different branch for example) it is considered changed. </p>
+
+</div>
+</div>
+<a id="ad2623bc430daef94d1df48e0307e49c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2623bc430daef94d1df48e0307e49c3">&#9670;&nbsp;</a></span>get_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ir::CommitId walker_state::get_id </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramname"><em>oid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -292,6 +360,20 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="ad9824ad10b26625a021ee2a332288c34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9824ad10b26625a021ee2a332288c34">&#9670;&nbsp;</a></span>commit_ids</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;git_oid, ir::CommitId&gt; walker_state::commit_ids</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a7d4de3c70d5cfd425d8c4aa39ad275e1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7d4de3c70d5cfd425d8c4aa39ad275e1">&#9670;&nbsp;</a></span>config</h2>
 
@@ -411,14 +493,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a4582d24fdc6f6ae70c0536ac26451bd6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4582d24fdc6f6ae70c0536ac26451bd6">&#9670;&nbsp;</a></span>sampled_commits</h2>
+<a id="ab561688122ed9ce1aa30f4e4d9708444"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab561688122ed9ce1aa30f4e4d9708444">&#9670;&nbsp;</a></span>sampled_commits</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_set&lt;git_oid&gt; walker_state::sampled_commits</td>
+          <td class="memname">std::unordered_map&lt;git_oid, ir::CommitId&gt; walker_state::sampled_commits</td>
         </tr>
       </table>
 </div><div class="memdoc">

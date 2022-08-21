@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['opt_2124',['Opt',['../common_8hpp.html#a831800a61c1b662adafb727abe4ef552',1,'common.hpp']]]
+  ['mutlog_2169',['MutLog',['../group__all__logging.html#ga297a1ab28363b5dfb3efc9380bfb6384',1,'logging.hpp']]]
 ];

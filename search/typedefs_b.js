@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['u16_2137',['u16',['../common_8hpp.html#a917e58b0692c2df778a27350534cbfe7',1,'common.hpp']]],
-  ['u32_2138',['u32',['../common_8hpp.html#a65cf28726f89e62ccf2f1354bc2716df',1,'common.hpp']]],
-  ['u64_2139',['u64',['../common_8hpp.html#a66e1d499241ccae9a18a20a1f4f0590d',1,'common.hpp']]],
-  ['u8_2140',['u8',['../common_8hpp.html#a254d32383658e016368673396e7afc1b',1,'common.hpp']]],
-  ['uptr_2141',['UPtr',['../common_8hpp.html#aa6d98c828559a00e7b99f2f84cff0c32',1,'common.hpp']]]
+  ['timeduration_2180',['TimeDuration',['../program__state_8hpp.html#ad0075f5accd6869b9ac32a5d13249c10',1,'program_state.hpp']]],
+  ['timepoint_2181',['TimePoint',['../program__state_8hpp.html#ae8634546c22db77e8c2eada64892bafc',1,'program_state.hpp']]],
+  ['type_2182',['type',['../structis__base__of__template.html#ae1e7f49a623e5ac8622e4825fe6b650b',1,'is_base_of_template::type()'],['../structdod_1_1value__type.html#ae632b2ed8ba76e9ecae65b5d5adcaca5',1,'dod::value_type::type()'],['../structdod_1_1id__type.html#a6c7ad9ecd19db6c16023e014c4b2b57b',1,'dod::id_type::type()'],['../structdod_1_1id__type_3_01_str_01_4.html#a768bd5c2359fa8eb4834c90bf53aebe3',1,'dod::id_type&lt; Str &gt;::type()']]]
 ];

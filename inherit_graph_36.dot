@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="std::hash\< git_oid \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structstd_1_1hash_3_01git__oid_01_4.html",tooltip="Hash for git OID."];
+  Node0 [label="sqlite_orm::row_extractor\< T \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsqlite__orm_1_1row__extractor_3_01_t_01_4.html",tooltip=" "];
 }

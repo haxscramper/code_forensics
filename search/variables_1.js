@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['begin_2037',['begin',['../structir_1_1_line_periods.html#a37e9cf88ca56033385c16fd426907be8',1,'ir::LinePeriods']]]
+  ['bar_2071',['bar',['../struct_scoped_bar.html#a5cfa57015011e5a941ee70a348585173',1,'ScopedBar']]],
+  ['binary_5fcb_2072',['binary_cb',['../struct_diff_foreach_params.html#a23e5a42bd2cd68b5ad54f8500e4b215b',1,'DiffForeachParams']]]
 ];

@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="dod::InternStore\< Id,\l Val \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structdod_1_1_intern_store.html",tooltip="Stores values with with automatic deduplication."];
+  Node0 [label="dod::id_type\< T \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structdod_1_1id__type.html",tooltip="Type trait tructure for inferring id type of the stored type."];
 }

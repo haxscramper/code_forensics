@@ -4,17 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node37 [label="formatter",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
-  Node37 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node0 [label="fmt::formatter\< Date \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structfmt_1_1formatter_3_01_date_01_4.html",tooltip=" "];
-  Node37 -> Node39 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node39 [label="fmt::formatter\< git\l_oid \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structfmt_1_1formatter_3_01git__oid_01_4.html",tooltip=" "];
-  Node37 -> Node40 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node40 [label="fmt::formatter\< Id \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structfmt_1_1formatter_3_01_id_01_4.html",tooltip=" "];
-  Node37 -> Node41 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node41 [label="fmt::formatter\< Opt\l\< T \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structfmt_1_1formatter_3_01_opt_3_01_t_01_4_01_4.html",tooltip=" "];
-  Node37 -> Node42 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node42 [label="fmt::formatter\< Path \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structfmt_1_1formatter_3_01_path_01_4.html",tooltip=" "];
-  Node37 -> Node43 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node43 [label="fmt::formatter\< PTime \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structfmt_1_1formatter_3_01_p_time_01_4.html",tooltip=" "];
+  Node0 [label="finally",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structfinally.html",tooltip=" "];
 }

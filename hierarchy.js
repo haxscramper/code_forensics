@@ -9,6 +9,7 @@ var hierarchy =
       [ "ir::orm_commit", "structir_1_1orm__commit.html", null ]
     ] ],
     [ "ir::content_manager", "structir_1_1content__manager.html", null ],
+    [ "DiffForeachParams", "struct_diff_foreach_params.html", null ],
     [ "ir::Directory", "structir_1_1_directory.html", [
       [ "ir::orm_dir", "structir_1_1orm__dir.html", null ]
     ] ],
@@ -28,6 +29,7 @@ var hierarchy =
       [ "fmt::formatter< Path >", "structfmt_1_1formatter_3_01_path_01_4.html", null ],
       [ "fmt::formatter< PTime >", "structfmt_1_1formatter_3_01_p_time_01_4.html", null ]
     ] ],
+    [ "FullCommitData", "struct_full_commit_data.html", null ],
     [ "generator< T >", "structgenerator.html", null ],
     [ "std::hash< git_oid >", "structstd_1_1hash_3_01git__oid_01_4.html", null ],
     [ "std::hash< Id >", "structstd_1_1hash_3_01_id_01_4.html", null ],
@@ -47,15 +49,14 @@ var hierarchy =
     [ "ir::LineData", "structir_1_1_line_data.html", [
       [ "ir::orm_line", "structir_1_1orm__line.html", null ]
     ] ],
-    [ "ir::LinePeriods", "structir_1_1_line_periods.html", [
-      [ "ir::orm_changed_range", "structir_1_1orm__changed__range.html", null ]
-    ] ],
     [ "dod::MultiStore< Args >", "structdod_1_1_multi_store.html", null ],
     [ "dod::MultiStore< dod::InternStore< AuthorId, ir::Author >, dod::InternStore< LineId, ir::LineData >, dod::Store< FileId, ir::File >, dod::Store< CommitId, ir::Commit >, dod::Store< DirectoryId, ir::Directory >, dod::InternStore< StringId, ir::String > >", "structdod_1_1_multi_store.html", null ],
+    [ "ir::orm_edited_files", "structir_1_1orm__edited__files.html", null ],
     [ "ir::orm_lines_table", "structir_1_1orm__lines__table.html", null ],
     [ "generator< T >::promise_type", "structgenerator_1_1promise__type.html", null ],
     [ "PyForensics", "class_py_forensics.html", null ],
     [ "sqlite_orm::row_extractor< T >", "structsqlite__orm_1_1row__extractor_3_01_t_01_4.html", null ],
+    [ "ScopedBar", "struct_scoped_bar.html", null ],
     [ "sqlite_orm::statement_binder< T >", "structsqlite__orm_1_1statement__binder_3_01_t_01_4.html", null ],
     [ "dod::Store< Id, T >", "structdod_1_1_store.html", null ],
     [ "dod::Store< Id, Val >", "structdod_1_1_store.html", null ],

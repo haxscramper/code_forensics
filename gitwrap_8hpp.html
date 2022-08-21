@@ -431,8 +431,8 @@ Functions</h2></td></tr>
 <tr class="separator:af63273c03bedb15cc59f00a1d13d1448"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e8a522ac46d96b82d239672140066bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gitwrap_8hpp.html#a8e8a522ac46d96b82d239672140066bf">diff_free</a> (git_diff *diff)</td></tr>
 <tr class="separator:a8e8a522ac46d96b82d239672140066bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abb6038f9842dd57d6e41d2cfb10ba705"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gitwrap_8hpp.html#abb6038f9842dd57d6e41d2cfb10ba705">diff_tree_to_tree</a> (git_diff **diff, git_repository *repo, git_tree *old_tree, git_tree *new_tree, const git_diff_options *opts)</td></tr>
-<tr class="separator:abb6038f9842dd57d6e41d2cfb10ba705"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ecd22aa830cd331b2af3b2bd64f875b"><td class="memItemLeft" align="right" valign="top">git_diff *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gitwrap_8hpp.html#a1ecd22aa830cd331b2af3b2bd64f875b">diff_tree_to_tree</a> (git_repository *repo, git_tree *old_tree, git_tree *new_tree, const git_diff_options *opts)</td></tr>
+<tr class="separator:a1ecd22aa830cd331b2af3b2bd64f875b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46fecce09fe565bc751766cabd297a5f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gitwrap_8hpp.html#a46fecce09fe565bc751766cabd297a5f">diff_tree_to_index</a> (git_diff **diff, git_repository *repo, git_tree *old_tree, git_index *index, const git_diff_options *opts)</td></tr>
 <tr class="separator:a46fecce09fe565bc751766cabd297a5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abdbe5cbfc405ae076bed7a75da7f5e2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gitwrap_8hpp.html#abdbe5cbfc405ae076bed7a75da7f5e2c">diff_index_to_workdir</a> (git_diff **diff, git_repository *repo, git_index *index, const git_diff_options *opts)</td></tr>
@@ -8752,8 +8752,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="abb6038f9842dd57d6e41d2cfb10ba705"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abb6038f9842dd57d6e41d2cfb10ba705">&#9670;&nbsp;</a></span>diff_tree_to_tree()</h2>
+<a id="a1ecd22aa830cd331b2af3b2bd64f875b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ecd22aa830cd331b2af3b2bd64f875b">&#9670;&nbsp;</a></span>diff_tree_to_tree()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -8762,14 +8762,8 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void diff_tree_to_tree </td>
+          <td class="memname">git_diff* diff_tree_to_tree </td>
           <td>(</td>
-          <td class="paramtype">git_diff **&#160;</td>
-          <td class="paramname"><em>diff</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">git_repository *&#160;</td>
           <td class="paramname"><em>repo</em>, </td>
         </tr>

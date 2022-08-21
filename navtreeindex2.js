@@ -1,5 +1,7 @@
 var NAVTREEINDEX2 =
 {
+"gitwrap_8hpp.html#a68d2ab06bfe1197910df572b4279c341":[3,0,0,8,571],
+"gitwrap_8hpp.html#a694b18a61ea617a37b5edd28fa456eab":[3,0,0,8,311],
 "gitwrap_8hpp.html#a69f3d5e2006bfb21932074c0324d42c8":[3,0,0,8,206],
 "gitwrap_8hpp.html#a6a05a0007f050226699ca799778d06bb":[3,0,0,8,631],
 "gitwrap_8hpp.html#a6a218f409eef54f9e9ae2790bd23fc32":[3,0,0,8,744],
@@ -229,7 +231,6 @@ var NAVTREEINDEX2 =
 "gitwrap_8hpp.html#abaa724e6b09fca2a53330db57971eb47":[3,0,0,8,208],
 "gitwrap_8hpp.html#abab1449e38c8b4a9a03adb3d2d151125":[3,0,0,8,431],
 "gitwrap_8hpp.html#abae9e6df5516cee6955284f7d090ff22":[3,0,0,8,707],
-"gitwrap_8hpp.html#abb6038f9842dd57d6e41d2cfb10ba705":[3,0,0,8,191],
 "gitwrap_8hpp.html#abb7b8fc5483b78072ed31a8fae318818":[3,0,0,8,337],
 "gitwrap_8hpp.html#abb8a21edadeb108e627427712e24b9f6":[3,0,0,8,730],
 "gitwrap_8hpp.html#abb98eebfe4aa96cacdb75ad1a2e19e33":[3,0,0,8,536],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "gitwrap_8hpp.html#abf4fe9fccdf3c5e12e8c91bd14c9b721":[3,0,0,8,510],
 "gitwrap_8hpp.html#abf7ded0c6df0b5556253d5ca14b0cfb1":[3,0,0,8,591],
 "gitwrap_8hpp.html#ac09bbb85ac91909169227c070bddd917":[3,0,0,8,325],
-"gitwrap_8hpp.html#ac0b59ab941abb7bf8652a5f69883452a":[3,0,0,8,612],
-"gitwrap_8hpp.html#ac0edeb017800f1491c80455cfdf98e10":[3,0,0,8,250]
+"gitwrap_8hpp.html#ac0b59ab941abb7bf8652a5f69883452a":[3,0,0,8,612]
 };

@@ -1,7 +1,7 @@
 var logging_8hpp =
 [
+    [ "ScopedBar", "struct_scoped_bar.html", "struct_scoped_bar" ],
     [ "CUSTOM_LOG", "group__all__logging.html#gac2117befd3cfea2b12d3d52db57151c1", null ],
-    [ "INIT_PROGRESS_BAR", "logging_8hpp.html#a539fb681705d619582ddaf7d08cfddf2", null ],
     [ "LOG_D", "group__all__logging.html#ga8169fcb6a173339da8bbd78637da4cd7", null ],
     [ "LOG_E", "group__all__logging.html#ga64e5648306b57a0c8079d03fd7acf948", null ],
     [ "LOG_F", "group__all__logging.html#ga6bddd1e228544bd96d6f8feb0b37a7df", null ],
@@ -21,8 +21,8 @@ var logging_8hpp =
     [ "get_logger", "group__all__logging.html#ga5f2bd8e72733c814acea57943bc5d198", null ],
     [ "get_logger", "group__all__logging.html#gae41f8f82869f05b57f3af212463aff7b", null ],
     [ "init_logger_properties", "logging_8hpp.html#a325e7588a67409e6676c83770d23b3d4", null ],
-    [ "init_progress", "logging_8hpp.html#aad839d8c0dbb8fe3a63a9ef098f1a06a", null ],
+    [ "init_progress", "logging_8hpp.html#a1a9f24f242157b98741f53bf6350f901", null ],
     [ "out_formatter", "logging_8hpp.html#a25cf6c1872144edab2d73802b1969245", null ],
     [ "set_get_attrib", "group__all__logging.html#ga349a35edd1f9e7a71ce6c8a0738886cb", null ],
-    [ "tick_next", "logging_8hpp.html#ad5686e7ffec968bf7cade2af20aa9b79", null ]
+    [ "tick_next", "logging_8hpp.html#ace28ad681438536cf06e7996ef3427f5", null ]
 ];

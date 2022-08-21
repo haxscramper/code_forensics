@@ -191,7 +191,7 @@ var gitwrap_8hpp =
     [ "diff_status_char", "gitwrap_8hpp.html#a1b412023ac18629a75709563530e41b6", null ],
     [ "diff_to_buf", "gitwrap_8hpp.html#aeef912cbec2ef1c17495ca1f335700f9", null ],
     [ "diff_tree_to_index", "gitwrap_8hpp.html#a46fecce09fe565bc751766cabd297a5f", null ],
-    [ "diff_tree_to_tree", "gitwrap_8hpp.html#abb6038f9842dd57d6e41d2cfb10ba705", null ],
+    [ "diff_tree_to_tree", "gitwrap_8hpp.html#a1ecd22aa830cd331b2af3b2bd64f875b", null ],
     [ "diff_tree_to_workdir", "gitwrap_8hpp.html#a64970638d936b135119803de0beab68f", null ],
     [ "diff_tree_to_workdir_with_index", "gitwrap_8hpp.html#a96cfe30e0318ae1a3e91a80d1aaefbd7", null ],
     [ "email_create_from_commit", "gitwrap_8hpp.html#ae5991543809b25c17cfce71e908c9e0c", null ],

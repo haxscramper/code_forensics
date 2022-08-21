@@ -4,5 +4,7 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="is_in_pack\< T, Pack \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structis__in__pack.html",tooltip=" "];
+  Node0 [label="ir::String",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1_string.html",tooltip="Table of interned stirngs for different purposes."];
+  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="ir::orm_string",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1orm__string.html",tooltip="ORM wrapper for the string data."];
 }

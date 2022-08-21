@@ -98,10 +98,10 @@ Include dependency graph for logging.cpp:</div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ada10ea9fff788b25c56a0c6cd3464c77"><td class="memItemLeft" align="right" valign="top">BlockProgressBar&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8cpp.html#ada10ea9fff788b25c56a0c6cd3464c77">init_progress</a> (int max)</td></tr>
-<tr class="separator:ada10ea9fff788b25c56a0c6cd3464c77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48df0f513f848fc44b25a2411a558a1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8cpp.html#a48df0f513f848fc44b25a2411a558a1e">tick_next</a> (BlockProgressBar &amp;bar, int &amp;count, int max, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; name)</td></tr>
-<tr class="separator:a48df0f513f848fc44b25a2411a558a1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e1350aa41b9f2cbeaaf9a59456e565e"><td class="memItemLeft" align="right" valign="top">BlockProgressBar&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8cpp.html#a3e1350aa41b9f2cbeaaf9a59456e565e">init_progress</a> (int max, int width)</td></tr>
+<tr class="separator:a3e1350aa41b9f2cbeaaf9a59456e565e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a382ba46b9990e7506b6c64c04c597656"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8cpp.html#a382ba46b9990e7506b6c64c04c597656">tick_next</a> (BlockProgressBar &amp;bar, int &amp;count, int max, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; name, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; extra)</td></tr>
+<tr class="separator:a382ba46b9990e7506b6c64c04c597656"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa19fa41017122b3de372db939ce6ff3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8cpp.html#aa19fa41017122b3de372db939ce6ff3f">log_formatter</a> (const boost::log::record_view &amp;rec, boost::log::formatting_ostream &amp;strm)</td></tr>
 <tr class="separator:aa19fa41017122b3de372db939ce6ff3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5088a2a04b1f0e3adf5d61cf29f82378"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a13aad120833e878b232c905e7d92834e">Pair</a>&lt; char, fmt::v9::text_style &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8cpp.html#a5088a2a04b1f0e3adf5d61cf29f82378">format_style</a> (<a class="el" href="namespaceboost_1_1log.html#aa0f34afeca93658a00499f5f7ca6dbda">boost::log::severity</a> level)</td></tr>
@@ -186,8 +186,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ada10ea9fff788b25c56a0c6cd3464c77"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada10ea9fff788b25c56a0c6cd3464c77">&#9670;&nbsp;</a></span>init_progress()</h2>
+<a id="a3e1350aa41b9f2cbeaaf9a59456e565e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e1350aa41b9f2cbeaaf9a59456e565e">&#9670;&nbsp;</a></span>init_progress()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -196,8 +196,18 @@ Functions</h2></td></tr>
           <td class="memname">BlockProgressBar init_progress </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>max</em></td><td>)</td>
+          <td class="paramname"><em>max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -260,8 +270,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a48df0f513f848fc44b25a2411a558a1e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a48df0f513f848fc44b25a2411a558a1e">&#9670;&nbsp;</a></span>tick_next()</h2>
+<a id="a382ba46b9990e7506b6c64c04c597656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a382ba46b9990e7506b6c64c04c597656">&#9670;&nbsp;</a></span>tick_next()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -288,7 +298,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
-          <td class="paramname"><em>name</em>&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
+          <td class="paramname"><em>extra</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

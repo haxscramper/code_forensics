@@ -13,7 +13,7 @@ var git__ir_8hpp =
     [ "orm_author", "structir_1_1orm__author.html", "structir_1_1orm__author" ],
     [ "orm_line", "structir_1_1orm__line.html", "structir_1_1orm__line" ],
     [ "orm_lines_table", "structir_1_1orm__lines__table.html", "structir_1_1orm__lines__table" ],
-    [ "orm_changed_range", "structir_1_1orm__changed__range.html", "structir_1_1orm__changed__range" ],
+    [ "orm_edited_files", "structir_1_1orm__edited__files.html", "structir_1_1orm__edited__files" ],
     [ "MAKE_HASHABLE", "git__ir_8hpp.html#a3526fcbd9e7e5173272bd2ce1b5f6801", null ],
     [ "DbConnection", "git__ir_8hpp.html#a5204640d279726dca41c205a966ab105", null ],
     [ "create_db", "git__ir_8hpp.html#a72e86ebad27c864af709bdc06de3df5e", null ],

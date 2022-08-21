@@ -84,6 +84,7 @@ $(document).ready(function(){initNavTree('logging_8hpp.html',''); initResizable(
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
@@ -94,6 +95,7 @@ $(document).ready(function(){initNavTree('logging_8hpp.html',''); initResizable(
 <div class="contents">
 <div class="textblock"><code>#include &lt;unordered_set&gt;</code><br />
 <code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;chrono&gt;</code><br />
 <code>#include &lt;boost/log/trivial.hpp&gt;</code><br />
 <code>#include &lt;boost/log/common.hpp&gt;</code><br />
 <code>#include &lt;boost/log/expressions.hpp&gt;</code><br />
@@ -121,6 +123,11 @@ This graph shows which files directly or indirectly include this file:</div>
 </div>
 <p><a href="logging_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_scoped_bar.html">ScopedBar</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespaceboost"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceboost.html">boost</a></td></tr>
@@ -130,8 +137,6 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a539fb681705d619582ddaf7d08cfddf2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#a539fb681705d619582ddaf7d08cfddf2">INIT_PROGRESS_BAR</a>(name,  counter,  max)</td></tr>
-<tr class="separator:a539fb681705d619582ddaf7d08cfddf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac2117befd3cfea2b12d3d52db57151c1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__all__logging.html#gac2117befd3cfea2b12d3d52db57151c1">CUSTOM_LOG</a>(logger,  sev)</td></tr>
 <tr class="separator:gac2117befd3cfea2b12d3d52db57151c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafce7d108578bf9b5ed9144dce848a966"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__all__logging.html#gafce7d108578bf9b5ed9144dce848a966">LOG_T</a>(state)&#160;&#160;&#160;<a class="el" href="group__all__logging.html#gac2117befd3cfea2b12d3d52db57151c1">CUSTOM_LOG</a>((<a class="el" href="group__all__logging.html#gaf0bdd0fad8a3e784d27ecf5743c238ef">get_logger</a>(state)), logging::severity::trace)</td></tr>
@@ -165,10 +170,10 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aad839d8c0dbb8fe3a63a9ef098f1a06a"><td class="memItemLeft" align="right" valign="top">indicators::BlockProgressBar&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#aad839d8c0dbb8fe3a63a9ef098f1a06a">init_progress</a> (int max)</td></tr>
-<tr class="separator:aad839d8c0dbb8fe3a63a9ef098f1a06a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5686e7ffec968bf7cade2af20aa9b79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#ad5686e7ffec968bf7cade2af20aa9b79">tick_next</a> (indicators::BlockProgressBar &amp;bar, int &amp;count, int max, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; name)</td></tr>
-<tr class="separator:ad5686e7ffec968bf7cade2af20aa9b79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a9f24f242157b98741f53bf6350f901"><td class="memItemLeft" align="right" valign="top">indicators::BlockProgressBar&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#a1a9f24f242157b98741f53bf6350f901">init_progress</a> (int max, int width=60)</td></tr>
+<tr class="separator:a1a9f24f242157b98741f53bf6350f901"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace28ad681438536cf06e7996ef3427f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#ace28ad681438536cf06e7996ef3427f5">tick_next</a> (indicators::BlockProgressBar &amp;bar, int &amp;count, int max, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; name, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; extra=&quot;&quot;)</td></tr>
+<tr class="separator:ace28ad681438536cf06e7996ef3427f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga349a35edd1f9e7a71ce6c8a0738886cb"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:ga349a35edd1f9e7a71ce6c8a0738886cb"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__all__logging.html#ga349a35edd1f9e7a71ce6c8a0738886cb">set_get_attrib</a> (const char *name, ValueType value) -&gt; ValueType</td></tr>
 <tr class="separator:ga349a35edd1f9e7a71ce6c8a0738886cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -189,44 +194,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a325e7588a67409e6676c83770d23b3d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#a325e7588a67409e6676c83770d23b3d4">init_logger_properties</a> ()</td></tr>
 <tr class="separator:a325e7588a67409e6676c83770d23b3d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a539fb681705d619582ddaf7d08cfddf2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a539fb681705d619582ddaf7d08cfddf2">&#9670;&nbsp;</a></span>INIT_PROGRESS_BAR</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define INIT_PROGRESS_BAR</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">name, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">counter, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">max&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordtype">int</span>  counter = 0;                                                     \</div>
-<div class="line">    auto name    = <a class="code" href="logging_8hpp.html#aad839d8c0dbb8fe3a63a9ef098f1a06a">init_progress</a>(max);                                    \</div>
-<div class="line">    logging::core::get()-&gt;flush();</div>
-</div><!-- fragment -->
-</div>
-</div>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a7d023a29409f585de94e674328d0f90c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7d023a29409f585de94e674328d0f90c">&#9670;&nbsp;</a></span>backend_t</h2>
@@ -355,8 +322,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aad839d8c0dbb8fe3a63a9ef098f1a06a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad839d8c0dbb8fe3a63a9ef098f1a06a">&#9670;&nbsp;</a></span>init_progress()</h2>
+<a id="a1a9f24f242157b98741f53bf6350f901"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a9f24f242157b98741f53bf6350f901">&#9670;&nbsp;</a></span>init_progress()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -365,8 +332,18 @@ Functions</h2></td></tr>
           <td class="memname">indicators::BlockProgressBar init_progress </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>max</em></td><td>)</td>
+          <td class="paramname"><em>max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em> = <code>60</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -401,8 +378,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ad5686e7ffec968bf7cade2af20aa9b79"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad5686e7ffec968bf7cade2af20aa9b79">&#9670;&nbsp;</a></span>tick_next()</h2>
+<a id="ace28ad681438536cf06e7996ef3427f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace28ad681438536cf06e7996ef3427f5">&#9670;&nbsp;</a></span>tick_next()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -429,7 +406,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
-          <td class="paramname"><em>name</em>&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
+          <td class="paramname"><em>extra</em> = <code>&quot;&quot;</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -443,7 +426,6 @@ Functions</h2></td></tr>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="alogging_8hpp_html_aad839d8c0dbb8fe3a63a9ef098f1a06a"><div class="ttname"><a href="logging_8hpp.html#aad839d8c0dbb8fe3a63a9ef098f1a06a">init_progress</a></div><div class="ttdeci">indicators::BlockProgressBar init_progress(int max)</div><div class="ttdef"><b>Definition:</b> logging.cpp:5</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

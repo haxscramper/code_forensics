@@ -6,10 +6,10 @@ var indexSectionsWithContent =
   3: "cdglpr",
   4: "abcdefghilmnoprstuvwy~",
   5: "abcdefghilmnoprstuvw",
-  6: "bcdfilmopstuv",
+  6: "bcdfhilmopstuv",
   7: "t",
   8: "ads",
-  9: "_dgilm",
+  9: "_dglm",
   10: "lm"
 };
 

@@ -126,9 +126,13 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:abb723d3db6c231686861cf784fdea821"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1_commit.html#abb723d3db6c231686861cf784fdea821">message</a></td></tr>
 <tr class="memdesc:abb723d3db6c231686861cf784fdea821"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of the period that commit was attributed to.  <a href="structir_1_1_commit.html#abb723d3db6c231686861cf784fdea821">More...</a><br /></td></tr>
 <tr class="separator:abb723d3db6c231686861cf784fdea821"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf9cefb7cedbc2645168f2d6c023c6f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt; FileId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1_commit.html#adf9cefb7cedbc2645168f2d6c023c6f7">files</a></td></tr>
-<tr class="memdesc:adf9cefb7cedbc2645168f2d6c023c6f7"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structir_1_1_commit.html" title="single commit by author, taken at some point in time">Commit</a> message.  <a href="structir_1_1_commit.html#adf9cefb7cedbc2645168f2d6c023c6f7">More...</a><br /></td></tr>
-<tr class="separator:adf9cefb7cedbc2645168f2d6c023c6f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8da5fefde9b327a77a85019ecdcb3b5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1_commit.html#ac8da5fefde9b327a77a85019ecdcb3b5">added_lines</a></td></tr>
+<tr class="memdesc:ac8da5fefde9b327a77a85019ecdcb3b5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structir_1_1_commit.html" title="single commit by author, taken at some point in time">Commit</a> message.  <a href="structir_1_1_commit.html#ac8da5fefde9b327a77a85019ecdcb3b5">More...</a><br /></td></tr>
+<tr class="separator:ac8da5fefde9b327a77a85019ecdcb3b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a985a9baaa6acc7d290436ba1aa57371a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1_commit.html#a985a9baaa6acc7d290436ba1aa57371a">removed_lines</a></td></tr>
+<tr class="separator:a985a9baaa6acc7d290436ba1aa57371a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93d9fd866a4d500a9ed3b0e5e6d39895"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt; <a class="el" href="common_8hpp.html#a13aad120833e878b232c905e7d92834e">Pair</a>&lt; ir::StringId, <a class="el" href="common_8hpp.html#a831800a61c1b662adafb727abe4ef552">Opt</a>&lt; ir::DirectoryId &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1_commit.html#a93d9fd866a4d500a9ed3b0e5e6d39895">changed_files</a></td></tr>
+<tr class="separator:a93d9fd866a4d500a9ed3b0e5e6d39895"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>single commit by author, taken at some point in time </p>
@@ -148,6 +152,22 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="ac8da5fefde9b327a77a85019ecdcb3b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8da5fefde9b327a77a85019ecdcb3b5">&#9670;&nbsp;</a></span>added_lines</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ir::Commit::added_lines</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="structir_1_1_commit.html" title="single commit by author, taken at some point in time">Commit</a> message. </p>
+
+</div>
+</div>
 <a id="a86d074b65d1ed0ffa814c462383e5d75"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a86d074b65d1ed0ffa814c462383e5d75">&#9670;&nbsp;</a></span>author</h2>
 
@@ -162,19 +182,17 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="adf9cefb7cedbc2645168f2d6c023c6f7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adf9cefb7cedbc2645168f2d6c023c6f7">&#9670;&nbsp;</a></span>files</h2>
+<a id="a93d9fd866a4d500a9ed3b0e5e6d39895"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93d9fd866a4d500a9ed3b0e5e6d39895">&#9670;&nbsp;</a></span>changed_files</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt;FileId&gt; ir::Commit::files</td>
+          <td class="memname"><a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt;<a class="el" href="common_8hpp.html#a13aad120833e878b232c905e7d92834e">Pair</a>&lt;ir::StringId, <a class="el" href="common_8hpp.html#a831800a61c1b662adafb727abe4ef552">Opt</a>&lt;ir::DirectoryId&gt; &gt; &gt; ir::Commit::changed_files</td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p><a class="el" href="structir_1_1_commit.html" title="single commit by author, taken at some point in time">Commit</a> message. </p>
 
 </div>
 </div>
@@ -223,6 +241,20 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>git hash of the commit </p>
+
+</div>
+</div>
+<a id="a985a9baaa6acc7d290436ba1aa57371a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a985a9baaa6acc7d290436ba1aa57371a">&#9670;&nbsp;</a></span>removed_lines</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ir::Commit::removed_lines</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
