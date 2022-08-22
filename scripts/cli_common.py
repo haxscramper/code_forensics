@@ -49,10 +49,14 @@ def align_yaxis(axes):
         ax.set_ylim(new_lims[i])
 
 
-def init_parser():
+def init_parser(with_common=True):
     parser = argparse.ArgumentParser(description="Process some integers.")
     parser.add_argument("database", type=str, help="Input database file")
     parser.add_argument("outfile", type=str, help="Output plot image")
+    if with_common:
+        add_rename_args(parser)
+        add_ignore_args(parser)
+        add_config_args(parser)
 
     return parser
 

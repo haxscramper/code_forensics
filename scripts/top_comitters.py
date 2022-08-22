@@ -7,9 +7,6 @@ import matplotlib.pyplot as plt
 from cli_common import *
 
 parser = init_parser()
-add_rename_args(parser)
-add_ignore_args(parser)
-add_config_args(parser)
 add_title_args(parser, "Top comitter distribution")
 
 args = parse_args_with_config(parser)

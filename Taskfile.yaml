@@ -7,6 +7,7 @@ vars:
   BRANCH: devel
   DB_FILE: /tmp/db.sqlite
   PNG_FILE: /tmp/db.png
+  SCRIPT_OPTS: /tmp/db.sqlite /tmp/db.png --config=scripts/config.cfg
   BIN: ./build/bin/code_forensics
   ROOT: |
     {{env "PWD"}}
@@ -54,33 +55,25 @@ tasks:
     deps: [ensure_test_db]
     summary: "Build top commiter activity ridgeline"
     cmds:
-      - >
-        ./scripts/author_ridgeline.py
-        {{.DB_FILE}}
-        {{.PNG_FILE}}
-        --rename="Andreas Rumpf=Araq"
-        --rename="Dominik Picheta=dom96"
-        --rename="Leorize=alaviss"
-        --ignore="bors[bot]"
+      - ./scripts/author_ridgeline.py {{.SCRIPT_OPTS}}
 
   authorship:
     deps: [ensure_test_db]
     summary: "Burndown chart for the code ownership"
     cmds:
-      - >
-        ./scripts/code_authorship.py
-        {{.DB_FILE}}
-        {{.PNG_FILE}}
+      - ./scripts/code_authorship.py {{.SCRIPT_OPTS}}
 
   top_comitter:
     deps: [ensure_test_db]
     summary: "Generate top comitters for the code"
     cmds:
-      - >
-        ./scripts/top_comitters.py
-        {{.DB_FILE}}
-        {{.PNG_FILE}}
-        --config=scripts/config.cfg
+      - ./scripts/top_comitters.py {{.SCRIPT_OPTS}}
+
+  line_category:
+    deps: [ensure_test_db]
+    summary: "Line category breakdown"
+    cmds:
+      - ./scripts/line_category.py {{.SCRIPT_OPTS}}
 
   compare:
     cmds:
@@ -114,14 +107,15 @@ tasks:
     cmds:
       - "{{.BIN}} --help || gdb_cmd {{.BIN}} --help"
       - "{{.BIN}} {{.OPTS}} || {{.GDB_CMD}} {{.BIN}} {{.OPTS}}"
+      - cp {{.DB_FILE}} /tmp/temp_db.sqlite
 
     vars:
       OPTS: /tmp/{{.TARGET}}
         --branch={{.BRANCH}}
+        --outfile={{.DB_FILE}}
         --filter-script=scripts/code_filter.py
         --filter-args=--per-year={{.PER_YEAR}}
         --filter-args=--target={{.TARGET}}
-        --analytics=Commits
 
   build_git_wrapper:
     cmd: clang++ generate_git_wrapper/genwrapper.cpp
