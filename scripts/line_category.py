@@ -19,7 +19,7 @@ cur.execute(open(Path(__file__).parent / "line_category.sql").read())
 
 
 def content_category(content: str) -> int:
-    if "#" in content:
+    if "##" in content:
         return 1
 
     else:
@@ -33,9 +33,8 @@ for (id, text) in cur.execute("select id, text from strings;"):
 
 df = pd.read_sql_query(
     """
-SELECT cfl.commit_id,
+SELECT cfl.commit_time,
        cfl.file_path,
-       cfl.line_id,
        line.content
   FROM commit_file_lines AS cfl
  INNER JOIN LINE
@@ -43,10 +42,48 @@ SELECT cfl.commit_id,
 """,
     con,
 )
+
+time = df["commit_time"].max()
+
+df = df[df["commit_time"] == time]
 df["category"] = df["content"].apply(lambda content: content_map[content])
-print(df)
-gb = df.groupby(["commit_id", "file_path", "category"])
 
-df = gb.size().to_frame("lines")
+df = (
+    df.groupby(["file_path"])
+    .agg(
+        comment=("category", lambda x: x.loc[x == 1].count()),
+        code=("category", lambda x: x.loc[x == 0].count()),
+    )
+    .reset_index()
+)
+
+df["total"] = df["code"] + df["comment"]
+df = df.sort_values("total", ascending=False)
+print(df)
+df.to_csv("/tmp/saved.csv")
 
 print(df)
+
+fig, ax = plt.subplots(figsize=(16, 34))
+ax.invert_yaxis()
+df["name"] = df.apply(lambda row: f"{row['file_path']} ({row['total']})", axis=1)
+ax.barh(df["name"], df["comment"], color="green", edgecolor="black", label="Code count")
+
+ax.barh(
+    df["name"],
+    df["code"],
+    left=df["comment"],
+    color="blue",
+    edgecolor="black",
+    label="Code count",
+)
+
+ax.grid(True)
+# ax.set_yticks(ax.get_yticks())
+# ax.set_yticklabels(
+#     df.apply(lambda row: f"{row['file_path']} ({row['total']})", axis=1), ha="left"
+# )
+ax.legend(loc="lower right")
+ax.set_xlabel("Line count")
+ax.set_title("Line category breakdown")
+fig.savefig(args.outfile, bbox_inches="tight", dpi=300)

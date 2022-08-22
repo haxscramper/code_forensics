@@ -107,6 +107,7 @@ tasks:
     cmds:
       - "{{.BIN}} --help || gdb_cmd {{.BIN}} --help"
       - "{{.BIN}} {{.OPTS}} || {{.GDB_CMD}} {{.BIN}} {{.OPTS}}"
+      - rm -f /tmp/temp_db.sqlite
       - cp {{.DB_FILE}} /tmp/temp_db.sqlite
 
     vars:

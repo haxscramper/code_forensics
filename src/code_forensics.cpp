@@ -332,7 +332,7 @@ void signal_handler(int signum) {
     std::cerr
         << "SIGINT signal was sent to the application, aborting execution"
         << std::endl;
-    exit(signum);
+    exit(0);
 }
 
 

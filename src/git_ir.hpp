@@ -356,6 +356,7 @@ inline auto create_db(CR<Str> storagePath) {
             "file",
             make_column("id", &orm_file::id, primary_key()),
             make_column("rcommit", &orm_file::commit_id),
+            make_column("parent", &orm_file::parent),
             make_column("name", &orm_file::name)),
         make_table<orm_author>(
             "author",
