@@ -14,12 +14,14 @@
 #include <boost/unordered_map.hpp>
 #include <fstream>
 
+/// Has typeinfo information for type-implementation mapping
 struct type_info_hash {
     std::size_t operator()(std::type_info const& t) const {
         return t.hash_code();
     }
 };
 
+/// Compare reference wrappers for equality
 struct equal_ref {
     template <typename T>
     bool operator()(
@@ -29,6 +31,8 @@ struct equal_ref {
     }
 };
 
+
+/// \brief `boost::any` visitor helper
 struct any_visitor {
     boost::unordered_map<
         boost::reference_wrapper<std::type_info const>,
@@ -37,11 +41,13 @@ struct any_visitor {
         equal_ref>
         fs;
 
+    /// \brief Convert 'any' value to specified type
     template <typename T>
     static T any_cast_f(boost::any& any) {
         return boost::any_cast<T>(any);
     }
 
+    /// \brief add visitor for the specified mapping
     template <typename T>
     void insert_visitor(boost::function<void(T)> f) {
         try {
@@ -54,6 +60,9 @@ struct any_visitor {
         }
     }
 
+    /// \brief try to call any of the stored oeprators with provided \arg
+    /// x. Return \return 'true' if call have been made, otherwise return
+    /// false.
     inline bool operator()(boost::any& x) const {
         auto it = fs.find(boost::ref(x.type()));
         if (it != fs.end()) {
@@ -67,11 +76,7 @@ struct any_visitor {
 
 namespace po = boost::program_options;
 
-// https://stackoverflow.com/questions/51723237/boostprogram-options-bool-switch-used-multiple-times
-// bool options is taken from this SO question - it is not /exactly/ what I
-// aimed for, but this solution allows specifying =true or =false on the
-// command line explicitly, which I aimed for
-
+/// \brief enum
 template <IsDescribedEnum E>
 class EnumOption {
   public:
@@ -85,6 +90,10 @@ class EnumOption {
     BOOST_DESCRIBE_CLASS(EnumOption, (), (value), (), ());
 };
 
+/// \breif more informative lexical cast error
+///
+/// Derived from the regular validation error and only providing support
+/// for additional mismatch description
 class bad_lexical_cast : public boost::bad_lexical_cast {
     Str msg;
 
@@ -95,6 +104,8 @@ class bad_lexical_cast : public boost::bad_lexical_cast {
         CR<Str>            _msg)
         : boost::bad_lexical_cast(S, T), msg(_msg) {}
     inline const char* what() const noexcept override {
+        // TODO use cxxabi and write out proper type conversion error
+        // message information - not only user-provided failure text
         return strdup((msg).c_str());
     }
 
@@ -104,13 +115,20 @@ class bad_lexical_cast : public boost::bad_lexical_cast {
     }
 };
 
+/// \brief more informative validation error exception
+///
+/// Derived from the regular validation error and only providing support
+/// for the user-provided error elaboration.
 class validation_error : public po::validation_error {
-    Str msg;
+    Str msg; ///< Stored user message
 
   public:
+    /// \brief create validation error with 'invalid option' state
     inline validation_error(Str _msg)
         : po::validation_error(po::validation_error::invalid_option)
         , msg(_msg) {}
+    /// \brief get error message description, returning baseline one
+    /// concatenated with the user-provdede elaboration
     inline const char* what() const noexcept override {
         return strdup(
             (Str{po::validation_error::what()} + ": " + msg).c_str());
@@ -118,6 +136,7 @@ class validation_error : public po::validation_error {
 };
 
 namespace boost {
+/// \brief lexical cast overload for 'described' enums
 template <IsDescribedEnum E>
 E lexical_cast(CR<Str> in) {
     E result;
@@ -130,27 +149,38 @@ E lexical_cast(CR<Str> in) {
     }
 }
 
+/// \brief Lexical cast overload for the 'described' enum values
 template <IsDescribedEnum E>
 Str lexical_cast(E in) {
     return Str{bd::enum_to_string<E>(in)};
 }
 } // namespace boost
 
+/// \brief unparse input enum option into the stored value
 template <typename E>
 void validate(boost::any& v, CR<Vec<Str>> xs, EnumOption<E>* opt, long) {}
 
+/// \brief specify boolean true/false flags on the boost command line
 class BoolOption {
+    // https://stackoverflow.com/questions/51723237/boostprogram-options-bool-switch-used-multiple-times
+    // bool options is taken from this SO question - it is not /exactly/
+    // what I aimed for, but this solution allows specifying =true or
+    // =false on the command line explicitly, which I aimed for
   public:
     inline BoolOption(bool initialState = false) : state(initialState) {}
     inline bool getState() const { return state; }
+    /// \brief toggle stored state
     inline void switchState() { state = !state; }
-                operator bool() const { return state; }
+    /// \brief boolean conversion operator for seamless interoperability
+    /// with the regular boolean types
+    operator bool() const { return state; }
 
   private:
     bool state;
 };
 
 
+/// \brief parse enum-valued CLI option
 template <IsDescribedEnum E>
 void validate(boost::any& v, CR<Vec<Str>> xs, EnumOption<E>*, long) {
     try {

@@ -75,6 +75,12 @@ tasks:
     cmds:
       - ./scripts/line_category.py {{.SCRIPT_OPTS}}
 
+  message_length:
+    deps: [ensure_test_db]
+    summary: "Generate stats for the commit message lenght"
+    cmds:
+      - ./scripts/commit_message_length.py {{.SCRIPT_OPTS}}
+
   compare:
     cmds:
       - ./tests/ci_compare_repo.sh

@@ -82,6 +82,11 @@ struct fmt::formatter<
     }
 };
 
+/// \brief templated formatter for all classes that were 'described' using
+/// boost/describe macros.
+///
+/// \note copied verbatim from the examples in the boost/describe
+/// documentation
 template <class T>
 struct fmt::formatter<
     T,
@@ -115,6 +120,8 @@ struct fmt::formatter<
     }
 };
 
+/// \brief Different modes of repository analytics enabled in the
+/// application. Mapped to the `--analytics` command line option
 enum class Analytics {
     BlameBurndown,  /// Use git blame for commits allowed by the
                     /// filter script
@@ -125,9 +132,13 @@ enum class Analytics {
 
 BOOST_DESCRIBE_ENUM(Analytics, BlameBurndown, Commits, CommitDiffInfo);
 
+
+/// \brief Convenience concept for interfacing with 'described' enumeration
+/// types
 template <typename E>
 concept IsDescribedEnum = bd::has_describe_enumerators<E>::value;
 
+/// \brief formatter specialization for gregorian dates
 template <>
 struct fmt::formatter<Date> : fmt::formatter<Str> {
     auto format(CR<Date> date, fmt::format_context& ctx) const {
@@ -137,6 +148,7 @@ struct fmt::formatter<Date> : fmt::formatter<Str> {
 };
 
 
+/// \brief formatter specification for posix time
 template <>
 struct fmt::formatter<PTime> : fmt::formatter<Str> {
     auto format(CR<PTime> time, fmt::format_context& ctx) const {
@@ -145,14 +157,18 @@ struct fmt::formatter<PTime> : fmt::formatter<Str> {
     }
 };
 
+/// \brief runtime configuration state object
 struct walker_config {
     /// Analyse commits via subprocess launches or via libgit blame
     /// execution
     bool use_subprocess = true;
+    /// Which threading mode to use during application execution (mostly
+    /// for debugging purposes)
     enum threading_mode { async, defer, sequential };
     threading_mode use_threading = threading_mode::async;
     /// Current project root path (absolute path)
-    Str            repo;
+    Str repo;
+    /// Which repository branch to use
     Str            heads;
     Vec<Analytics> analytics;
 
@@ -175,7 +191,7 @@ struct walker_config {
     }
 };
 
-
+/// \brief stdlib time point alias
 using TimePoint = stime::time_point<stime::system_clock>;
 
 
@@ -229,6 +245,8 @@ struct walker_state {
         }
     }
 
+    /// \brief get period the line was attributed to, otherwise fall back
+    /// to the commit period
     int get_period(CR<git_oid> commit, CR<git_oid> line) const noexcept {
         auto lp = get_period(line);
         auto cp = get_period(commit);
@@ -255,9 +273,11 @@ struct walker_state {
     /// List of commits that were selected for the processing run
     std::unordered_map<git_oid, ir::CommitId> sampled_commits;
 
+    /// \brief common mutex for synchronizing content manager mutations
     std::mutex           m;
     ir::content_manager* content;
-    SPtr<Logger>         logger;
+    /// \brief main application logger entry
+    SPtr<Logger> logger;
 };
 
 #endif // PROGRAM_STATE_HPP

@@ -83,41 +83,44 @@ for author, commits in top_authors[0:topcount]:
 i = 0
 axis_objects = []
 for author, commits in top_authors[0:topcount]:
+    # Incrementally add subplots for the top N authors in the dataset
     ax = fig.add_subplot(gs[i : i + 1, 0:])
 
+    # Extract dates, number of added and removed lines per each commit
     times = [time for (time, _, _) in commits]
     added = [added for (_, added, _) in commits]
     removed = [removed for (_, _, removed) in commits]
     dates = from_timestamps(times)
 
     bins = 60
+    # Split input data into fixed histograms to reduce activity noise
     (hist, bin_edges) = np.histogram(dates, bins)
 
     ax.plot(bin_edges[:-1], hist)
     ax.set_xlim(min_date, num_now())
     width = int(math.log(max([len(commits), sum(added), sum(removed)]), 10)) + 1
+    # For each subplot add title and align it to the top left corner
     ax.set_ylabel(
-        f"{author}\n{len(commits):<{width}} total\n{sum(added):<{width}} added\n{sum(removed):<{width}} removed",
+        f"{author}\n{len(commits):<{width}} "
+        + f"total\n{sum(added):<{width}} added\n{sum(removed):<{width}} removed",
         rotation=0,
         labelpad=120,
         ha="left",
         va="top",
     )
 
+    # Add common position grid
     ax.grid(True)
 
+    # Two metrics for each plot - dates and line add/remove information
     lines = ax.twinx()
 
     lines.plot(dates, added, "g")
+    # Plot removed line count as a negative
     lines.plot(dates, [-r for r in removed], "r")
 
     for it in [ax, lines]:
         format_x_dates(it)
-        # it.set_yticklabels([])
-
-        # spines = ["top", "right", "left", "bottom"]
-        # for s in spines:
-        #     it.spines[s].set_visible(False)
 
     align_yaxis([ax, lines])
     axis_objects.append(ax)
