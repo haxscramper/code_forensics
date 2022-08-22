@@ -1,16 +1,22 @@
-CREATE VIEW commit_file_lines (commit_time, file_path, file_id, line_id, file_parent) AS SELECT rcommit.time AS commit_time,
-       (dir.name || strings.text) AS file_path,
-       file.parent AS file_parent,
-       file_lines.file AS file_id,
-       file_lines.line AS line_id
-  FROM file_lines
+SELECT cfl.commit_time,
+       cfl.file_name AS file_name,
+       cfl.file_dir AS file_dir,
+       line.content AS content
+  FROM (
+        SELECT rcommit.time AS commit_time,
+               dir.name AS file_dir,
+               strings.text AS file_name,
+               file.parent AS file_parent,
+               file.id AS file_id
+          FROM FILE
+         INNER JOIN rcommit
+            ON file.rcommit = rcommit.id
+         INNER JOIN dir
+            ON file.parent = dir.id
+         INNER JOIN strings
+            ON file.name = strings.id
+       ) AS cfl
+ INNER JOIN file_lines
+    ON file_lines.file = cfl.file_id
  INNER JOIN LINE
-    ON file_lines.line = line.id
- INNER JOIN rcommit
-    ON file.rcommit = rcommit.id
- INNER JOIN FILE
-    ON file_lines.file = file.id
- INNER JOIN dir
-    ON file.parent = dir.id
- INNER JOIN strings
-    ON file.name = strings.id;
+    ON file_lines.line = line.id ;
