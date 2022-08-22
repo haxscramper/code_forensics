@@ -78,6 +78,14 @@ for author_idx, (author, count) in enumerate(authors_ordered):
                 author_period_map[author][period] = 0
 
 full_count = sum([count for _, count in total_writers.items()])
+
+if full_count == 0:
+    print(
+        "no code was registered during the DB analysis "
+        "- compile the database with --analytics=BlameBurndown enabled"
+    )
+    exit(1)
+
 global_percentage = {  #
     name: 100 * (count / full_count) for name, count in total_writers.items()
 }

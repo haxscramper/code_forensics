@@ -72,6 +72,16 @@ tasks:
         {{.DB_FILE}}
         {{.PNG_FILE}}
 
+  top_comitter:
+    deps: [ensure_test_db]
+    summary: "Generate top comitters for the code"
+    cmds:
+      - >
+        ./scripts/top_comitters.py
+        {{.DB_FILE}}
+        {{.PNG_FILE}}
+        --config=scripts/config.cfg
+
   compare:
     cmds:
       - ./tests/ci_compare_repo.sh
