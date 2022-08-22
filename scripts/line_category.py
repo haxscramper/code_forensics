@@ -12,6 +12,13 @@ plt.rcParams["font.family"] = "consolas"
 from cli_common import *
 
 parser = init_parser()
+parser.add_argument(
+    "--subdir-breakdown",
+    dest="subdir_breakdown",
+    type=bool,
+    default=False,
+    help="Create per-subdirectory division or group all elements in one distribution",
+)
 args = parser.parse_args()
 
 con = sqlite3.connect(args.database)
@@ -58,21 +65,27 @@ df = (
     .reset_index()
 )
 
-df["total"] = df["code"] + df["comment"]
-df = df.sort_values(["dir", "total"], ascending=False)
 fig, ax = plt.subplots(figsize=(16, 34))
 ax.invert_yaxis()
+df["total"] = df["code"] + df["comment"]
 
-max_total = int(math.log(df["total"].max(), 10) + 1)
-max_name = df["file_name"].apply(lambda x: len(x)).max()
-max_dir = df["file_dir"].apply(lambda x: len(x)).max()
+if args.subdir_breakdown:
+    df = df.sort_values(["dir", "total"], ascending=False)
 
-df["name"] = df.apply(
-    lambda row: f"{row['file_dir']:-<{max_dir}}"
-    + f"{row['file_name']:->{max_name}} "
-    + f"({row['total']:<{max_total}})",
-    axis=1,
-)
+    max_total = int(math.log(df["total"].max(), 10) + 1)
+    max_name = df["file_name"].apply(lambda x: len(x)).max()
+    max_dir = df["file_dir"].apply(lambda x: len(x)).max()
+
+    df["name"] = df.apply(
+        lambda row: f"{row['file_dir']:-<{max_dir}}"
+        + f"{row['file_name']:->{max_name}} "
+        + f"({row['total']:<{max_total}})",
+        axis=1,
+    )
+
+else:
+    df = df.sort_values("total", ascending=False)
+    df["name"] = df.apply(lambda row: row["file_dir"] + row["file_name"], axis=1)
 
 ax.barh(df["name"], df["comment"], color="green", edgecolor="black", label="Code count")
 
