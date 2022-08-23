@@ -178,4 +178,15 @@ inline bool operator==(CR<git_oid> lhs, CR<git_oid> rhs) {
     return git::oid_cmp(&lhs, &rhs) == 0;
 }
 
+inline bool operator<(CR<git_oid> lhs, CR<git_oid> rhs) {
+    return git::oid_cmp(&lhs, &rhs) < 0;
+}
+
+
+inline std::ostream& operator<<(std::ostream& out, git_oid const& oid) {
+    out << oid_tostr(oid);
+    return out;
+}
+
+
 #endif // GIT_INTERFACE_HPP

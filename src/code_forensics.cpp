@@ -24,6 +24,7 @@
 #include <boost/thread/lock_guard.hpp>
 
 
+#include "repo_graph.hpp"
 #include "python_interop.hpp"
 #include "cli_options.hpp"
 #include "logging.hpp"
@@ -337,7 +338,7 @@ void signal_handler(int signum) {
 
 
 auto main(int argc, const char** argv) -> int {
-    signal(SIGINT, signal_handler);
+    // signal(SIGINT, signal_handler);
 
     auto vm = parse_cmdline(argc, argv);
     {

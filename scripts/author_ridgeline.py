@@ -25,9 +25,6 @@ from cli_common import *
 
 parser = init_parser()
 
-add_rename_args(parser)
-add_ignore_args(parser)
-
 parser.add_argument(
     "--top",
     dest="top",
@@ -36,7 +33,7 @@ parser.add_argument(
     help="How many committers from the top to plot",
 )
 
-args = parser.parse_args()
+args = parse_args_with_config(parser)
 cur = open_db(args)
 
 authors = {}

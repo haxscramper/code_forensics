@@ -55,7 +55,7 @@ tasks:
     deps: [ensure_test_db]
     summary: "Build top commiter activity ridgeline"
     cmds:
-      - ./scripts/author_ridgeline.py {{.SCRIPT_OPTS}}
+      - ./scripts/author_ridgeline.py {{.SCRIPT_OPTS}} --top=10
 
   authorship:
     deps: [ensure_test_db]

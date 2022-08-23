@@ -3,6 +3,7 @@
 #include "logging.hpp"
 #include "common.hpp"
 #include "git_interface.hpp"
+#include "repo_graph.hpp"
 
 #include <algorithm>
 #include <execution>
@@ -394,89 +395,102 @@ struct FullCommitData {
     CommitId    id;
 };
 
-void for_each_commit(
-    walker_state*           state,
-    CR<Vec<FullCommitData>> full_commits) {
+void for_each_commit(walker_state* state) {
+    CommitGraph g{state->repo};
+
     LOG_I(state) << "Getting list of files changed per each commit";
     git_commit*      prev     = nullptr;
     git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
 
     struct CommitTask {
-        CommitId  id;
-        Str       hash;
-        Str       prev_hash;
-        git_tree* prev_tree;
-        git_tree* this_tree;
+        CommitId     id;
+        git_tree*    prev_tree;
+        git_tree*    this_tree;
+        Opt<git_oid> prev_hash;
+        git_oid      this_hash;
     };
 
-    Vec<git_tree*>  trees;
     Vec<CommitTask> tasks;
-    git_tree*       prev_tree = nullptr;
-    Str             prev_hash;
 
-    for (const auto& [oid, date, git_commit, oid_commit] : full_commits) {
-        git_tree* this_tree = git::commit_tree(git_commit);
-        Str       hash      = oid_tostr(oid);
-        LOG_T(state) << fmt::format(
-            "diff {} at index {}, id {}", hash, tasks.size(), oid_commit);
-        tasks.push_back(
-            {oid_commit, hash, prev_hash, prev_tree, this_tree});
-        trees.push_back(this_tree);
-        prev_tree = this_tree;
-        prev_hash = hash;
+    using VDesc = CommitGraph::VDesc;
 
-        prev = git_commit;
+    std::unordered_map<VDesc, git_tree*> trees;
+
+    auto get_tree = [&trees, state, &g](VDesc v) -> git_tree* {
+        if (trees.find(v) == trees.end()) {
+            auto commit = git::commit_lookup(state->repo, &g[v].oid);
+            trees[v]    = git::commit_tree(commit);
+        }
+        return trees[v];
+    };
+
+    for (auto [main, base] : g.commit_pairs()) {
+        if (!g.is_merge(main)) {
+            tasks.push_back(CommitTask{
+                .id        = state->get_id(g[main].oid),
+                .prev_tree = base ? get_tree(base.value()) : nullptr,
+                .this_tree = get_tree(main),
+                .prev_hash = base ? Opt<git_oid>{g[base.value()].oid}
+                                  : Opt<git_oid>{},
+                .this_hash = g[main].oid});
+        }
     }
 
     std::mutex tick_mutex;
-    auto       task_executor =
-        [state, &tick_mutex, &diffopts](CR<CommitTask> task) {
-            git_diff* diff = git::diff_tree_to_tree(
-                state->repo, task.prev_tree, task.this_tree, &diffopts);
+    auto       task_executor = [state, &tick_mutex, &diffopts](
+                             CR<CommitTask> task) {
+        git_diff* diff = git::diff_tree_to_tree(
+            state->repo, task.prev_tree, task.this_tree, &diffopts);
 
 
-            int      added = 0, removed = 0, changed = 0;
-            auto     id_commit = task.id;
-            Vec<Str> paths;
-            diff_foreach(
-                diff,
-                DiffForeachParams{
-                    .file_cb = [state, id_commit, &tick_mutex, &paths](
-                                   const git_diff_delta* delta,
-                                   float                 progress) -> int {
-                        paths.push_back(delta->new_file.path);
-                        return GIT_OK;
-                    },
-                    .line_cb = [state, &added, &removed](
-                                   const git_diff_delta* delta,
-                                   const git_diff_hunk*  hunk,
-                                   const git_diff_line*  line) -> int {
-                        switch (line->origin) {
-                            case GIT_DIFF_LINE_CONTEXT: ++added; break;
-                            case GIT_DIFF_LINE_DELETION: ++removed; break;
-                            default: break;
-                        }
+        int      added = 0, removed = 0, changed = 0;
+        auto     id_commit = task.id;
+        Vec<Str> paths;
+        diff_foreach(
+            diff,
+            DiffForeachParams{
+                .file_cb = [state, id_commit, &tick_mutex, &paths](
+                               const git_diff_delta* delta,
+                               float                 progress) -> int {
+                    paths.push_back(delta->new_file.path);
+                    return GIT_OK;
+                },
+                .line_cb = [state, &added, &removed](
+                               const git_diff_delta* delta,
+                               const git_diff_hunk*  hunk,
+                               const git_diff_line*  line) -> int {
+                    switch (line->origin) {
+                        case GIT_DIFF_LINE_CONTEXT: ++added; break;
+                        case GIT_DIFF_LINE_DELETION: ++removed; break;
+                        default: break;
+                    }
 
-                        return GIT_OK;
-                    }});
+                    return GIT_OK;
+                }});
 
-            SLock lock{tick_mutex};
-            state->content->at(id_commit).removed_lines = removed;
-            state->content->at(id_commit).added_lines   = added;
+        SLock lock{tick_mutex};
+        state->content->at(id_commit).removed_lines = removed;
+        state->content->at(id_commit).added_lines   = added;
+        if (task.prev_hash) {
+            LOG_T(state) << "Diffing (base-main) "
+                         << task.prev_hash.value() << " " << task.this_hash
+                         << " add " << added << " remove " << removed
+                         << " changed path " << paths.size();
+        }
 
-            for (const auto& path : paths) {
-                state->content->at(id_commit).changed_files.push_back(
-                    {state->content->add(String{path}),
-                     state->content->parentDirectory(path)});
-            }
-        };
+        for (const auto& path : paths) {
+            state->content->at(id_commit).changed_files.push_back(
+                {state->content->add(String{path}),
+                 state->content->parentDirectory(path)});
+        }
+    };
 
     const int                             max_parallel = 16;
     std::counting_semaphore<max_parallel> counting{max_parallel};
     Vec<std::future<void>>                executed;
 
     for (auto bar = ScopedBar(
-             state, full_commits.size(), "commits to analyze", true, 40);
+             state, tasks.size(), "commits to analyze", true, 40);
          const auto& task : tasks) {
         bar.tick();
         counting.acquire();
@@ -612,7 +626,7 @@ Vec<CommitId> launch_analysis(git_oid& oid, walker_state* state) {
 
 
     if (state->config->use_analytics(Analytics::CommitDiffInfo)) {
-        for_each_commit(state, full_commits);
+        for_each_commit(state);
     } else {
         LOG_W(state) << "Diff analytics was not enabled, skipping";
     }

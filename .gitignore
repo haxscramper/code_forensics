@@ -410,3 +410,5 @@ docs
 **/*.png
 .task
 perf.data*
+
+**/*.ipynb
