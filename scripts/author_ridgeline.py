@@ -3,10 +3,12 @@
 # https://matplotlib.org/matplotblog/posts/create-ridgeplots-in-matplotlib/
 
 from matplotlib import rcParams
+
+rcParams["font.family"] = "consolas"
+
 import math
 import argparse
 
-rcParams["font.family"] = "consolas"
 
 from copy import deepcopy
 import sqlite3

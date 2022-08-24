@@ -90,6 +90,13 @@ DECL_ID_TYPE(Author, AuthorId, int);
 
 /// \defgroup db_mapped Mapped to the database
 
+struct EditedFile {
+    ir::StringId         path;
+    Opt<ir::DirectoryId> dir;
+    int                  added;
+    int                  removed;
+};
+
 /// \brief single commit by author, taken at some point in time
 /// \ingroup db_mapped
 struct Commit {
@@ -102,7 +109,7 @@ struct Commit {
     Str      message; /// Commit message
     int      added_lines;
     int      removed_lines;
-    Vec<Pair<ir::StringId, Opt<ir::DirectoryId>>> changed_files;
+    Vec<EditedFile> edited_files;
 };
 
 
@@ -331,10 +338,8 @@ struct orm_lines_table {
     LineId line;
 };
 
-struct orm_edited_files {
-    CommitId         commit;
-    Opt<DirectoryId> dir;
-    StringId         path;
+struct orm_edited_files : EditedFile {
+    CommitId commit;
 };
 
 /// \brief Instantiate database connection
@@ -367,6 +372,8 @@ inline auto create_db(CR<Str> storagePath) {
             "edited_files",
             make_column("rcommit", &orm_edited_files::commit),
             make_column("dir", &orm_edited_files::dir),
+            make_column("added", &orm_edited_files::added),
+            make_column("removed", &orm_edited_files::removed),
             make_column("path", &orm_edited_files::path)),
         make_table<orm_line>(
             "line",
