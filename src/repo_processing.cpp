@@ -399,8 +399,10 @@ void for_each_commit(walker_state* state) {
     CommitGraph g{state->repo};
 
     LOG_I(state) << "Getting list of files changed per each commit";
-    git_commit*      prev     = nullptr;
-    git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
+    git_commit*           prev     = nullptr;
+    git_diff_options      diffopts = GIT_DIFF_OPTIONS_INIT;
+    git_diff_find_options findopts = GIT_DIFF_FIND_OPTIONS_INIT;
+    findopts.rename_threshold      = 50;
 
     struct CommitTask {
         CommitId     id;
@@ -437,19 +439,21 @@ void for_each_commit(walker_state* state) {
     }
 
     std::mutex tick_mutex;
-    auto       task_executor = [state, &tick_mutex, &diffopts](
+    auto       task_executor = [state, &tick_mutex, &diffopts, &findopts](
                              CR<CommitTask> task) {
         git_diff* diff = git::diff_tree_to_tree(
             state->repo, task.prev_tree, task.this_tree, &diffopts);
 
+        git_diff_find_similar(diff, &findopts);
 
         int      added = 0, removed = 0, changed = 0;
         auto     id_commit = task.id;
         Vec<Str> paths;
+
         diff_foreach(
             diff,
             DiffForeachParams{
-                .file_cb = [state, id_commit, &tick_mutex, &paths](
+                .file_cb = [state, id_commit, &tick_mutex, &paths, log](
                                const git_diff_delta* delta,
                                float                 progress) -> int {
                     paths.push_back(delta->new_file.path);
@@ -460,7 +464,7 @@ void for_each_commit(walker_state* state) {
                                const git_diff_hunk*  hunk,
                                const git_diff_line*  line) -> int {
                     switch (line->origin) {
-                        case GIT_DIFF_LINE_CONTEXT: ++added; break;
+                        case GIT_DIFF_LINE_ADDITION: ++added; break;
                         case GIT_DIFF_LINE_DELETION: ++removed; break;
                         default: break;
                     }
@@ -471,13 +475,6 @@ void for_each_commit(walker_state* state) {
         SLock lock{tick_mutex};
         state->content->at(id_commit).removed_lines = removed;
         state->content->at(id_commit).added_lines   = added;
-        if (task.prev_hash) {
-            LOG_T(state) << "Diffing (base-main) "
-                         << task.prev_hash.value() << " " << task.this_hash
-                         << " add " << added << " remove " << removed
-                         << " changed path " << paths.size();
-        }
-
         for (const auto& path : paths) {
             state->content->at(id_commit).changed_files.push_back(
                 {state->content->add(String{path}),
