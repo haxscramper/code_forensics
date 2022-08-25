@@ -63,6 +63,12 @@ tasks:
     cmds:
       - ./scripts/code_authorship.py {{.SCRIPT_OPTS}}
 
+  hotspot_connections:
+    deps: [ensure_test_db]
+    summary: "Generate connectivity graph for the most edited files"
+    cmds:
+      - ./scripts/hotspot_connections.py {{.SCRIPT_OPTS}}
+
   top_comitter:
     deps: [ensure_test_db]
     summary: "Generate top comitters for the code"

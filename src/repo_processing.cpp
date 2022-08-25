@@ -409,6 +409,9 @@ void for_each_commit(walker_state* state) {
     // the default values. Documentation is going to be a little more
     // problematic, but I think adding `name->description` map of the
     // content will be sufficient.
+    //
+    // Assigned values are said to be 'default' in the libgith
+    // documentation
     findopts.rename_threshold              = 50;
     findopts.rename_from_rewrite_threshold = 50;
     findopts.copy_threshold                = 50;
@@ -469,6 +472,7 @@ void for_each_commit(walker_state* state) {
                 git::patch_line_stats(nullptr, &added, &removed, patch);
 
                 SLock lock{tick_mutex};
+                // TODO implement rename chain detection
                 state->content->at(id_commit).edited_files.push_back(
                     EditedFile{
                         .path = state->content->add(

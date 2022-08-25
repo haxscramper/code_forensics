@@ -97,12 +97,19 @@ else:
     max_name = (
         df["file_dir"].apply(lambda x: len(x)) + df["file_name"].apply(lambda x: len(x))
     ).max()
-    df["name"] = df.apply(
-        lambda row: f"{row['file_dir']+row['file_name']:-<{max_name}}", axis=1
-    )
+
+    def name(r):
+        return (
+            f"({r.comment:<4}/{r.code:<4}/{r['empty']:<4}) "
+            + f"{r.file_dir + r.file_name:-<{max_name}}"
+        )
+
+    df["name"] = df.apply(lambda row: name(row), axis=1)
 
 # Code documentation lines are placed at the very left of the barplot
-ax.barh(df["name"], df["comment"], color="green", edgecolor="black", label="Code count")
+ax.barh(
+    df["name"], df["comment"], color="green", edgecolor="black", label="Comment count"
+)
 
 # Then code is added on top of them
 ax.barh(

@@ -338,7 +338,7 @@ void signal_handler(int signum) {
 
 
 auto main(int argc, const char** argv) -> int {
-    // signal(SIGINT, signal_handler);
+    signal(SIGINT, signal_handler);
 
     auto vm = parse_cmdline(argc, argv);
     {
