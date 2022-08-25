@@ -11,10 +11,7 @@ import matplotlib.pyplot as plt
 from pprint import pprint
 from cli_common import *
 
-parser = argparse.ArgumentParser(description="Process some integers.")
-parser.add_argument("database", type=str, help="Input database file")
-parser.add_argument("outfile", type=str, help="Output plot image")
-add_rename_args(parser)
+parser = init_parser()
 parser.add_argument(
     "--top",
     dest="top",
@@ -22,7 +19,8 @@ parser.add_argument(
     type=int,
     help="How many committers from the top to plot",
 )
-args = parser.parse_args()
+
+args = parse_args_with_config(parser)
 cur = open_db(args)
 
 total_writers = {}
