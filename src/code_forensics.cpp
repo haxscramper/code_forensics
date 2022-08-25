@@ -130,6 +130,10 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
             storage.insert(ir::orm_edited_files{file, id});
         }
 
+        for (const auto& file : commit->renamed_files) {
+            storage.insert(ir::orm_renamed_file{file, id});
+        }
+
         bar.tick();
     }
 
@@ -154,6 +158,13 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
         }
 
         bar.tick();
+    }
+
+    for (auto bar = ScopedBar(
+             state, content.multi.store<ir::FilePath>().size(), "paths");
+         const auto& [id, file] :
+         content.multi.store<ir::FilePath>().pairs()) {
+        storage.insert(ir::orm_file_path{*file, id});
     }
 
     storage.commit();

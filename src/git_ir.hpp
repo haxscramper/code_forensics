@@ -69,6 +69,7 @@ namespace ir {
 DECL_ID_TYPE(LineData, LineId, std::size_t);
 DECL_ID_TYPE(Commit, CommitId, std::size_t);
 DECL_ID_TYPE(File, FileId, std::size_t);
+DECL_ID_TYPE(FilePath, FilePathId, std::size_t);
 DECL_ID_TYPE(Directory, DirectoryId, std::size_t);
 DECL_ID_TYPE(String, StringId, std::size_t);
 
@@ -90,11 +91,27 @@ DECL_ID_TYPE(Author, AuthorId, int);
 
 /// \defgroup db_mapped Mapped to the database
 
-struct EditedFile {
+/// \brief file path with associated parent directory information
+/// \ingroup db_mapped
+struct FilePath {
+    using id_type = FilePathId;
     ir::StringId         path;
     Opt<ir::DirectoryId> dir;
-    int                  added;
-    int                  removed;
+
+    bool operator==(CR<FilePath> other) const {
+        return this->path == other.path;
+    }
+};
+
+struct EditedFile {
+    ir::FilePathId path;
+    int            added;
+    int            removed;
+};
+
+struct RenamedFile {
+    ir::FilePathId old_path;
+    ir::FilePathId new_path;
 };
 
 /// \brief single commit by author, taken at some point in time
@@ -109,7 +126,8 @@ struct Commit {
     Str      message; /// Commit message
     int      added_lines;
     int      removed_lines;
-    Vec<EditedFile> edited_files;
+    Vec<EditedFile>  edited_files;
+    Vec<RenamedFile> renamed_files;
 };
 
 
@@ -118,10 +136,9 @@ struct Commit {
 struct File {
     using id_type = FileId;
     CommitId commit_id; /// Id of the commit this version of the file was
-                        /// recorded in
-    DirectoryId parent; /// parent directory
-    StringId    name;   /// file name
-    Vec<LineId> lines;  /// List of all lines found in the file
+    /// recorded in
+    ir::FilePathId path;
+    Vec<LineId>    lines; /// List of all lines found in the file
 };
 
 
@@ -215,18 +232,19 @@ MAKE_HASHABLE(ir::Author, it, it.name, it.email);
 MAKE_HASHABLE(ir::LineData, it, it.author, it.time, it.content);
 MAKE_HASHABLE(ir::Directory, it, it.name, it.parent);
 MAKE_HASHABLE(ir::String, it, it.text);
-
+MAKE_HASHABLE(ir::FilePath, it, it.path);
 
 namespace ir {
 /// \brief Main store for repository analysis
 struct content_manager {
     dod::MultiStore<
-        dod::InternStore<AuthorId, Author>, // Full list of authors
-        dod::InternStore<LineId, LineData>, // found lines
-        dod::Store<FileId, File>,           // files
-        dod::Store<CommitId, Commit>,       // all commits
-        dod::Store<DirectoryId, Directory>, // all directories
-        dod::InternStore<StringId, String>  // all interned strings
+        dod::InternStore<AuthorId, Author>,     // Full list of authors
+        dod::InternStore<LineId, LineData>,     // found lines
+        dod::Store<FileId, File>,               // files
+        dod::InternStore<FilePathId, FilePath>, // file paths
+        dod::Store<CommitId, Commit>,           // all commits
+        dod::Store<DirectoryId, Directory>,     // all directories
+        dod::InternStore<StringId, String>      // all interned strings
         >
         multi;
 
@@ -255,6 +273,11 @@ struct content_manager {
             .parent = parentDirectory(dir), .name = dir.native()});
     }
 
+    FilePathId getFile(CR<Str> file) {
+        return add(ir::FilePath{
+            .path = add(String{file}), .dir = getDirectory(file)});
+    }
+
     /// \brief Get reference to value pointed to by the ID
     template <dod::IsIdType Id>
     auto at(Id id) -> typename dod::value_type_t<Id>& {
@@ -277,7 +300,7 @@ struct content_manager {
 struct orm_file : File {
     FileId id;
     inline orm_file()
-        : File{.commit_id = CommitId::Nil(), .parent = DirectoryId::Nil(), .name = StringId::Nil()}
+        : File{.commit_id = CommitId::Nil(), .path = FilePathId::Nil()}
         , id(FileId::Nil()) {}
     inline orm_file(FileId _id, CR<File> base) : File(base), id(_id) {}
 };
@@ -342,10 +365,28 @@ struct orm_edited_files : EditedFile {
     CommitId commit;
 };
 
+struct orm_renamed_file : RenamedFile {
+    CommitId commit;
+};
+
+struct orm_file_path : FilePath {
+    FilePathId id;
+};
+
 /// \brief Instantiate database connection
 inline auto create_db(CR<Str> storagePath) {
     auto storage = make_storage(
         storagePath,
+        make_table<orm_renamed_file>(
+            "renamed",
+            make_column("rcommit", &orm_renamed_file::commit),
+            make_column("old_path", &orm_renamed_file::old_path),
+            make_column("new_path", &orm_renamed_file::new_path)),
+        make_table<orm_file_path>(
+            "paths",
+            make_column("id", &orm_file_path::id, primary_key()),
+            make_column("path", &orm_file_path::path),
+            make_column("dir", &orm_file_path::dir)),
         make_table<orm_commit>(
             "rcommit",
             make_column("id", &orm_commit::id, primary_key()),
@@ -361,8 +402,7 @@ inline auto create_db(CR<Str> storagePath) {
             "file",
             make_column("id", &orm_file::id, primary_key()),
             make_column("rcommit", &orm_file::commit_id),
-            make_column("parent", &orm_file::parent),
-            make_column("name", &orm_file::name)),
+            make_column("path", &orm_file::path)),
         make_table<orm_author>(
             "author",
             make_column("id", &orm_author::id, primary_key()),
@@ -371,7 +411,6 @@ inline auto create_db(CR<Str> storagePath) {
         make_table<orm_edited_files>(
             "edited_files",
             make_column("rcommit", &orm_edited_files::commit),
-            make_column("dir", &orm_edited_files::dir),
             make_column("added", &orm_edited_files::added),
             make_column("removed", &orm_edited_files::removed),
             make_column("path", &orm_edited_files::path)),

@@ -61,7 +61,7 @@ struct ScopedBar {
         int           _max,
         CR<Str>       _annotation,
         bool          _timed = true,
-        int           _width = 60)
+        int           _width = 40)
         : max(_max)
         , bar(init_progress(_max, _width))
         , state(_state)

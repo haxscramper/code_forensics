@@ -262,9 +262,7 @@ FileId exec_walker(
     {
         SLock lock{state->m};
         init = File{
-            .commit_id = commit,
-            .parent    = state->content->getDirectory(Str{root}),
-            .name      = state->content->add(String{path})};
+            .commit_id = commit, .path = state->content->getFile(path)};
     }
 
     // Choose between different modes of data processing and call into one.
@@ -454,35 +452,39 @@ void for_each_commit(walker_state* state) {
     }
 
     std::mutex tick_mutex;
-    auto       task_executor =
-        [state, &tick_mutex, &diffopts, &findopts](CR<CommitTask> task) {
-            git_diff* diff = git::diff_tree_to_tree(
-                state->repo, task.prev_tree, task.this_tree, &diffopts);
+    auto       task_executor = [state, &tick_mutex, &diffopts, &findopts](
+                             CR<CommitTask> task) {
+        git_diff* diff = git::diff_tree_to_tree(
+            state->repo, task.prev_tree, task.this_tree, &diffopts);
 
-            git_diff_find_similar(diff, &findopts);
+        git_diff_find_similar(diff, &findopts);
 
-            int  deltas    = git::diff_num_deltas(diff);
-            auto id_commit = task.id;
+        int  deltas    = git::diff_num_deltas(diff);
+        auto id_commit = task.id;
 
-            for (int i = 0; i < deltas; ++i) {
-                git_patch* patch = git::patch_from_diff(diff, i);
-                const git_diff_delta* delta = git::patch_get_delta(patch);
+        for (int i = 0; i < deltas; ++i) {
+            git_patch*            patch = git::patch_from_diff(diff, i);
+            const git_diff_delta* delta = git::patch_get_delta(patch);
 
-                size_t added = 0, removed = 0;
-                git::patch_line_stats(nullptr, &added, &removed, patch);
+            size_t added = 0, removed = 0;
+            git::patch_line_stats(nullptr, &added, &removed, patch);
 
-                SLock lock{tick_mutex};
-                // TODO implement rename chain detection
-                state->content->at(id_commit).edited_files.push_back(
-                    EditedFile{
-                        .path = state->content->add(
-                            String{delta->new_file.path}),
-                        .dir = state->content->parentDirectory(
-                            delta->new_file.path),
-                        .added   = added,
-                        .removed = removed});
+            SLock lock{tick_mutex};
+
+            auto new_path = state->content->getFile(delta->new_file.path);
+            if (delta->old_file.path &&
+                strcmp(delta->old_file.path, delta->new_file.path) != 0) {
+                auto old_path = state->content->getFile(
+                    delta->old_file.path);
+                state->content->at(id_commit).renamed_files.push_back(
+                    RenamedFile{old_path, new_path});
             }
-        };
+
+            state->content->at(id_commit).edited_files.push_back(
+                EditedFile{
+                    .path = new_path, .added = added, .removed = removed});
+        }
+    };
 
     const int                             max_parallel = 16;
     std::counting_semaphore<max_parallel> counting{max_parallel};
