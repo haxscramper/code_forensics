@@ -19,9 +19,26 @@ def parse_args(args=sys.argv[1:]):
         "--mode",
         type=str,
         dest="mode",
-        choices=["graph", "correlation"],
+        choices=["graph", "heatmap"],
         default="graph",
         help="Hotspot correlation analysis mode",
+    )
+
+    parser.add_argument(
+        "--top",
+        type=str,
+        dest="top",
+        default=30,
+        help="Top N files for the correlation heatmap. Applicable for the heatmap generation",
+    )
+
+    parser.add_argument(
+        "--ordering-mode",
+        type=str,
+        dest="ordering_mode",
+        default="self-edit",
+        choices=["self-edit", "connections", "top-connection"],
+        help="Odering mode for the top edited files. 'self-edit' will order by total number edits of the file, 'connections' will order by the total number of edits made with some other files. 'top-collection' will order by the maximum number of edits with other files.",
     )
 
     parser.add_argument(
@@ -35,7 +52,7 @@ def parse_args(args=sys.argv[1:]):
     return parse_args_with_config(parser, args)
 
 
-def graph_correlation(args):
+def get_groups(args):
     con = sqlite3.connect(args.database)
     resolver = PathResolver(con)
     df = pd.read_sql_query(
@@ -50,11 +67,10 @@ def graph_correlation(args):
         )
     ]
 
-    g = ig.Graph()
-    node_table = {}
-    gb = df.groupby("rcommit")
+    return (resolver, df.groupby("rcommit"))
 
-    path_count = {}
+
+def co_edit_stats(gb, g):
     path_ids = {}
 
     def get_vertex(path: str):
@@ -87,6 +103,94 @@ def graph_correlation(args):
 
                         else:
                             pair_list[v1][v2] = 1
+
+    return (pair_list, vertex_weight, path_ids)
+
+
+def heatmap_correlation(args):
+    (resolver, gb) = get_groups(args)
+    g = ig.Graph()
+    (pair_list, vertex_weight, path_ids) = co_edit_stats(gb, g)
+
+    weight_map = {}
+
+    if args.ordering_mode == "self-edit":
+        weight_map = vertex_weight
+
+    elif args.ordering_mode in ["connections", "top-connection"]:
+        coedit_weigth = {}
+        dedup_set = set()
+        weight_map = {}
+        for it1, key in pair_list.items():
+            adjacent_edits = []
+            for it2, value in pair_list[it1].items():
+                if (
+                    it1 != it2
+                    and (it1, it2) not in dedup_set
+                    and (it2, it1) not in dedup_set
+                ):
+                    dedup_set.add((it1, it2))
+                    adjacent_edits.append(value)
+
+            if args.ordering_mode == "connections":
+                weight_map[it1] = sum(adjacent_edits)
+
+            elif args.ordering_mode == "top-connection":
+                weight_map[it1] = max(adjacent_edits) if adjacent_edits else 0
+
+    count = pd.DataFrame(weight_map.items(), columns=["path_id", "count"]).sort_values(
+        ["count"], ascending=False
+    )
+
+    edit = [
+        resolver.resolve_id(id)
+        for id in count.head(min(count["count"].count(), args.top))["path_id"]
+    ]
+
+    heatmap = np.zeros([len(edit), len(edit)]).astype(int)
+    for idx1, it1 in enumerate(edit):
+        for idx2, it2 in enumerate(edit):
+            if it1 in pair_list and it2 in pair_list[it1]:
+                heatmap[idx1][idx2] = pair_list[it1][it2]
+
+        coedit_weight = {}
+
+    fig, ax = plt.subplots(figsize=(12, 12))
+
+    ax.imshow(heatmap)
+    ax.set_yticks(
+        np.arange(len(edit)),
+        ["{} ({})".format(resolver.resolve_path(id), weight_map[id]) for id in edit],
+    )
+
+    ax.set_xticks(
+        np.arange(len(edit)),
+        [resolver.resolve_path(id) for id in edit],
+        rotation=45,
+        ha="right",
+        rotation_mode="anchor",
+    )
+
+    for i in range(len(edit)):
+        for j in range(len(edit)):
+            text = ax.text(j, i, heatmap[i, j], ha="center", va="center", color="w")
+
+    ax.set_title(
+        args.title
+        or "Edit correlation of the top {} most {}, ignoring self-edit, showing {}".format(
+            args.top,  #
+            "edited" if args.ordering_mode == "self-edit" else "connected",
+            "edit count" if args.ordering_mode == "self-edit" else "connection count",
+        )
+    )
+
+    fig.savefig(args.outfile, dpi=300, bbox_inches="tight")
+
+
+def graph_correlation(args):
+    (resolver, gb) = get_groups(args)
+    g = ig.Graph()
+    (pair_list, vertex_weight, path_ids) = co_edit_stats(gb, g)
 
     vertex_list = []
     attr_list = []
@@ -158,6 +262,9 @@ graph {{
 def impl(args):
     if args.mode == "graph":
         graph_correlation(args)
+
+    elif args.mode == "heatmap":
+        heatmap_correlation(args)
 
 
 if __name__ == "__main__":

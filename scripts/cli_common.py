@@ -58,6 +58,7 @@ def init_parser(with_common=True):
         add_rename_args(parser)
         add_ignore_args(parser)
         add_config_args(parser)
+        add_title_args(parser, None)
 
     return parser
 

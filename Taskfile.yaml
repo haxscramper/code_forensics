@@ -70,7 +70,11 @@ tasks:
     cmds:
       - >
         ./scripts/hotspot_connections.py
-        {{.DB_FILE}} /tmp/graph.dot --config=scripts/config.cfg
+        {{.DB_FILE}}
+        /tmp/db.png
+        --config=scripts/config.cfg
+        --mode=heatmap
+        --ordering-mode=top-connection
 
   top_comitter:
     deps: [ensure_test_db]
