@@ -72,8 +72,9 @@ tasks:
         ./scripts/hotspot_connections.py
         {{.DB_FILE}}
         /tmp/db.png
+        --top=120
         --config=scripts/config.cfg
-        --mode=heatmap-fraction
+        --mode=overwrite
         --ordering-mode=connections
 
   top_comitter:

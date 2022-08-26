@@ -19,16 +19,16 @@ def parse_args(args=sys.argv[1:]):
         "--mode",
         type=str,
         dest="mode",
-        choices=["graph", "heatmap", "heatmap-fraction"],
+        choices=["graph", "heatmap", "heatmap-fraction", "overwrite"],
         default="graph",
-        help="Hotspot correlation analysis mode",
+        help="Hotspot correlation analysis mode. 'heatmap' - correlation between the most edited files in absolute numbers, 'heatmap-fraction' - correlation between most edited files in relation to their total edits, 'overwrite' - most rewritten files",
     )
 
     parser.add_argument(
         "--top",
-        type=str,
+        type=int,
         dest="top",
-        default=40,
+        default=50,
         help="Top N files for the correlation heatmap. Applicable for the heatmap generation",
     )
 
@@ -287,12 +287,79 @@ graph {{
         g.write(args.outfile)
 
 
+def overwrite_breakdown(args):
+    con = sqlite3.connect(args.database)
+
+    resolver = PathResolver(con)
+    df = pd.read_sql_query(
+        "select rcommit, added, removed, path as file_id from edited_files", con
+    )
+
+    df["file_id"] = df["file_id"].apply(lambda id: resolver.resolve_id(id))
+
+    per_file = {}
+    gb = df.groupby("file_id")
+    for gr in gb.groups:
+        df_file = gb.get_group(gr)
+        per_file[gr] = (df_file["added"].sum(), df_file["removed"].sum())
+
+    df = pd.DataFrame(
+        [(id, add, remove) for (id, (add, remove)) in per_file.items()],
+        columns=["file_id", "added", "removed"],
+    )
+
+    df["path"] = df["file_id"].apply(lambda id: resolver.resolve_path(id))
+    df = df[df.apply(lambda r: r["path"].startswith("compiler"), axis=1)]
+    max_added = int(math.log(df["added"].max(), 10) + 1)
+    max_removed = int(math.log(df["removed"].max(), 10) + 1)
+
+    df["edits"] = df.apply(
+        lambda r: "+{:>{}}/-{:>{}}".format(
+            r["added"], max_added, r["removed"], max_removed
+        ),
+        axis=1,
+    )
+    max_name = df["path"].apply(lambda r: len(r)).max()
+    max_edit = df["edits"].apply(lambda r: len(r)).max()
+
+    df["name"] = df.apply(
+        lambda r: f"{r.path:-<{max_name}}{r.edits:->{max_edit}}", axis=1
+    )
+
+    df["total"] = df["added"] + df["removed"]
+    df = df.sort_values("total")
+    size = min(len(df.index), args.top)
+    df = df.tail(size)
+
+    fig, ax = plt.subplots(figsize=(12, 34))
+
+    ax.barh(
+        df["name"], df["added"], color="green", edgecolor="black", label="Added lines"
+    )
+    ax.barh(
+        df["name"],
+        df["removed"],
+        left=df["added"],
+        color="red",
+        edgecolor="black",
+        label="Removed lines",
+    )
+
+    ax.grid(True)
+    ax.legend(loc="lower right")
+    ax.set_title(args.title or "Total number of added and removed lines, per file")
+    fig.savefig(args.outfile, bbox_inches="tight", dpi=300)
+
+
 def impl(args):
     if args.mode == "graph":
         graph_correlation(args)
 
     elif args.mode in ["heatmap", "heatmap-fraction"]:
         heatmap_correlation(args)
+
+    elif args.mode == "overwrite":
+        overwrite_breakdown(args)
 
 
 if __name__ == "__main__":

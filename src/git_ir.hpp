@@ -481,8 +481,9 @@ CREATE VIEW file_version_with_path AS SELECT file.id AS id,
         exec(db, "DROP VIEW IF EXISTS file_version_with_path_dir;--");
         exec(db, R"(
 CREATE VIEW file_version_with_path_dir AS SELECT fv.id,
-       fv.rcommit,
-       fv.path,
+       fv.rcommit as rcommit,
+       fv.path as path,
+       fv.path_id as path_id,
        dir.name AS dir
   FROM file_version_with_path AS fv
  INNER JOIN dir
