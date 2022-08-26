@@ -160,4 +160,5 @@ def impl(args):
 
 
 if __name__ == "__main__":
+    plt.rcParams["font.family"] = "consolas"
     impl(parse_args())

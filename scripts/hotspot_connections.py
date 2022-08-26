@@ -37,52 +37,12 @@ def parse_args(args=sys.argv[1:]):
 
 def graph_correlation(args):
     con = sqlite3.connect(args.database)
-
-    path_id_map = {}
-    for (id, path) in con.execute("select path_id, path from file_path_with_dir"):
-        path_id_map[id] = path
-
-    rename_forward = {}
-    rename_backward = {}
-
-    for (old, new) in con.execute("select old_path, new_path from renamed"):
-        if old not in rename_forward:
-            rename_forward[old] = []
-        if new not in rename_backward:
-            rename_backward[new] = []
-
-        rename_forward[old].append(new)
-        rename_backward[new].append(old)
-
-    @functools.cache
-    def resolve_id(id, forward: bool = True):
-        result = id
-        remap = rename_forward if forward else rename_backward
-        already_visited = set()
-        while result in remap:
-            found = False
-            for option in remap[result]:
-                if option not in already_visited:
-                    found = True
-                    result = option
-                    already_visited.add(option)
-
-            if not found:
-                break
-
-            # result = remap[result]
-            # already_visited.add(result)
-
-        return result
-
-    def resolve_path(id, forward: bool = True):
-        return path_id_map[resolve_id(id, forward)]
-
+    resolver = PathResolver(con)
     df = pd.read_sql_query(
         "select rcommit, edited_files.path as file_id from edited_files", con
     )
 
-    df["path"] = df["file_id"].apply(lambda id: resolve_path(id))
+    df["path"] = df["file_id"].apply(lambda id: resolver.resolve_path(id))
 
     df = df[
         df.apply(
@@ -201,4 +161,5 @@ def impl(args):
 
 
 if __name__ == "__main__":
+    plt.rcParams["font.family"] = "consolas"
     impl(parse_args())

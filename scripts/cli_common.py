@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import functools
 from typing import *
 
 from datetime import datetime
@@ -144,3 +145,43 @@ def read_configs(parser, args, base_args=sys.argv[1:]):
 def parse_args_with_config(parser, args_list=sys.argv[1:]):
     args = parser.parse_args(args_list)
     return read_configs(parser, args, args_list)
+
+
+class PathResolver:
+    def __init__(self, con):
+        self.path_id_map = {}
+        for (id, path) in con.execute("select path_id, path from file_path_with_dir"):
+            self.path_id_map[id] = path
+
+        self.rename_forward = {}
+        self.rename_backward = {}
+
+        for (old, new) in con.execute("select old_path, new_path from renamed"):
+            if old not in self.rename_forward:
+                self.rename_forward[old] = []
+            if new not in self.rename_backward:
+                self.rename_backward[new] = []
+
+            self.rename_forward[old].append(new)
+            self.rename_backward[new].append(old)
+
+    @functools.cache
+    def resolve_id(self, id, forward: bool = True):
+        result = id
+        remap = self.rename_forward if forward else self.rename_backward
+        already_visited = set()
+        while result in remap:
+            found = False
+            for option in remap[result]:
+                if option not in already_visited:
+                    found = True
+                    result = option
+                    already_visited.add(option)
+
+            if not found:
+                break
+
+        return result
+
+    def resolve_path(self, id, forward: bool = True):
+        return self.path_id_map[self.resolve_id(id, forward)]
