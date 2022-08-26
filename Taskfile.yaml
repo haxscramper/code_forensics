@@ -81,7 +81,7 @@ tasks:
     deps: [ensure_test_db]
     summary: "Line category breakdown"
     cmds:
-      - ./scripts/line_category.py {{.SCRIPT_OPTS}}
+      - ./scripts/line_category.py --subdir-breakdown=True {{.SCRIPT_OPTS}}
 
   message_length:
     deps: [ensure_test_db]
@@ -120,7 +120,8 @@ tasks:
     deps: [build_binary]
     cmds:
       - "{{.BIN}} --help || gdb_cmd {{.BIN}} --help"
-      - "{{.BIN}} {{.OPTS}}" # - "{{.BIN}} {{.OPTS}} || {{.GDB_CMD}} {{.BIN}} {{.OPTS}}"
+      # - "{{.BIN}} {{.OPTS}}"
+      - "{{.BIN}} {{.OPTS}} || {{.GDB_CMD}} {{.BIN}} {{.OPTS}}"
       - rm -f /tmp/temp_db.sqlite
       - cp {{.DB_FILE}} /tmp/temp_db.sqlite
 

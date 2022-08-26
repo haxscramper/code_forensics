@@ -289,6 +289,11 @@ struct MultiStore {
         return store<value_type_t<Id>>().at(id);
     }
 
+    template <dod::IsIdType Id>
+    auto at(Id id) const -> CR<value_type_t<Id>> {
+        return store<value_type_t<Id>>().at(id);
+    }
+
     template <typename Id, typename Val>
     void insert(Id id, CR<Val> val) {
         return store<Val>().insert(id, val);
@@ -319,5 +324,12 @@ struct fmt::formatter<Id> : fmt::formatter<Str> {
     }
 };
 
+template <typename CharT, typename TraitsT, dod::IsIdType Id>
+std::basic_ostream<CharT, TraitsT> operator<<(
+    std::basic_ostream<CharT, TraitsT>& os,
+    CR<Id>                              value) {
+    os << value.getStr();
+    return os;
+};
 
 #endif // DOD_BASE_HPP

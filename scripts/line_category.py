@@ -83,11 +83,9 @@ if args.subdir_breakdown:
 
     max_total = int(math.log(df["total"].max(), 10) + 1)
     max_name = df["file_name"].apply(lambda x: len(x)).max()
-    max_dir = df["file_dir"].apply(lambda x: len(x)).max()
 
     df["name"] = df.apply(
-        lambda row: f"{row['file_dir']:-<{max_dir}}"
-        + f"{row['file_name']:->{max_name}} "
+        lambda row: f"{row['file_name']:-<{max_name}} "
         + f"({row['total']:<{max_total}})",
         axis=1,
     )
@@ -101,7 +99,7 @@ else:
     def name(r):
         return (
             f"({r.comment:<4}/{r.code:<4}/{r['empty']:<4}) "
-            + f"{r.file_dir + r.file_name:-<{max_name}}"
+            + f"{r.file_name:-<{max_name}}"
         )
 
     df["name"] = df.apply(lambda row: name(row), axis=1)

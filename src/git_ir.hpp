@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <sqlite_orm/sqlite_orm.h>
 #include <concepts>
 #include <iostream>
@@ -238,13 +239,13 @@ namespace ir {
 /// \brief Main store for repository analysis
 struct content_manager {
     dod::MultiStore<
-        dod::InternStore<AuthorId, Author>,     // Full list of authors
-        dod::InternStore<LineId, LineData>,     // found lines
-        dod::Store<FileId, File>,               // files
-        dod::InternStore<FilePathId, FilePath>, // file paths
-        dod::Store<CommitId, Commit>,           // all commits
-        dod::Store<DirectoryId, Directory>,     // all directories
-        dod::InternStore<StringId, String>      // all interned strings
+        dod::InternStore<AuthorId, Author>,       // Full list of authors
+        dod::InternStore<LineId, LineData>,       // found lines
+        dod::Store<FileId, File>,                 // files
+        dod::InternStore<FilePathId, FilePath>,   // file paths
+        dod::Store<CommitId, Commit>,             // all commits
+        dod::InternStore<DirectoryId, Directory>, // all directories
+        dod::InternStore<StringId, String>        // all interned strings
         >
         multi;
 
@@ -273,14 +274,29 @@ struct content_manager {
             .parent = parentDirectory(dir), .name = dir.native()});
     }
 
-    FilePathId getFile(CR<Str> file) {
-        return add(ir::FilePath{
-            .path = add(String{file}), .dir = getDirectory(file)});
+    FilePathId getFilePath(CR<Str> file) {
+        if (file.starts_with(" ")) {
+            std::cerr << file << std::endl;
+            assert(false);
+        }
+
+
+        auto result = add(ir::FilePath{
+            .path = add(String{file}), .dir = parentDirectory(file)});
+
+        assert(!at(at(result).path).text.starts_with(" "));
+
+        return result;
     }
 
     /// \brief Get reference to value pointed to by the ID
     template <dod::IsIdType Id>
     auto at(Id id) -> typename dod::value_type_t<Id>& {
+        return multi.at<Id>(id);
+    }
+
+    template <dod::IsIdType Id>
+    [[nodiscard]] auto cat(Id id) const -> CR<dod::value_type_t<Id>> {
         return multi.at<Id>(id);
     }
 
@@ -373,6 +389,16 @@ struct orm_file_path : FilePath {
     FilePathId id;
 };
 
+inline void exec(sqlite3* db, Str query) {
+    char* errMsg = 0;
+    int   rc     = sqlite3_exec(db, query.c_str(), NULL, NULL, &errMsg);
+    if (rc != SQLITE_OK) {
+        sqlite3_free(errMsg);
+        throw std::runtime_error(
+            "DB execution failure for query '" + query + "': " + errMsg);
+    }
+}
+
 /// \brief Instantiate database connection
 inline auto create_db(CR<Str> storagePath) {
     auto storage = make_storage(
@@ -436,6 +462,34 @@ inline auto create_db(CR<Str> storagePath) {
             "strings",
             make_column("id", &orm_string::id, primary_key()),
             make_column("text", &orm_string::text)));
+
+    storage.on_open = [](sqlite3* db) {
+        // do what you want once open happened
+        exec(db, "DROP VIEW IF EXISTS file_version_with_path;--");
+        exec(db, R"(
+CREATE VIEW file_version_with_path AS SELECT file.id AS id,
+       file.rcommit,
+       paths.path AS path_id,
+       strings.text AS PATH,
+       paths.dir AS dir
+  FROM FILE
+ INNER JOIN paths
+    ON file.path = paths.id
+ INNER JOIN strings
+    ON path_id = strings.id;--
+)");
+        exec(db, "DROP VIEW IF EXISTS file_version_with_path_dir;--");
+        exec(db, R"(
+CREATE VIEW file_version_with_path_dir AS SELECT fv.id,
+       fv.rcommit,
+       fv.path,
+       dir.name AS dir
+  FROM file_version_with_path AS fv
+ INNER JOIN dir
+    ON fv.dir = dir.id;SELECT *
+  FROM file_version_with_path_dir;
+)");
+    };
 
     return storage;
 }

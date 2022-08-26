@@ -24,6 +24,7 @@
 #include <boost/thread/lock_guard.hpp>
 
 
+#include "dod_base.hpp"
 #include "repo_graph.hpp"
 #include "python_interop.hpp"
 #include "cli_options.hpp"
@@ -90,6 +91,9 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
         storage.remove_all<ir::orm_dir>();
         storage.remove_all<ir::orm_author>();
         storage.remove_all<ir::orm_string>();
+        storage.remove_all<ir::orm_file_path>();
+        storage.remove_all<ir::orm_edited_files>();
+        storage.remove_all<ir::orm_renamed_file>();
     } else {
         LOG_I(state) << "Incremental update, reusing the database";
     }
@@ -165,6 +169,15 @@ void store_content(walker_state* state, CR<ir::content_manager> content) {
          const auto& [id, file] :
          content.multi.store<ir::FilePath>().pairs()) {
         storage.insert(ir::orm_file_path{*file, id});
+        assert(!content.cat(content.cat(id).path).text.starts_with(" "));
+
+        LOG_T(state) << fmt::format(
+            "path {} string {} text {}",
+            id,
+            content.cat(id).path,
+            content.cat(content.cat(id).path).text);
+
+        bar.tick();
     }
 
     storage.commit();

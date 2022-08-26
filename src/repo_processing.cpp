@@ -262,7 +262,8 @@ FileId exec_walker(
     {
         SLock lock{state->m};
         init = File{
-            .commit_id = commit, .path = state->content->getFile(path)};
+            .commit_id = commit,
+            .path      = state->content->getFilePath(relpath)};
     }
 
     // Choose between different modes of data processing and call into one.
@@ -471,10 +472,11 @@ void for_each_commit(walker_state* state) {
 
             SLock lock{tick_mutex};
 
-            auto new_path = state->content->getFile(delta->new_file.path);
+            auto new_path = state->content->getFilePath(
+                delta->new_file.path);
             if (delta->old_file.path &&
                 strcmp(delta->old_file.path, delta->new_file.path) != 0) {
-                auto old_path = state->content->getFile(
+                auto old_path = state->content->getFilePath(
                     delta->old_file.path);
                 state->content->at(id_commit).renamed_files.push_back(
                     RenamedFile{old_path, new_path});
