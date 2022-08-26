@@ -498,7 +498,7 @@ CREATE VIEW file_path_with_dir AS SELECT paths.id AS path_id,
   FROM paths
  INNER JOIN strings
     ON paths.path = strings.id
- INNER JOIN dir
+ LEFT OUTER JOIN dir
     ON paths.dir = dir.id;
 )");
     };
