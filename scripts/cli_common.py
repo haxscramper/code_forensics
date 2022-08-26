@@ -117,7 +117,7 @@ def add_title_args(parser, default: str):
     )
 
 
-def read_configs(parser, args):
+def read_configs(parser, args, base_args=sys.argv[1:]):
     if args.config:
         options = []
         for path in args.config:
@@ -133,7 +133,7 @@ def read_configs(parser, args):
                         else:
                             options.append(split[0])
 
-        new = sys.argv[1:] + options
+        new = base_args + options
         new_args = parser.parse_args(new)
         return new_args
 
@@ -141,6 +141,6 @@ def read_configs(parser, args):
         return args
 
 
-def parse_args_with_config(parser):
-    args = parser.parse_args()
-    return read_configs(parser, args)
+def parse_args_with_config(parser, args_list=sys.argv[1:]):
+    args = parser.parse_args(args_list)
+    return read_configs(parser, args, args_list)

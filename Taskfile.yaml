@@ -5,6 +5,7 @@ vars:
   GH_ORG: "nim-works"
   TARGET: nimskull
   BRANCH: devel
+  TMPD: /tmp
   DB_FILE: /tmp/db.sqlite
   PNG_FILE: /tmp/db.png
   SCRIPT_OPTS: /tmp/db.sqlite /tmp/db.png --config=scripts/config.cfg
@@ -81,13 +82,25 @@ tasks:
     deps: [ensure_test_db]
     summary: "Line category breakdown"
     cmds:
-      - ./scripts/line_category.py --subdir-breakdown=True {{.SCRIPT_OPTS}}
+      - ./scripts/line_category.py --subdir-breakdown={{.PER_DIR}} {{.SCRIPT_OPTS}}
+    vars:
+      PER_DIR: False
 
   message_length:
     deps: [ensure_test_db]
     summary: "Generate stats for the commit message lenght"
     cmds:
       - ./scripts/commit_message_length.py {{.SCRIPT_OPTS}}
+
+  all_stats:
+    summary: "Execute all statistics scripts in sequence"
+    cmds:
+      - >
+        ./scripts/all_stats.py
+        {{.DB_FILE}}
+        {{.TMPD}}
+        --config={{.PWD}}/scripts/all_config.yaml
+        --subconfig={{.PWD}}/scripts/config.cfg
 
   compare:
     cmds:

@@ -1,0 +1,4 @@
+line_category:
+  subdir-breakdown: "True"
+hotspot_connections:
+  outfile: "/tmp/hotspot_connection.dot"

@@ -8,33 +8,32 @@ import math
 import igraph as ig
 from cli_common import *
 
-parser = init_parser()
-parser.add_argument(
-    "--mode",
-    type=str,
-    dest="mode",
-    choices=["graph", "correlation"],
-    default="graph",
-    help="Hotspot correlation analysis mode",
-)
 
-parser.add_argument(
-    "--graph.min_correlation",
-    type=int,
-    dest="graph_min_correlation",
-    default=200,
-    help="Minimal number of time two files had to be edited together in order to be linked together in the graph",
-)
+def parse_args(args=sys.argv[1:]):
+    parser = init_parser()
+    parser.add_argument(
+        "--mode",
+        type=str,
+        dest="mode",
+        choices=["graph", "correlation"],
+        default="graph",
+        help="Hotspot correlation analysis mode",
+    )
 
-args = parse_args_with_config(parser)
+    parser.add_argument(
+        "--graph.min_correlation",
+        type=int,
+        dest="graph_min_correlation",
+        default=200,
+        help="Minimal number of time two files had to be edited together in order to be linked together in the graph",
+    )
 
-plt.rcParams["font.family"] = "consolas"
-plt.rcParams["axes.facecolor"] = "white"
-
-con = sqlite3.connect(args.database)
+    return parse_args_with_config(parser, args)
 
 
-def graph_correlation():
+def graph_correlation(args):
+    con = sqlite3.connect(args.database)
+
     df = pd.read_sql_query(
         """
     select rcommit, path as file_id, strings.text as path
@@ -155,5 +154,6 @@ graph {{
         g.write(args.outfile)
 
 
-if args.mode == "graph":
-    graph_correlation()
+def impl(args):
+    if args.mode == "graph":
+        graph_correlation(args)
