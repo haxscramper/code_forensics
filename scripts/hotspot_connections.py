@@ -19,7 +19,7 @@ def parse_args(args=sys.argv[1:]):
         "--mode",
         type=str,
         dest="mode",
-        choices=["graph", "heatmap"],
+        choices=["graph", "heatmap", "heatmap-fraction"],
         default="graph",
         help="Hotspot correlation analysis mode",
     )
@@ -28,7 +28,7 @@ def parse_args(args=sys.argv[1:]):
         "--top",
         type=str,
         dest="top",
-        default=30,
+        default=40,
         help="Top N files for the correlation heatmap. Applicable for the heatmap generation",
     )
 
@@ -112,12 +112,18 @@ def heatmap_correlation(args):
     g = ig.Graph()
     (pair_list, vertex_weight, path_ids) = co_edit_stats(gb, g)
 
+    rev_ids = {}
+    for k, v in path_ids.items():
+        rev_ids[v] = k
+
     weight_map = {}
 
-    if args.ordering_mode == "self-edit":
+    omode = args.ordering_mode
+
+    if omode == "self-edit":
         weight_map = vertex_weight
 
-    elif args.ordering_mode in ["connections", "top-connection"]:
+    elif omode in ["connections", "top-connection", "top-fraction"]:
         coedit_weigth = {}
         dedup_set = set()
         weight_map = {}
@@ -132,10 +138,10 @@ def heatmap_correlation(args):
                     dedup_set.add((it1, it2))
                     adjacent_edits.append(value)
 
-            if args.ordering_mode == "connections":
+            if omode == "connections":
                 weight_map[it1] = sum(adjacent_edits)
 
-            elif args.ordering_mode == "top-connection":
+            elif omode == "top-connection":
                 weight_map[it1] = max(adjacent_edits) if adjacent_edits else 0
 
     count = pd.DataFrame(weight_map.items(), columns=["path_id", "count"]).sort_values(
@@ -147,25 +153,38 @@ def heatmap_correlation(args):
         for id in count.head(min(count["count"].count(), args.top))["path_id"]
     ]
 
-    heatmap = np.zeros([len(edit), len(edit)]).astype(int)
+    heatmap = np.zeros([len(edit), len(edit)])
+    heatmap = heatmap.astype(int)
+
     for idx1, it1 in enumerate(edit):
         for idx2, it2 in enumerate(edit):
             if it1 in pair_list and it2 in pair_list[it1]:
-                heatmap[idx1][idx2] = pair_list[it1][it2]
+                if args.mode == "heatmap-fraction":
+                    heatmap[idx1][idx2] = int(
+                        pair_list[it1][it2] / vertex_weight[it1] * 100
+                    )
 
-        coedit_weight = {}
+                else:
+                    heatmap[idx1][idx2] = pair_list[it1][it2]
 
     fig, ax = plt.subplots(figsize=(12, 12))
 
     ax.imshow(heatmap)
     ax.set_yticks(
         np.arange(len(edit)),
-        ["{} ({})".format(resolver.resolve_path(id), weight_map[id]) for id in edit],
+        [
+            "{} ({}{})".format(
+                rev_ids[id],
+                int(weight_map[id]),
+                "%" if omode == "top-fraction" else "",
+            )
+            for id in edit
+        ],
     )
 
     ax.set_xticks(
         np.arange(len(edit)),
-        [resolver.resolve_path(id) for id in edit],
+        [rev_ids[id] for id in edit],
         rotation=45,
         ha="right",
         rotation_mode="anchor",
@@ -175,12 +194,21 @@ def heatmap_correlation(args):
         for j in range(len(edit)):
             text = ax.text(j, i, heatmap[i, j], ha="center", va="center", color="w")
 
+    descriptions = [
+        ["edited", "edit count"],
+        ["connected", "connection count"],
+        ["connected", "maximum common edit count"],
+    ]
+
+    idx = ["self-edit", "connections", "top-connection", "top-fraction"].index(omode)
+
     ax.set_title(
         args.title
-        or "Edit correlation of the top {} most {}, ignoring self-edit, showing {}".format(
-            args.top,  #
-            "edited" if args.ordering_mode == "self-edit" else "connected",
-            "edit count" if args.ordering_mode == "self-edit" else "connection count",
+        or "Edit {} of the top {} most {}, ignoring self-edit, showing {}".format(
+            "correlation" if args.mode == "heatmap" else "correlation fraction",
+            args.top,
+            descriptions[idx][0],
+            descriptions[idx][1],
         )
     )
 
@@ -263,7 +291,7 @@ def impl(args):
     if args.mode == "graph":
         graph_correlation(args)
 
-    elif args.mode == "heatmap":
+    elif args.mode in ["heatmap", "heatmap-fraction"]:
         heatmap_correlation(args)
 
 

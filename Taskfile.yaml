@@ -3,7 +3,7 @@ version: 3
 vars:
   PER_YEAR: 1
   GH_ORG: "nim-works"
-  TARGET: nimskull
+  TARGET: Nim
   BRANCH: devel
   TMPD: /tmp
   DB_FILE: /tmp/db.sqlite
@@ -73,8 +73,8 @@ tasks:
         {{.DB_FILE}}
         /tmp/db.png
         --config=scripts/config.cfg
-        --mode=heatmap
-        --ordering-mode=top-connection
+        --mode=heatmap-fraction
+        --ordering-mode=connections
 
   top_comitter:
     deps: [ensure_test_db]
