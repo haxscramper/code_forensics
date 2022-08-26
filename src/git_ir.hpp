@@ -489,6 +489,18 @@ CREATE VIEW file_version_with_path_dir AS SELECT fv.id,
     ON fv.dir = dir.id;SELECT *
   FROM file_version_with_path_dir;
 )");
+
+        exec(db, "DROP VIEW IF EXISTS file_path_with_dir;");
+        exec(db, R"(
+CREATE VIEW file_path_with_dir AS SELECT paths.id AS path_id,
+       strings.text AS PATH,
+       dir.name AS dir
+  FROM paths
+ INNER JOIN strings
+    ON paths.path = strings.id
+ INNER JOIN dir
+    ON paths.dir = dir.id;
+)");
     };
 
     return storage;

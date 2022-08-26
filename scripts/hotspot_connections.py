@@ -24,7 +24,7 @@ def parse_args(args=sys.argv[1:]):
         "--graph.min_correlation",
         type=int,
         dest="graph_min_correlation",
-        default=200,
+        default=100,
         help="Minimal number of time two files had to be edited together in order to be linked together in the graph",
     )
 
@@ -36,9 +36,9 @@ def graph_correlation(args):
 
     df = pd.read_sql_query(
         """
-    select rcommit, path as file_id, strings.text as path
+    select rcommit, fp.path_id as file_id, fp.path as path
     from edited_files
-    inner join strings on strings.id = edited_files.path
+    inner join file_path_with_dir fp on fp.path_id = edited_files.path
     """,
         con,
     )
@@ -157,3 +157,7 @@ graph {{
 def impl(args):
     if args.mode == "graph":
         graph_correlation(args)
+
+
+if __name__ == "__main__":
+    impl(parse_args())

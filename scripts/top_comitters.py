@@ -34,3 +34,7 @@ def impl(args):
     ax.set_xlabel("Commit count")
     ax.set_ylabel("contributor name and commit count")
     fig.savefig(args.outfile, bbox_inches="tight", dpi=300)
+
+
+if __name__ == "__main__":
+    impl(parse_args())

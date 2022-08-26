@@ -127,3 +127,7 @@ def impl(args):
 
     fig.autofmt_xdate()
     plt.savefig(args.outfile, bbox_inches="tight")
+
+
+if __name__ == "__main__":
+    impl(parse_args())

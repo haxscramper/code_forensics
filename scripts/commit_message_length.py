@@ -157,3 +157,7 @@ def impl(args):
     ax.grid(True)
     fig.set_dpi(300)
     fig.savefig(args.outfile, bbox_inches="tight")
+
+
+if __name__ == "__main__":
+    impl(parse_args())

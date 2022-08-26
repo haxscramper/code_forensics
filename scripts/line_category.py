@@ -156,3 +156,7 @@ def impl(args):
     )
 
     fig.savefig(args.outfile, bbox_inches="tight", dpi=300)
+
+
+if __name__ == "__main__":
+    impl(parse_args())

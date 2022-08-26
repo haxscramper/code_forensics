@@ -129,3 +129,7 @@ def impl(args):
 
     plt.legend(loc="upper left")
     plt.savefig(args.outfile, bbox_inches="tight")
+
+
+if __name__ == "__main__":
+    impl(parse_args())
