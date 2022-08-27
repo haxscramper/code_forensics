@@ -1,33 +1,41 @@
-name: "Compile and execute analysis for the current repository"
+name: "Compile and execute analysis for the current repository on Arch Linux"
 on: push
 jobs:
   test:
-    if: "false"
     runs-on: ubuntu-22.04
+    container: archlinux:latest
     steps:
       - name: "Checkout the repository"
         uses: actions/checkout@v2
       - name: "Update installed packages"
-        run: sudo apt-get -qq update
+        run: pacman --noconfirm -Syu
       - name: "Install package dependencies"
         run: |
-          sudo apt-get -qq -y install \
-            cmake git g++ gcc make sudo tar wget curl \
-            pip clang libboost-all-dev \
-            python-is-python3 graphviz
+          pacman --noconfirm -S \
+            gcc \
+            clang \
+            python-pip \
+            wget \
+            curl \
+            git \
+            cmake \
+            make \
+            boost
 
         env:
           DEBIAN_FRONTEND: noninteractive
 
       - name: "Install conan"
-        run: pip install conan matplotlib igraph
-      - name: "Build code analyzer"
+        run: pip install conan matplotlib igraph pandas numpy
+      - name: "Install conan dependencies"
         run: |
           conan install . \
             -if build/dependencies/conan \
             --build=missing \
             --settings compiler.libcxx="libstdc++11"
 
+      - name: "Build code analyzer"
+        run: |
           mkdir -p build
           cd build
           cmake ..
@@ -51,4 +59,5 @@ jobs:
           name: burndown-plots
           path: |
             *.png
+            nimskull_plots/*.png
             nimskull.sqlite

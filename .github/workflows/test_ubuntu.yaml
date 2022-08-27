@@ -1,0 +1,54 @@
+name: "Compile and execute analysis for the current repository on Ubuntu"
+on: push
+jobs:
+  test:
+    if: "false"
+    runs-on: ubuntu-22.04
+    steps:
+      - name: "Checkout the repository"
+        uses: actions/checkout@v2
+      - name: "Update installed packages"
+        run: sudo apt-get -qq update
+      - name: "Install package dependencies"
+        run: |
+          sudo apt-get -qq -y install \
+            cmake git g++ gcc make sudo tar wget curl \
+            pip clang libboost-all-dev \
+            python-is-python3 graphviz
+
+        env:
+          DEBIAN_FRONTEND: noninteractive
+
+      - name: "Install conan"
+        run: pip install conan matplotlib igraph
+      - name: "Build code analyzer"
+        run: |
+          conan install . \
+            -if build/dependencies/conan \
+            --build=missing \
+            --settings compiler.libcxx="libstdc++11"
+
+          mkdir -p build
+          cd build
+          cmake ..
+          make -j10
+          cd ..
+
+      - name: "Compare repositories"
+        run: ./tests/ci_compare_repo.sh
+
+      - name: "Run all stats"
+        run: |
+          mkdir nimskull_plots
+          ./scripts/all_stats.py \
+            nimskull.sqlite \
+            nimskull_plots \
+            --config=scripts/all_config.yaml \
+            --subconfig=scripts/config.cfg
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: burndown-plots
+          path: |
+            *.png
+            nimskull.sqlite
