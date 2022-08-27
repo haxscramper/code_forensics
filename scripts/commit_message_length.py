@@ -12,7 +12,6 @@ import sys
 
 def parse_args(args=sys.argv[1:]):
     parser = init_parser()
-    add_title_args(parser, None)
 
     parser.add_argument(
         "--mode",

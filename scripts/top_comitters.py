@@ -9,7 +9,6 @@ from cli_common import *
 
 def parse_args(args=sys.argv[1:]):
     parser = init_parser()
-    add_title_args(parser, "Top comitter distribution")
     return parse_args_with_config(parser, args)
 
 
@@ -30,7 +29,7 @@ def impl(args):
     fig, ax = plt.subplots(figsize=(16, 16))
     ax.plot(df["count"], df["name"])
     ax.grid(True)
-    ax.set_title(args.title)
+    ax.set_title(args.title or "Top comitter distribution")
     ax.set_xlabel("Commit count")
     ax.set_ylabel("contributor name and commit count")
     fig.savefig(args.outfile, bbox_inches="tight", dpi=300)

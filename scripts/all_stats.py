@@ -42,7 +42,7 @@ modules = [
     "line_category",
     "code_authorship",
     "commit_message_length",
-    "author_ridgeline",
+    # "author_ridgeline",
 ]
 
 sub_args = {}
