@@ -97,6 +97,8 @@ $(document).ready(function(){initNavTree('repo__processing_8cpp.html',''); initR
 <code>#include &quot;<a class="el" href="logging_8hpp_source.html">logging.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="common_8hpp_source.html">common.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="git__interface_8hpp_source.html">git_interface.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="repo__graph_8hpp_source.html">repo_graph.hpp</a>&quot;</code><br />
+<code>#include &lt;git2/patch.h&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;execution&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -126,12 +128,10 @@ Functions</h2></td></tr>
 <tr class="separator:a3e397fba9a09c51d3f0fcca300554f6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a2dfc3ba97405a8daef3e3cc2a5dbbe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8cpp.html#a2a2dfc3ba97405a8daef3e3cc2a5dbbe">open_walker</a> (git_oid &amp;oid, <a class="el" href="structwalker__state.html">walker_state</a> &amp;state)</td></tr>
 <tr class="separator:a2a2dfc3ba97405a8daef3e3cc2a5dbbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adcbd5066806c09118426a30aff0321f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8cpp.html#adcbd5066806c09118426a30aff0321f1">for_each_commit</a> (<a class="el" href="structwalker__state.html">walker_state</a> *state, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt; <a class="el" href="struct_full_commit_data.html">FullCommitData</a> &gt;&gt; full_commits)</td></tr>
-<tr class="separator:adcbd5066806c09118426a30aff0321f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7db7b7aeada44b10280264d4cf36eb1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8cpp.html#aa7db7b7aeada44b10280264d4cf36eb1">for_each_commit</a> (<a class="el" href="structwalker__state.html">walker_state</a> *state)</td></tr>
+<tr class="separator:aa7db7b7aeada44b10280264d4cf36eb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89d1572c2025357736e222d7e5c0074d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8cpp.html#a89d1572c2025357736e222d7e5c0074d">sample_blame_commits</a> (<a class="el" href="structwalker__state.html">walker_state</a> *state, <a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt; <a class="el" href="struct_sub_task_params.html">SubTaskParams</a> &gt; &amp;params)</td></tr>
 <tr class="separator:a89d1572c2025357736e222d7e5c0074d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a226c8ab93890b4b51d6c3cdcb3e52db7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8cpp.html#a226c8ab93890b4b51d6c3cdcb3e52db7">post_line_hooks</a> (<a class="el" href="structwalker__state.html">walker_state</a> *state)</td></tr>
-<tr class="separator:a226c8ab93890b4b51d6c3cdcb3e52db7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea4a646ccabdc15465673723586a1488"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt; CommitId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8cpp.html#aea4a646ccabdc15465673723586a1488">launch_analysis</a> (git_oid &amp;oid, <a class="el" href="structwalker__state.html">walker_state</a> *state)</td></tr>
 <tr class="separator:aea4a646ccabdc15465673723586a1488"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -224,8 +224,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="adcbd5066806c09118426a30aff0321f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adcbd5066806c09118426a30aff0321f1">&#9670;&nbsp;</a></span>for_each_commit()</h2>
+<a id="aa7db7b7aeada44b10280264d4cf36eb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7db7b7aeada44b10280264d4cf36eb1">&#9670;&nbsp;</a></span>for_each_commit()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -234,18 +234,8 @@ Functions</h2></td></tr>
           <td class="memname">void for_each_commit </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structwalker__state.html">walker_state</a> *&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>state</em></td><td>)</td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt; <a class="el" href="struct_full_commit_data.html">FullCommitData</a> &gt;&gt;&#160;</td>
-          <td class="paramname"><em>full_commits</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -320,24 +310,6 @@ Functions</h2></td></tr>
           <td></td>
           <td>)</td>
           <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a226c8ab93890b4b51d6c3cdcb3e52db7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a226c8ab93890b4b51d6c3cdcb3e52db7">&#9670;&nbsp;</a></span>post_line_hooks()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void post_line_hooks </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structwalker__state.html">walker_state</a> *&#160;</td>
-          <td class="paramname"><em>state</em></td><td>)</td>
-          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">

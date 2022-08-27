@@ -113,6 +113,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a22e666a8188e9317791d0d3f20f0a1a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a831800a61c1b662adafb727abe4ef552">Opt</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a22e666a8188e9317791d0d3f20f0a1a1">get_period</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; commit) const noexcept</td></tr>
 <tr class="separator:a22e666a8188e9317791d0d3f20f0a1a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a944e7933895be2cc42e4c4c0774be923"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a944e7933895be2cc42e4c4c0774be923">get_period</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; commit, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; line) const noexcept</td></tr>
+<tr class="memdesc:a944e7933895be2cc42e4c4c0774be923"><td class="mdescLeft">&#160;</td><td class="mdescRight">get period the line was attributed to, otherwise fall back to the commit period  <a href="structwalker__state.html#a944e7933895be2cc42e4c4c0774be923">More...</a><br /></td></tr>
 <tr class="separator:a944e7933895be2cc42e4c4c0774be923"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0f44c43ce52bc9bdd3ddcc2991f2c26"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ac0f44c43ce52bc9bdd3ddcc2991f2c26">consider_changed</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; <a class="el" href="gitwrap_8hpp.html#a23114cb7e9dc6fbb95d307b28af92354">commit_id</a>, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; line_change_id) const -&gt; bool</td></tr>
 <tr class="separator:ac0f44c43ce52bc9bdd3ddcc2991f2c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -140,10 +141,12 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:ab561688122ed9ce1aa30f4e4d9708444"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of commits that were selected for the processing run.  <a href="structwalker__state.html#ab561688122ed9ce1aa30f4e4d9708444">More...</a><br /></td></tr>
 <tr class="separator:ab561688122ed9ce1aa30f4e4d9708444"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a161ce5118cda3eab460d27a193637251"><td class="memItemLeft" align="right" valign="top">std::mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a161ce5118cda3eab460d27a193637251">m</a></td></tr>
+<tr class="memdesc:a161ce5118cda3eab460d27a193637251"><td class="mdescLeft">&#160;</td><td class="mdescRight">common mutex for synchronizing content manager mutations  <a href="structwalker__state.html#a161ce5118cda3eab460d27a193637251">More...</a><br /></td></tr>
 <tr class="separator:a161ce5118cda3eab460d27a193637251"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a808b305b6826411c16d21db04ad7c15f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structir_1_1content__manager.html">ir::content_manager</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a808b305b6826411c16d21db04ad7c15f">content</a></td></tr>
 <tr class="separator:a808b305b6826411c16d21db04ad7c15f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25289bbfbc778fc387189b1379154eab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a5076b1659821c8d7ce06da09452ba382">SPtr</a>&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a25289bbfbc778fc387189b1379154eab">logger</a></td></tr>
+<tr class="memdesc:a25289bbfbc778fc387189b1379154eab"><td class="mdescLeft">&#160;</td><td class="mdescRight">main application logger entry  <a href="structwalker__state.html#a25289bbfbc778fc387189b1379154eab">More...</a><br /></td></tr>
 <tr class="separator:a25289bbfbc778fc387189b1379154eab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -357,6 +360,8 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>get period the line was attributed to, otherwise fall back to the commit period </p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -430,6 +435,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>main application logger entry </p>
+
 </div>
 </div>
 <a id="a161ce5118cda3eab460d27a193637251"></a>
@@ -443,6 +450,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>common mutex for synchronizing content manager mutations </p>
 
 </div>
 </div>

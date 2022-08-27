@@ -88,6 +88,7 @@ $(document).ready(function(){initNavTree('dod__base_8hpp.html',''); initResizabl
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">dod_base.hpp File Reference</div>  </div>
@@ -157,6 +158,12 @@ Typedefs</h2></td></tr>
 <tr class="memdesc:a29c5bf718f2aee7ce2858fd1d5698bca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper alias for accessing id type of the type.  <a href="namespacedod.html#a29c5bf718f2aee7ce2858fd1d5698bca">More...</a><br /></td></tr>
 <tr class="separator:a29c5bf718f2aee7ce2858fd1d5698bca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a3c4e0b36fd2d9181bef5bec971f1562d"><td class="memTemplParams" colspan="2">template&lt;typename CharT , typename TraitsT , dod::IsIdType Id&gt; </td></tr>
+<tr class="memitem:a3c4e0b36fd2d9181bef5bec971f1562d"><td class="memTemplItemLeft" align="right" valign="top">std::basic_ostream&lt; CharT, TraitsT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dod__base_8hpp.html#a3c4e0b36fd2d9181bef5bec971f1562d">operator&lt;&lt;</a> (std::basic_ostream&lt; CharT, TraitsT &gt; &amp;os, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; Id &gt; value)</td></tr>
+<tr class="separator:a3c4e0b36fd2d9181bef5bec971f1562d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a6c0b11ca545823218306beb5a5bfbab6"><td class="memTemplParams" colspan="2">template&lt;typename D &gt; </td></tr>
@@ -217,6 +224,37 @@ Variables</h2></td></tr>
 <li>__name and associated value type <code>__value</code>. All three parameters must be specified in order for the definition to be sound.</li>
 </ul>
 <p>Defined type provides implementation of the <code>::FromValue</code> and <code>::Nil</code> static functions that can be used as an alternative construction methods in various cases. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a3c4e0b36fd2d9181bef5bec971f1562d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c4e0b36fd2d9181bef5bec971f1562d">&#9670;&nbsp;</a></span>operator&lt;&lt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename CharT , typename TraitsT , dod::IsIdType Id&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::basic_ostream&lt;CharT, TraitsT&gt; operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::basic_ostream&lt; CharT, TraitsT &gt; &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; Id &gt;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>

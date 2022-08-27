@@ -4,5 +4,7 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="is_base_of_template\l\< Base, Derived \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structis__base__of__template.html",tooltip=" "];
+  Node0 [label="ir::Author",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1_author.html",tooltip="Author - name and email found during the source code analysis."];
+  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="ir::orm_author",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1orm__author.html",tooltip="ORM wrapper for the author data."];
 }

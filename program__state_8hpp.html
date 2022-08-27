@@ -85,7 +85,10 @@ $(document).ready(function(){initNavTree('program__state_8hpp.html',''); initRes
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">program_state.hpp File Reference</div>  </div>
 </div><!--header-->
@@ -94,10 +97,13 @@ $(document).ready(function(){initNavTree('program__state_8hpp.html',''); initRes
 <p>Main code analysis state and configuration classes.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;unordered_set&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;chrono&gt;</code><br />
 <code>#include &lt;boost/log/trivial.hpp&gt;</code><br />
 <code>#include &lt;boost/date_time/gregorian/gregorian.hpp&gt;</code><br />
 <code>#include &lt;boost/date_time/posix_time/posix_time.hpp&gt;</code><br />
+<code>#include &lt;boost/describe.hpp&gt;</code><br />
+<code>#include &lt;boost/mp11.hpp&gt;</code><br />
 <code>#include &quot;<a class="el" href="common_8hpp_source.html">common.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="git__interface_8hpp_source.html">git_interface.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="git__ir_8hpp_source.html">git_ir.hpp</a>&quot;</code><br />
@@ -116,11 +122,19 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfmt_1_1formatter_3_01_t_00_01char_00_01std_1_1enable__if__t_3_01boost_1_1describe_1_1has__70059db84d41efe19b45131ba41e5c1b.html">fmt::formatter&lt; T, char, std::enable_if_t&lt; boost::describe::has_describe_bases&lt; T &gt;::value &amp;&amp;boost::describe::has_describe_members&lt; T &gt;::value &amp;&amp;!std::is_union&lt; T &gt;::value &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfmt_1_1formatter_3_01_t_00_01char_00_01std_1_1enable__if__t_3_01boost_1_1describe_1_1has__82caa5c447a9324d6094a99b0fdff09a.html">fmt::formatter&lt; T, char, std::enable_if_t&lt; boost::describe::has_describe_enumerators&lt; T &gt;::value &gt; &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">templated formatter for all classes that were 'described' using boost/describe macros.  <a href="structfmt_1_1formatter_3_01_t_00_01char_00_01std_1_1enable__if__t_3_01boost_1_1describe_1_1has__82caa5c447a9324d6094a99b0fdff09a.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfmt_1_1formatter_3_01_date_01_4.html">fmt::formatter&lt; Date &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">formatter specialization for gregorian dates  <a href="structfmt_1_1formatter_3_01_date_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfmt_1_1formatter_3_01_p_time_01_4.html">fmt::formatter&lt; PTime &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">formatter specification for posix time  <a href="structfmt_1_1formatter_3_01_p_time_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__config.html">walker_config</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">runtime configuration state object  <a href="structwalker__config.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html">walker_state</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutable state passed around walker configurations.  <a href="structwalker__state.html#details">More...</a><br /></td></tr>
@@ -137,7 +151,29 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ad0075f5accd6869b9ac32a5d13249c10"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="program__state_8hpp.html#ad0075f5accd6869b9ac32a5d13249c10">TimeDuration</a> = boost::posix_time::time_duration</td></tr>
 <tr class="separator:ad0075f5accd6869b9ac32a5d13249c10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8634546c22db77e8c2eada64892bafc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="program__state_8hpp.html#ae8634546c22db77e8c2eada64892bafc">TimePoint</a> = stime::time_point&lt; stime::system_clock &gt;</td></tr>
+<tr class="memdesc:ae8634546c22db77e8c2eada64892bafc"><td class="mdescLeft">&#160;</td><td class="mdescRight">stdlib time point alias  <a href="program__state_8hpp.html#ae8634546c22db77e8c2eada64892bafc">More...</a><br /></td></tr>
 <tr class="separator:ae8634546c22db77e8c2eada64892bafc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ad67562051d57b4ea1204fc0f41adbcb2"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="program__state_8hpp.html#ad67562051d57b4ea1204fc0f41adbcb2">Analytics</a> { <a class="el" href="program__state_8hpp.html#ad67562051d57b4ea1204fc0f41adbcb2ab537d6ea2a31f91e5a166baf62ef744f">Analytics::BlameBurndown</a>, 
+<a class="el" href="program__state_8hpp.html#ad67562051d57b4ea1204fc0f41adbcb2af3b88f8ef15820911ff2d1141bf3059a">Analytics::CommitDiffInfo</a>, 
+<a class="el" href="program__state_8hpp.html#ad67562051d57b4ea1204fc0f41adbcb2a7b3e99499b99f8c89ac261493ee5c49c">Analytics::Commits</a>
+ }</td></tr>
+<tr class="memdesc:ad67562051d57b4ea1204fc0f41adbcb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Different modes of repository analytics enabled in the application. Mapped to the <code>--analytics</code> command line option.  <a href="program__state_8hpp.html#ad67562051d57b4ea1204fc0f41adbcb2">More...</a><br /></td></tr>
+<tr class="separator:ad67562051d57b4ea1204fc0f41adbcb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a7fd75b6eed8e33fec8ad967e598564a6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="program__state_8hpp.html#a7fd75b6eed8e33fec8ad967e598564a6">BOOST_DESCRIBE_ENUM</a> (<a class="el" href="program__state_8hpp.html#ad67562051d57b4ea1204fc0f41adbcb2">Analytics</a>, BlameBurndown, Commits, CommitDiffInfo)</td></tr>
+<tr class="separator:a7fd75b6eed8e33fec8ad967e598564a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ad87f1d6f1991d654b2fbd9c5c75fd679"><td class="memTemplParams" colspan="2">template&lt;typename E &gt; </td></tr>
+<tr class="memitem:ad87f1d6f1991d654b2fbd9c5c75fd679"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="program__state_8hpp.html#ad87f1d6f1991d654b2fbd9c5c75fd679">IsDescribedEnum</a> = bd::has_describe_enumerators&lt;E&gt;::value</td></tr>
+<tr class="memdesc:ad87f1d6f1991d654b2fbd9c5c75fd679"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience concept for interfacing with 'described' enumeration types.  <a href="program__state_8hpp.html#ad87f1d6f1991d654b2fbd9c5c75fd679">More...</a><br /></td></tr>
+<tr class="separator:ad87f1d6f1991d654b2fbd9c5c75fd679"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Main code analysis state and configuration classes. </p>
@@ -209,6 +245,101 @@ Typedefs</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>stdlib time point alias </p>
+
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ad67562051d57b4ea1204fc0f41adbcb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad67562051d57b4ea1204fc0f41adbcb2">&#9670;&nbsp;</a></span>Analytics</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="program__state_8hpp.html#ad67562051d57b4ea1204fc0f41adbcb2">Analytics</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Different modes of repository analytics enabled in the application. Mapped to the <code>--analytics</code> command line option. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ad67562051d57b4ea1204fc0f41adbcb2ab537d6ea2a31f91e5a166baf62ef744f"></a>BlameBurndown&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad67562051d57b4ea1204fc0f41adbcb2af3b88f8ef15820911ff2d1141bf3059a"></a>CommitDiffInfo&#160;</td><td class="fielddoc"><p>Use git blame for commits allowed by the filter script </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad67562051d57b4ea1204fc0f41adbcb2a7b3e99499b99f8c89ac261493ee5c49c"></a>Commits&#160;</td><td class="fielddoc"><p>Only information about commits. </p>
+<p>Which files where touched in each commit, how many lines were edited </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a7fd75b6eed8e33fec8ad967e598564a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fd75b6eed8e33fec8ad967e598564a6">&#9670;&nbsp;</a></span>BOOST_DESCRIBE_ENUM()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">BOOST_DESCRIBE_ENUM </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="program__state_8hpp.html#ad67562051d57b4ea1204fc0f41adbcb2">Analytics</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BlameBurndown&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Commits&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">CommitDiffInfo&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ad87f1d6f1991d654b2fbd9c5c75fd679"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad87f1d6f1991d654b2fbd9c5c75fd679">&#9670;&nbsp;</a></span>IsDescribedEnum</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename E &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">concept IsDescribedEnum = bd::has_describe_enumerators&lt;E&gt;::value</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience concept for interfacing with 'described' enumeration types. </p>
 
 </div>
 </div>

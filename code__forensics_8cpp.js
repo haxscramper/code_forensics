@@ -6,5 +6,6 @@ var code__forensics_8cpp =
     [ "load_content", "code__forensics_8cpp.html#adf5ff084617abb3c66719ba2e3915404", null ],
     [ "main", "code__forensics_8cpp.html#ab85c3edfd2aada0e059dccf8d002924d", null ],
     [ "parse_python_exception", "code__forensics_8cpp.html#a306418411b34a32b65734af4bb3598ad", null ],
+    [ "signal_handler", "code__forensics_8cpp.html#af675374954cdabdf63d036fe3c12d348", null ],
     [ "store_content", "code__forensics_8cpp.html#ad375a6ee9b50c7082571db84c4213fe6", null ]
 ];

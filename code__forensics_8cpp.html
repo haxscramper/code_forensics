@@ -93,6 +93,7 @@ $(document).ready(function(){initNavTree('code__forensics_8cpp.html',''); initRe
 <div class="textblock"><code>#include &quot;<a class="el" href="common_8hpp_source.html">common.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="git__ir_8hpp_source.html">git_ir.hpp</a>&quot;</code><br />
 <code>#include &lt;exception&gt;</code><br />
+<code>#include &lt;signal.h&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;map&gt;</code><br />
 <code>#include &lt;fstream&gt;</code><br />
@@ -107,8 +108,11 @@ $(document).ready(function(){initNavTree('code__forensics_8cpp.html',''); initRe
 <code>#include &lt;unordered_map&gt;</code><br />
 <code>#include &lt;unordered_set&gt;</code><br />
 <code>#include &lt;set&gt;</code><br />
+<code>#include &lt;range/v3/all.hpp&gt;</code><br />
 <code>#include &lt;boost/thread/mutex.hpp&gt;</code><br />
 <code>#include &lt;boost/thread/lock_guard.hpp&gt;</code><br />
+<code>#include &quot;<a class="el" href="dod__base_8hpp_source.html">dod_base.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="repo__graph_8hpp_source.html">repo_graph.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="python__interop_8hpp_source.html">python_interop.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="cli__options_8hpp_source.html">cli_options.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="logging_8hpp_source.html">logging.hpp</a>&quot;</code><br />
@@ -136,6 +140,8 @@ Functions</h2></td></tr>
 <tr class="separator:a306418411b34a32b65734af4bb3598ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc48e32ca5502ec7c9258416e038d036"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_py_forensics.html">PyForensics</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="code__forensics_8cpp.html#adc48e32ca5502ec7c9258416e038d036">exec_python_filter</a> (<a class="el" href="common_8hpp.html#a5076b1659821c8d7ce06da09452ba382">SPtr</a>&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt; logger, po::variables_map vm)</td></tr>
 <tr class="separator:adc48e32ca5502ec7c9258416e038d036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af675374954cdabdf63d036fe3c12d348"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="code__forensics_8cpp.html#af675374954cdabdf63d036fe3c12d348">signal_handler</a> (int signum)</td></tr>
+<tr class="separator:af675374954cdabdf63d036fe3c12d348"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab85c3edfd2aada0e059dccf8d002924d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="code__forensics_8cpp.html#ab85c3edfd2aada0e059dccf8d002924d">main</a> (int argc, const char **argv) -&gt; int</td></tr>
 <tr class="separator:ab85c3edfd2aada0e059dccf8d002924d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -170,9 +176,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    {                                                                     \</div>
-<div class="line">        auto <a class="code" href="structgit_1_1exception.html">exception</a> = <a class="code" href="code__forensics_8cpp.html#a306418411b34a32b65734af4bb3598ad">parse_python_exception</a>();                        \</div>
+<div class="line">        auto exception = <a class="code" href="code__forensics_8cpp.html#a306418411b34a32b65734af4bb3598ad">parse_python_exception</a>();                        \</div>
 <div class="line">        LOG_E(logger) &lt;&lt; <span class="stringliteral">&quot;Error during python code execution&quot;</span>;            \</div>
-<div class="line">        LOG_E(logger) &lt;&lt; <a class="code" href="structgit_1_1exception.html">exception</a>;                                       \</div>
+<div class="line">        LOG_E(logger) &lt;&lt; exception;                                       \</div>
 <div class="line">    }</div>
 </div><!-- fragment -->
 </div>
@@ -280,6 +286,24 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="af675374954cdabdf63d036fe3c12d348"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af675374954cdabdf63d036fe3c12d348">&#9670;&nbsp;</a></span>signal_handler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void signal_handler </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>signum</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ad375a6ee9b50c7082571db84c4213fe6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad375a6ee9b50c7082571db84c4213fe6">&#9670;&nbsp;</a></span>store_content()</h2>
 
@@ -310,8 +334,7 @@ Functions</h2></td></tr>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="acode__forensics_8cpp_html_a306418411b34a32b65734af4bb3598ad"><div class="ttname"><a href="code__forensics_8cpp.html#a306418411b34a32b65734af4bb3598ad">parse_python_exception</a></div><div class="ttdeci">Str parse_python_exception()</div><div class="ttdef"><b>Definition:</b> code_forensics.cpp:165</div></div>
-<div class="ttc" id="astructgit_1_1exception_html"><div class="ttname"><a href="structgit_1_1exception.html">git::exception</a></div><div class="ttdef"><b>Definition:</b> git_interface.hpp:14</div></div>
+<div class="ttc" id="acode__forensics_8cpp_html_a306418411b34a32b65734af4bb3598ad"><div class="ttname"><a href="code__forensics_8cpp.html#a306418411b34a32b65734af4bb3598ad">parse_python_exception</a></div><div class="ttdeci">Str parse_python_exception()</div><div class="ttdef"><b>Definition:</b> code_forensics.cpp:189</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

@@ -4,5 +4,7 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="is_in_pack\< V, T0,\l T... \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structis__in__pack_3_01_v_00_01_t0_00_01_t_8_8_8_01_4.html",tooltip=" "];
+  Node0 [label="ir::Directory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1_directory.html",tooltip="Full directory path and it's parent ID."];
+  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="ir::orm_dir",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1orm__dir.html",tooltip="ORM wrapper for the directory data."];
 }

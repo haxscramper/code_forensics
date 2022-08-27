@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['u16_2183',['u16',['../common_8hpp.html#a917e58b0692c2df778a27350534cbfe7',1,'common.hpp']]],
-  ['u32_2184',['u32',['../common_8hpp.html#a65cf28726f89e62ccf2f1354bc2716df',1,'common.hpp']]],
-  ['u64_2185',['u64',['../common_8hpp.html#a66e1d499241ccae9a18a20a1f4f0590d',1,'common.hpp']]],
-  ['u8_2186',['u8',['../common_8hpp.html#a254d32383658e016368673396e7afc1b',1,'common.hpp']]],
-  ['uptr_2187',['UPtr',['../common_8hpp.html#aa6d98c828559a00e7b99f2f84cff0c32',1,'common.hpp']]]
+  ['severity_2297',['severity',['../namespaceboost_1_1log.html#aa0f34afeca93658a00499f5f7ca6dbda',1,'boost::log']]],
+  ['sink_5ft_2298',['sink_t',['../logging_8hpp.html#aae6e8800f73d2cfd43f503ed13e6332d',1,'logging.hpp']]],
+  ['slock_2299',['SLock',['../repo__processing_8hpp.html#a1b7cad9d7b9b32f86ec7b8028cd0bc26',1,'repo_processing.hpp']]],
+  ['sptr_2300',['SPtr',['../common_8hpp.html#a5076b1659821c8d7ce06da09452ba382',1,'common.hpp']]],
+  ['str_2301',['Str',['../common_8hpp.html#a376207d46bd161163b9089964e8fbed6',1,'common.hpp']]]
 ];

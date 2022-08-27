@@ -1,0 +1,27 @@
+var struct_commit_graph =
+[
+    [ "EDesc", "struct_commit_graph.html#adf6f1913172603e8449fe1759a501708", null ],
+    [ "Graph", "struct_commit_graph.html#a219a3ec1c6729bfd813771162aedf94f", null ],
+    [ "GraphTraits", "struct_commit_graph.html#a1213100a9b68a821ce3767ac9d6f74bf", null ],
+    [ "VDesc", "struct_commit_graph.html#a0c42e5246fe724fdcf0542ed43a951b3", null ],
+    [ "CommitGraph", "struct_commit_graph.html#a0465bf4c2a49df3371c8f84bc18f428e", null ],
+    [ "commit_pairs", "struct_commit_graph.html#a57919d9bc336a495815e03020e5f831d", null ],
+    [ "commits", "struct_commit_graph.html#abbf51d9a1993f167e3e3b264a1afc784", null ],
+    [ "get_base", "struct_commit_graph.html#ac3dc286ec4417243d4a2c76de20841c1", null ],
+    [ "get_desc", "struct_commit_graph.html#aef7c61aed9dc909d618e85a6a3a564a7", null ],
+    [ "in_degree", "struct_commit_graph.html#a54966ed8b1dbf68cca8003be0a7c825f", null ],
+    [ "is_main", "struct_commit_graph.html#a5ef44ff84e7c05744480ee2cae04cee7", null ],
+    [ "is_merge", "struct_commit_graph.html#a037e6438b0d233e2ab2e6ad537216f82", null ],
+    [ "next_commits", "struct_commit_graph.html#a7817c9fcd7eb95f06335c6bd654ebb1a", null ],
+    [ "operator[]", "struct_commit_graph.html#abc75e1bc8c9f3d231a0a530bfba93603", null ],
+    [ "operator[]", "struct_commit_graph.html#a2d1678396c10650a51308064d638cc92", null ],
+    [ "operator[]", "struct_commit_graph.html#ad9e9c1318020b868cb6d9b509688545b", null ],
+    [ "out_degree", "struct_commit_graph.html#ab4122b9b0f30465487f319df2f46d238", null ],
+    [ "parent_commits", "struct_commit_graph.html#a5d8fb765a3404c5021837abf40467419", null ],
+    [ "source", "struct_commit_graph.html#a458b05f07a16d9ba63ed12bbe0a808ca", null ],
+    [ "target", "struct_commit_graph.html#a8bf5c2a7fac7a67dca10e5da84131b99", null ],
+    [ "g", "struct_commit_graph.html#a0e2d45eacc24ebc08e652fd3309a1183", null ],
+    [ "main_path", "struct_commit_graph.html#aab8e4f486b416c915f819f7e22ff11df", null ],
+    [ "main_set", "struct_commit_graph.html#a6b1a1a494ec3ed4c89de6fb842f79bd8", null ],
+    [ "rev_map", "struct_commit_graph.html#a73fa68100a5eacc49b044139cfdc35a1", null ]
+];

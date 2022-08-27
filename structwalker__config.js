@@ -5,9 +5,10 @@ var structwalker__config =
       [ "defer", "structwalker__config.html#a47b7c1d6e737a7eba658d952170ba5b7ac6f64ec8a311413d9eee6255bd03c5f5", null ],
       [ "sequential", "structwalker__config.html#a47b7c1d6e737a7eba658d952170ba5b7ab395dfaa1425c1f8fc1c0872ffaa5c81", null ]
     ] ],
+    [ "use_analytics", "structwalker__config.html#ac2b37eb28888f2ee7fa3d29e6f6c2a61", null ],
     [ "allow_path", "structwalker__config.html#a1f01b29770cc07c0ea971ee0b7465c9b", null ],
     [ "allow_sample", "structwalker__config.html#af718fefdb608262007fefd8b26e02347", null ],
-    [ "classify_line", "structwalker__config.html#aafe5f9b6bcff543fedc8a48a1d25ff1c", null ],
+    [ "analytics", "structwalker__config.html#afa09f2c666544b83e22a382d71d1f311", null ],
     [ "db_path", "structwalker__config.html#a50929e0145d5afd854243933321564cb", null ],
     [ "get_commit_period", "structwalker__config.html#a01b2ae3a5a907ff3a6e42d663d576626", null ],
     [ "get_sampled_period", "structwalker__config.html#a0ad6f713776f2a27e1ed8870631e0f96", null ],

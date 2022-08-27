@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['threading_5fmode_2191',['threading_mode',['../structwalker__config.html#a47b7c1d6e737a7eba658d952170ba5b7',1,'walker_config']]]
+  ['analytics_2315',['Analytics',['../program__state_8hpp.html#ad67562051d57b4ea1204fc0f41adbcb2',1,'program_state.hpp']]]
 ];

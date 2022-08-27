@@ -11,5 +11,6 @@ var dod__base_8hpp =
     [ "DECL_ID_TYPE", "dod__base_8hpp.html#aefb056686be494b56778acdd7f4cf418", null ],
     [ "id_type_t", "dod__base_8hpp.html#a29c5bf718f2aee7ce2858fd1d5698bca", null ],
     [ "value_type_t", "dod__base_8hpp.html#a90d2ece056b0d6b205602755ec9df792", null ],
+    [ "operator<<", "dod__base_8hpp.html#a3c4e0b36fd2d9181bef5bec971f1562d", null ],
     [ "IsIdType", "dod__base_8hpp.html#a6c0b11ca545823218306beb5a5bfbab6", null ]
 ];

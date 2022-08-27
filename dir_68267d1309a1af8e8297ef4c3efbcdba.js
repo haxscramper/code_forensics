@@ -17,6 +17,12 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "logging.hpp", "logging_8hpp.html", "logging_8hpp" ],
     [ "program_state.hpp", "program__state_8hpp.html", "program__state_8hpp" ],
     [ "python_interop.hpp", "python__interop_8hpp.html", "python__interop_8hpp" ],
+    [ "repo_graph.cpp", "repo__graph_8cpp.html", null ],
+    [ "repo_graph.hpp", "repo__graph_8hpp.html", [
+      [ "CommitInfo", "struct_commit_info.html", "struct_commit_info" ],
+      [ "CommitEdge", "struct_commit_edge.html", "struct_commit_edge" ],
+      [ "CommitGraph", "struct_commit_graph.html", "struct_commit_graph" ]
+    ] ],
     [ "repo_processing.cpp", "repo__processing_8cpp.html", "repo__processing_8cpp" ],
     [ "repo_processing.hpp", "repo__processing_8hpp.html", "repo__processing_8hpp" ]
 ];

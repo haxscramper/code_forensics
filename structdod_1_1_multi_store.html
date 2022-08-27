@@ -121,6 +121,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a02ba485b68408e9f5dde72c2e925ccf3"><td class="memTemplParams" colspan="2">template&lt;dod::IsIdType Id&gt; </td></tr>
 <tr class="memitem:a02ba485b68408e9f5dde72c2e925ccf3"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdod_1_1_multi_store.html#a02ba485b68408e9f5dde72c2e925ccf3">at</a> (<a class="el" href="structdod_1_1_id.html">Id</a> id) -&gt; <a class="el" href="namespacedod.html#a90d2ece056b0d6b205602755ec9df792">value_type_t</a>&lt; <a class="el" href="structdod_1_1_id.html">Id</a> &gt; &amp;</td></tr>
 <tr class="separator:a02ba485b68408e9f5dde72c2e925ccf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adca4f88dd8804df77b783fe719403d4a"><td class="memTemplParams" colspan="2">template&lt;dod::IsIdType Id&gt; </td></tr>
+<tr class="memitem:adca4f88dd8804df77b783fe719403d4a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdod_1_1_multi_store.html#adca4f88dd8804df77b783fe719403d4a">at</a> (<a class="el" href="structdod_1_1_id.html">Id</a> id) const -&gt; <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="namespacedod.html#a90d2ece056b0d6b205602755ec9df792">value_type_t</a>&lt; <a class="el" href="structdod_1_1_id.html">Id</a> &gt;&gt;</td></tr>
+<tr class="separator:adca4f88dd8804df77b783fe719403d4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a176045ad4c54930426eff050a629028e"><td class="memTemplParams" colspan="2">template&lt;typename Id , typename Val &gt; </td></tr>
 <tr class="memitem:a176045ad4c54930426eff050a629028e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdod_1_1_multi_store.html#a176045ad4c54930426eff050a629028e">insert</a> (<a class="el" href="structdod_1_1_id.html">Id</a> id, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; Val &gt; val)</td></tr>
 <tr class="separator:a176045ad4c54930426eff050a629028e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -197,7 +200,7 @@ template&lt;typename Val &gt; </div>
 </div>
 </div>
 <a id="a02ba485b68408e9f5dde72c2e925ccf3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02ba485b68408e9f5dde72c2e925ccf3">&#9670;&nbsp;</a></span>at()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a02ba485b68408e9f5dde72c2e925ccf3">&#9670;&nbsp;</a></span>at() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -224,6 +227,36 @@ template&lt;dod::IsIdType Id&gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Get value at one of the associated stores, inferring which one based on the value type of the ID </p>
+
+</div>
+</div>
+<a id="adca4f88dd8804df77b783fe719403d4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adca4f88dd8804df77b783fe719403d4a">&#9670;&nbsp;</a></span>at() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Args&gt; </div>
+<div class="memtemplate">
+template&lt;dod::IsIdType Id&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto <a class="el" href="structdod_1_1_multi_store.html">dod::MultiStore</a>&lt; Args &gt;::at </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structdod_1_1_id.html">Id</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const -&gt; <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt;<a class="el" href="namespacedod.html#a90d2ece056b0d6b205602755ec9df792">value_type_t</a>&lt;<a class="el" href="structdod_1_1_id.html">Id</a>&gt;&gt; </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

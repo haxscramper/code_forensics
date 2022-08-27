@@ -1,6 +1,6 @@
 var struct_scoped_bar =
 [
-    [ "ScopedBar", "struct_scoped_bar.html#a5dae93cec5d4d625886a83c7645d6821", null ],
+    [ "ScopedBar", "struct_scoped_bar.html#a5d9219aa3669283a4fbe00f3cbc7a863", null ],
     [ "~ScopedBar", "struct_scoped_bar.html#aaf548643da0c035209bf48548c3b9a59", null ],
     [ "tick", "struct_scoped_bar.html#aa043d1394e1e0a050ae83542f0873615", null ],
     [ "annotation", "struct_scoped_bar.html#a8a1391010c76661f8f0568212180fd4f", null ],

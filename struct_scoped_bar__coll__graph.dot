@@ -10,5 +10,5 @@ digraph "ScopedBar"
   Node3 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" content" ,fontname="Helvetica"];
   Node3 [label="ir::content_manager",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1content__manager.html",tooltip="Main store for repository analysis."];
   Node4 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" multi" ,fontname="Helvetica"];
-  Node4 [label="dod::MultiStore\< dod\l::InternStore\< AuthorId,\l ir::Author \>, dod::InternStore\l\< LineId, ir::LineData \>, dod\l::Store\< FileId, ir::File \>, dod\l::Store\< CommitId, ir::Commit \>,\l dod::Store\< DirectoryId, ir::Directory\l \>, dod::InternStore\< StringId, ir::String \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structdod_1_1_multi_store.html",tooltip=" "];
+  Node4 [label="dod::MultiStore\< dod\l::InternStore\< AuthorId,\l ir::Author \>, dod::InternStore\l\< LineId, ir::LineData \>, dod\l::Store\< FileId, ir::File \>, dod\l::InternStore\< FilePathId, ir::FilePath\l \>, dod::Store\< CommitId, ir::Commit\l \>, dod::InternStore\< DirectoryId, ir\l::Directory \>, dod::InternStore\< StringId,\l ir::String \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structdod_1_1_multi_store.html",tooltip=" "];
 }

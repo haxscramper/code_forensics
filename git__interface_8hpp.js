@@ -7,6 +7,8 @@ var git__interface_8hpp =
     [ "__GIT_THROW_EXCEPTION", "git__interface_8hpp.html#a9d4019844fe5668bbf046d932cc5e103", null ],
     [ "diff_foreach", "git__interface_8hpp.html#a024361d819e1689d15a9bf09e222bb75", null ],
     [ "oid_tostr", "git__interface_8hpp.html#a4a74fe013dba8d87176fee4b5e5cb80d", null ],
+    [ "operator<", "git__interface_8hpp.html#a4f5101279d75d7ce87255703d7d0cd8a", null ],
+    [ "operator<<", "git__interface_8hpp.html#abede973bc5bb6a24cecd2147a7183599", null ],
     [ "operator==", "git__interface_8hpp.html#a57aad2e609d0f5569322369832487e0b", null ],
     [ "tree_walk", "git__interface_8hpp.html#a1eb912b18555e43af6f1dffb1438a3d0", null ]
 ];

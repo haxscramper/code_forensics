@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="BoolOption",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bool_option.html",tooltip=" "];
+  Node0 [label="arg_pack\< Args \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structarg__pack.html",tooltip="Helper implementation to pass multiple types around in a 'pack'."];
 }

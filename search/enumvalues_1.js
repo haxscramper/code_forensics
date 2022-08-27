@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['defer_2193',['defer',['../structwalker__config.html#a47b7c1d6e737a7eba658d952170ba5b7ac6f64ec8a311413d9eee6255bd03c5f5',1,'walker_config']]]
+  ['blameburndown_2318',['BlameBurndown',['../program__state_8hpp.html#ad67562051d57b4ea1204fc0f41adbcb2ab537d6ea2a31f91e5a166baf62ef744f',1,'program_state.hpp']]]
 ];

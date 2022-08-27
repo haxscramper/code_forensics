@@ -1,5 +1,6 @@
 var namespaces_dup =
 [
+    [ "bg", "namespacebg.html", null ],
     [ "boost", "namespaceboost.html", "namespaceboost" ],
     [ "dod", "namespacedod.html", null ],
     [ "fmt", "namespacefmt.html", null ],

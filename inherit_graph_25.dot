@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="ir::orm_edited_files",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structir_1_1orm__edited__files.html",tooltip=" "];
+  Node0 [label="generator\< T \>::iterator",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classgenerator_1_1iterator.html",tooltip=" "];
 }
