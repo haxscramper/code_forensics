@@ -125,8 +125,6 @@ struct Commit {
     Str      hash;     /// git hash of the commit
     int      period; /// Number of the period that commit was attributed to
     Str      message; /// Commit message
-    int      added_lines;
-    int      removed_lines;
     Vec<EditedFile>  edited_files;
     Vec<RenamedFile> renamed_files;
 };
@@ -390,12 +388,11 @@ struct orm_file_path : FilePath {
 };
 
 inline void exec(sqlite3* db, Str query) {
-    char* errMsg = 0;
-    int   rc     = sqlite3_exec(db, query.c_str(), NULL, NULL, &errMsg);
+    int rc = sqlite3_exec(db, query.c_str(), nullptr, nullptr, nullptr);
     if (rc != SQLITE_OK) {
-        sqlite3_free(errMsg);
         throw std::runtime_error(
-            "DB execution failure for query '" + query + "': " + errMsg);
+            "DB execution failure for query '" + query +
+            "': " + sqlite3_errmsg(db) + " error: " + sqlite3_errstr(rc));
     }
 }
 
@@ -420,8 +417,6 @@ inline auto create_db(CR<Str> storagePath) {
             make_column("time", &orm_commit::time),
             make_column("hash", &orm_commit::hash),
             make_column("period", &orm_commit::period),
-            make_column("added", &orm_commit::added_lines),
-            make_column("removed", &orm_commit::removed_lines),
             make_column("timezone", &orm_commit::timezone),
             make_column("message", &orm_commit::message)),
         make_table<orm_file>(
@@ -487,11 +482,10 @@ CREATE VIEW file_version_with_path_dir AS SELECT fv.id,
        dir.name AS dir
   FROM file_version_with_path AS fv
  INNER JOIN dir
-    ON fv.dir = dir.id;SELECT *
-  FROM file_version_with_path_dir;
-)");
+    ON fv.dir = dir.id;--
+        )");
 
-        exec(db, "DROP VIEW IF EXISTS file_path_with_dir;");
+        exec(db, "DROP VIEW IF EXISTS file_path_with_dir;--");
         exec(db, R"(
 CREATE VIEW file_path_with_dir AS SELECT paths.id AS path_id,
        strings.text AS PATH,
@@ -500,8 +494,8 @@ CREATE VIEW file_path_with_dir AS SELECT paths.id AS path_id,
  INNER JOIN strings
     ON paths.path = strings.id
  LEFT OUTER JOIN dir
-    ON paths.dir = dir.id;
-)");
+    ON paths.dir = dir.id;--
+        )");
     };
 
     return storage;

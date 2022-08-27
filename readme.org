@@ -75,9 +75,29 @@ using ~ir::~ [[https://haxscramper.github.io/code_forensics/group__db__mapped.ht
 - files :: full list of all processed files - each separate version of the
   file is represented as a different database entry, with new ID,
   statistics etc.
-- file lines :: auxiliary table for data found in the analyzed files.
-  ~.file~ refers to the ~files~ table, ~index~ shows the position in the
-  file and the ~.line~ refers to the information in the ~line~ table.
+  - file lines :: auxiliary table for data found in the analyzed files.
+    ~.file~ refers to the ~files~ table, ~index~ shows the position in the
+    file and the ~.line~ refers to the information in the ~line~ table.
+- rcommit :: full list of all processed commits. contains information about
+  author id, time and timezone of the commit, period to which commit was
+  attributed and commit message.
+  - edited_files :: files explicitly modified for each commit. Contains a
+    commit id, number of added and removed lines and path ID of the file.
+  - renamed :: pair of old-new file path IDs for each commit
+- paths :: interned list of paths used in different tables. Contains full
+  path of the file and ID of it's direct parent directory.
+- author :: List of commit and line authors - name and email
+
+In addition to the main tables a collection of views is added to the
+database after it is generated.
+
+- ~file_path_with_dir~ - simplify getting full file name from the path ID
+  (without this view it would require two joins - on path ID and on the
+  path's name)
+- ~file_version_with_path~ - simplify getting full name, commit, directory
+  of each file version.
+- ~file_version_with_path_dir~ - extension of the previous view with a
+  joined path of the parent directory.
 
 * Analyzing data
 

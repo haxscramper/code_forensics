@@ -2,6 +2,7 @@ name: "Compile and execute analysis for the current repository"
 on: push
 jobs:
   test:
+    if: "false"
     runs-on: ubuntu-22.04
     steps:
       - name: "Checkout the repository"
@@ -19,7 +20,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
 
       - name: "Install conan"
-        run: pip install conan matplotlib
+        run: pip install conan matplotlib igraph
       - name: "Build code analyzer"
         run: |
           conan install . \
@@ -35,6 +36,15 @@ jobs:
 
       - name: "Compare repositories"
         run: ./tests/ci_compare_repo.sh
+
+      - name: "Run all stats"
+        run: |
+          mkdir nimskull_plots
+          ./scripts/all_stats.py \
+            nimskull.sqlite \
+            nimskull_plots \
+            --config=scripts/all_config.yaml \
+            --subconfig=scripts/config.cfg
 
       - uses: actions/upload-artifact@v3
         with:
