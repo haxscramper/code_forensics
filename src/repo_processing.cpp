@@ -6,6 +6,9 @@
 #include "repo_graph.hpp"
 #include <git2/patch.h>
 
+#include <boost/asio/thread_pool.hpp>
+#include <boost/asio/post.hpp>
+
 #include <algorithm>
 #include <execution>
 
@@ -518,65 +521,82 @@ void sample_blame_commits(
         ++index;
     }
 
+    bool pooled = true;
+
     constexpr int                         max_parallel = 32;
     std::counting_semaphore<max_parallel> counting{max_parallel};
-    Vec<std::future<FileId>>              walked{};
+    Vec<std::future<void>>                walked{};
+    boost::asio::thread_pool              pool(max_parallel);
+    std::mutex                            tick_mutex;
+
     for (auto bar = ScopedBar(state, params.size(), "files", true, 40);
          const auto& param : params) {
-        bar.tick();
-        auto sub_task = [state, param, &counting]() -> FileId {
-            finally finish{[&counting]() { counting.release(); }};
-            // Walker returns optional analysis result
-            auto result = exec_walker(
-                param.commit_oid,
-                state,
-                param.out_commit,
-                param.root.c_str(),
-                param.entry);
+        if (!pooled) { bar.tick(); }
+        auto sub_task =
+            [state, param, &counting, &tick_mutex, pooled, &bar]() {
+                finally finish{[&counting, pooled]() {
+                    if (!pooled) { counting.release(); }
+                }};
+                // Walker returns optional analysis result
+                auto result = exec_walker(
+                    param.commit_oid,
+                    state,
+                    param.out_commit,
+                    param.root.c_str(),
+                    param.entry);
 
-            if (!result.isNil()) {
-                // FIXME This sink is placed inside of the `process_filter`
-                // tick range, so increasing debugging level would
-                // invariably mess up the stdout. It might be possible to
-                // introduce a HACK via CLI configuration - disable progres
-                // bar if stdout sink shows trace records (after all these
-                // two items perform the same task)
-                LOG_T(state) << fmt::format(
-                    "FILE {:>5}/{:<5} {} {}",
-                    param.index,
-                    param.max_count,
-                    oid_tostr(param.commit_oid),
-                    param.root + git::tree_entry_name(param.entry));
-            }
+                if (!result.isNil() && !pooled) {
+                    // FIXME This sink is placed inside of the
+                    // `process_filter` tick range, so increasing debugging
+                    // level would invariably mess up the stdout. It might
+                    // be possible to introduce a HACK via CLI
+                    // configuration - disable progres bar if stdout sink
+                    // shows trace records (after all these two items
+                    // perform the same task)
+                    LOG_T(state) << fmt::format(
+                        "FILE {:>5}/{:<5} {} {}",
+                        param.index,
+                        param.max_count,
+                        oid_tostr(param.commit_oid),
+                        param.root + git::tree_entry_name(param.entry));
+                }
+                if (pooled) {
+                    std::scoped_lock lock{tick_mutex};
+                    bar.tick();
+                }
+            };
 
-            return result;
-        };
+        if (pooled) {
+            boost::asio::post(pool, sub_task);
+        } else {
+            counting.acquire();
 
-        counting.acquire();
-
-        switch (state->config->use_threading) {
-            case walker_config::async: {
-                walked.push_back(std::async(std::launch::async, sub_task));
-                break;
-            }
-            case walker_config::defer: {
-                walked.push_back(
-                    std::async(std::launch::deferred, sub_task));
-                break;
-            }
-            case walker_config::sequential: {
-                auto tmp = sub_task();
-                walked.push_back(std::async(
-                    std::launch::deferred, [tmp]() { return tmp; }));
-                break;
+            switch (state->config->use_threading) {
+                case walker_config::async: {
+                    walked.push_back(
+                        std::async(std::launch::async, sub_task));
+                    break;
+                }
+                case walker_config::defer: {
+                    walked.push_back(
+                        std::async(std::launch::deferred, sub_task));
+                    break;
+                }
+                case walker_config::sequential: {
+                    sub_task();
+                    break;
+                }
             }
         }
     }
 
-    for (auto& future : walked) {
-        future.get();
+    if (pooled) {
+        pool.join();
+    } else {
+        for (auto& future : walked) {
+            future.get();
+        }
     }
-
     LOG_I(state) << "All commits finished";
 }
 

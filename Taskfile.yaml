@@ -3,7 +3,7 @@ version: 3
 vars:
   PER_YEAR: 1
   GH_ORG: "nim-works"
-  TARGET: Nim
+  TARGET: nimskull
   BRANCH: devel
   TMPD: /tmp
   DB_FILE: /tmp/db.sqlite
