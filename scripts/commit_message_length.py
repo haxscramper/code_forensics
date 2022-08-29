@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 
-from cli_common import *
+import cli_common as cc
 import matplotlib.pyplot as plt
+import numpy as np
 import re
-import math
 import pandas as pd
 import sqlite3
-import matplotlib.pyplot as plt
 import sys
 
 
 def parse_args(args=sys.argv[1:]):
-    parser = init_parser()
+    parser = cc.init_parser()
 
     parser.add_argument(
         "--mode",
@@ -30,7 +29,7 @@ def parse_args(args=sys.argv[1:]):
         help="Top percentile of the controibutors to plot",
     )
 
-    return parse_args_with_config(parser, args)
+    return cc.parse_args_with_config(parser, args)
 
 
 # Remove automation boilerplate text from the message
@@ -55,7 +54,7 @@ def impl(args):
 
     df = df.sort_values(by=["time"])
     # Apply rename configuration provided from the command line
-    df["name"] = df["name"].apply(lambda name: remap_name(args, name))
+    df["name"] = df["name"].apply(lambda name: cc.remap_name(args, name))
     # Parse datetime values into the pandas content - specify unit="s" to select input source
     df["time"] = pd.to_datetime(df["time"], unit="s")
     # Calculate legths of original messages
@@ -66,7 +65,9 @@ def impl(args):
     df = df.drop("message", axis=1)
     # Drop ignored names from the list as well
     df = df.loc[
-        lambda row: row["name"].apply(lambda name: name not in set(args.ignore or []))
+        lambda row: row["name"].apply(
+            lambda name: name not in set(args.ignore or [])
+        )
     ]
 
     # Only process commits that are withing 0-0.999 percentile range of the
@@ -87,7 +88,9 @@ def impl(args):
             # Create new dataframe with information about each group size and then join additional aggregate columns to it incrementally
             gb.size()
             .to_frame("count")  # Count each grop's size
-            .join(gb["len"].agg(mean=np.mean))  # Average it's commit message lenght
+            .join(
+                gb["len"].agg(mean=np.mean)
+            )  # Average it's commit message lenght
             .join(  # Count minimum message, using 10-90% percentile range
                 gb["len"].agg(
                     min=lambda x: x.loc[lambda it: x.quantile(0.10) < it].min()
@@ -131,7 +134,12 @@ def impl(args):
             label="average message",
         )
 
-        ax.plot(gb["clearlen_mean"], gb["labels"], "r", label="without 'fixes #' noise")
+        ax.plot(
+            gb["clearlen_mean"],
+            gb["labels"],
+            "r",
+            label="without 'fixes #' noise",
+        )
 
         ax.set_title(
             args.title
@@ -140,7 +148,9 @@ def impl(args):
                 + "(.999th commit length percentile)"
             )
         )
-        ax.set_ylabel("author name, total commit count + " + "mean/min/max length")
+        ax.set_ylabel(
+            "author name, total commit count + " + "mean/min/max length"
+        )
         ax.set_xlabel("message character count")
         ax.legend(loc="lower right")
 
@@ -160,4 +170,7 @@ def impl(args):
 
 if __name__ == "__main__":
     plt.rcParams["font.family"] = "consolas"
-    impl(parse_args())
+    if len(sys.argv) == 1:
+        impl(parse_args(["/tmp/v.sqlite", "/tmp/v.png"]))
+    else:
+        impl(parse_args())

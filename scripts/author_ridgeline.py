@@ -7,26 +7,20 @@ from matplotlib import rcParams
 rcParams["font.family"] = "consolas"
 
 import math
-import argparse
 
 
-from copy import deepcopy
-import sqlite3
-import pprint
-import itertools
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
 from matplotlib.dates import date2num
 from datetime import datetime
 import numpy as np
 import sys
 from typing import *
-from cli_common import *
+import cli_common as cc
 
 
 def parse_args(args=sys.argv[1:]):
-    parser = init_parser()
+    parser = cc.init_parser()
     parser.add_argument(
         "--top",
         dest="top",
@@ -35,11 +29,11 @@ def parse_args(args=sys.argv[1:]):
         help="How many committers from the top to plot",
     )
 
-    return parse_args_with_config(parser, args)
+    return cc.parse_args_with_config(parser, args)
 
 
 def impl(args):
-    cur = open_db(args)
+    cur = cc.open_db(args)
 
     authors = {}
     author_names = {}
@@ -47,9 +41,11 @@ def impl(args):
     ignored_names = set(args.ignore or [])
 
     for row in cur.execute("select id, name from author;"):
-        author_names[row[0]] = remap_name(args, row[1])
+        author_names[row[0]] = cc.remap_name(args, row[1])
 
-    for row in cur.execute("select author, time, added, removed from rcommit;"):
+    for row in cur.execute(
+        "select author, time, added, removed from rcommit;"
+    ):
         name = author_names[row[0]]
         if name in ignored_names:
             continue
@@ -62,7 +58,9 @@ def impl(args):
     for author, stats in authors.items():
         authors[author] = list(sorted(stats, key=lambda it: it[0]))
 
-    top_authors = sorted(list(authors.items()), key=lambda it: len(it[1]), reverse=True)
+    top_authors = sorted(
+        list(authors.items()), key=lambda it: len(it[1]), reverse=True
+    )
 
     topcount: int = args.top
 
@@ -74,7 +72,7 @@ def impl(args):
 
     min_date = None
     for author, commits in top_authors[0:topcount]:
-        for date in from_timestamps([time for (time, _, _) in commits]):
+        for date in cc.from_timestamps([time for (time, _, _) in commits]):
             if not min_date or date < min_date:
                 min_date = date
 
@@ -88,7 +86,7 @@ def impl(args):
         times = [time for (time, _, _) in commits]
         added = [added for (_, added, _) in commits]
         removed = [removed for (_, _, removed) in commits]
-        dates = from_timestamps(times)
+        dates = cc.from_timestamps(times)
 
         bins = 60
         # Split input data into fixed histograms to reduce activity noise
@@ -96,7 +94,10 @@ def impl(args):
 
         ax.plot(bin_edges[:-1], hist)
         ax.set_xlim(min_date, num_now())
-        width = int(math.log(max([len(commits), sum(added), sum(removed)]), 10)) + 1
+        width = (
+            int(math.log(max([len(commits), sum(added), sum(removed)]), 10))
+            + 1
+        )
         # For each subplot add title and align it to the top left corner
         ax.set_ylabel(
             f"{author}\n{len(commits):<{width}} "
@@ -118,9 +119,9 @@ def impl(args):
         lines.plot(dates, [-r for r in removed], "r")
 
         for it in [ax, lines]:
-            format_x_dates(it)
+            cc.format_x_dates(it)
 
-        align_yaxis([ax, lines])
+        cc.align_yaxis([ax, lines])
         axis_objects.append(ax)
 
         i += 1

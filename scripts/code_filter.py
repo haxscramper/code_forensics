@@ -4,7 +4,9 @@ import sys
 import argparse
 
 # Code filter script can accept CLI arguments - main execution program can pass them via `--filter-arg=<argument>` (the option can be repeated)
-parser = argparse.ArgumentParser(description="Code filter script configuration")
+parser = argparse.ArgumentParser(
+    description="Code filter script configuration"
+)
 
 # Number of samples that should be taken per commit
 parser.add_argument(
@@ -42,6 +44,15 @@ def path_predicate(path: str) -> bool:
 
         else:
             return False
+
+    elif args.target in ["v"]:
+        result = path.startswith("vlib/v") and path.endswith(".v")
+        # if result:
+        #     config.log_info(f"Analyzing {path}")
+        # else:
+        #     config.log_warning(f"Skipping analysis for {path}")
+
+        return result
 
     else:
         return True

@@ -523,80 +523,52 @@ void sample_blame_commits(
 
     bool pooled = true;
 
-    constexpr int                         max_parallel = 32;
-    std::counting_semaphore<max_parallel> counting{max_parallel};
-    Vec<std::future<void>>                walked{};
-    boost::asio::thread_pool              pool(max_parallel);
-    std::mutex                            tick_mutex;
+    constexpr int            max_parallel = 32;
+    boost::asio::thread_pool pool(max_parallel);
+    std::mutex               tick_mutex;
 
     for (auto bar = ScopedBar(state, params.size(), "files", true, 40);
          const auto& param : params) {
-        if (!pooled) { bar.tick(); }
-        auto sub_task =
-            [state, param, &counting, &tick_mutex, pooled, &bar]() {
-                finally finish{[&counting, pooled]() {
-                    if (!pooled) { counting.release(); }
-                }};
-                // Walker returns optional analysis result
-                auto result = exec_walker(
-                    param.commit_oid,
-                    state,
-                    param.out_commit,
-                    param.root.c_str(),
-                    param.entry);
+        auto sub_task = [state, param, &tick_mutex, pooled, &bar]() {
+            // Walker returns optional analysis result
+            auto result = exec_walker(
+                param.commit_oid,
+                state,
+                param.out_commit,
+                param.root.c_str(),
+                param.entry);
 
-                if (!result.isNil() && !pooled) {
-                    // FIXME This sink is placed inside of the
-                    // `process_filter` tick range, so increasing debugging
-                    // level would invariably mess up the stdout. It might
-                    // be possible to introduce a HACK via CLI
-                    // configuration - disable progres bar if stdout sink
-                    // shows trace records (after all these two items
-                    // perform the same task)
-                    LOG_T(state) << fmt::format(
-                        "FILE {:>5}/{:<5} {} {}",
-                        param.index,
-                        param.max_count,
-                        oid_tostr(param.commit_oid),
-                        param.root + git::tree_entry_name(param.entry));
-                }
-                if (pooled) {
-                    std::scoped_lock lock{tick_mutex};
-                    bar.tick();
-                }
-            };
-
-        if (pooled) {
-            boost::asio::post(pool, sub_task);
-        } else {
-            counting.acquire();
-
-            switch (state->config->use_threading) {
-                case walker_config::async: {
-                    walked.push_back(
-                        std::async(std::launch::async, sub_task));
-                    break;
-                }
-                case walker_config::defer: {
-                    walked.push_back(
-                        std::async(std::launch::deferred, sub_task));
-                    break;
-                }
-                case walker_config::sequential: {
-                    sub_task();
-                    break;
-                }
+            if (!result.isNil()) {
+                // FIXME This sink is placed inside of the `process_filter`
+                // tick range, so increasing debugging level would
+                // invariably mess up the stdout. It might be possible to
+                // introduce a HACK via CLI configuration - disable progres
+                // bar if stdout sink shows trace records (after all these
+                // two items perform the same task)
+                LOG_T(state) << fmt::format(
+                    "FILE {:>5}/{:<5} {} {}",
+                    param.index,
+                    param.max_count,
+                    oid_tostr(param.commit_oid),
+                    param.root + git::tree_entry_name(param.entry));
             }
-        }
+
+
+            if (state->config->log_progress_bars) {
+                std::scoped_lock lock{tick_mutex};
+                bar.tick();
+                // HACK go back one line after each tick because using
+                // progress bar in a threadpool causes it to write each
+                // line separately. I don't know what causes this.
+                printf("\033[1A");
+            }
+        };
+
+        boost::asio::post(pool, sub_task);
     }
 
-    if (pooled) {
-        pool.join();
-    } else {
-        for (auto& future : walked) {
-            future.get();
-        }
-    }
+    pool.join();
+
     LOG_I(state) << "All commits finished";
 }
 

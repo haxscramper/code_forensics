@@ -2,19 +2,19 @@
 
 import pandas as pd
 import numpy as np
-import functools
 import matplotlib.pyplot as plt
 import sqlite3
 import math
 import igraph as ig
-from cli_common import *
+import cli_common as cc
+import sys
 from tqdm import tqdm
 
 tqdm.pandas()
 
 
 def parse_args(args=sys.argv[1:]):
-    parser = init_parser()
+    parser = cc.init_parser()
     parser.add_argument(
         "--mode",
         type=str,
@@ -49,12 +49,12 @@ def parse_args(args=sys.argv[1:]):
         help="Minimal number of time two files had to be edited together in order to be linked together in the graph",
     )
 
-    return parse_args_with_config(parser, args)
+    return cc.parse_args_with_config(parser, args)
 
 
 def get_groups(args):
     con = sqlite3.connect(args.database)
-    resolver = PathResolver(con)
+    resolver = cc.PathResolver(con)
     df = pd.read_sql_query(
         "select rcommit, edited_files.path as file_id from edited_files", con
     )
@@ -63,7 +63,10 @@ def get_groups(args):
 
     df = df[
         df.apply(
-            lambda r: r.path.startswith("compiler") and r.path.endswith(".nim"), axis=1
+            # HACK expose proper configuration options for file
+            # filtering
+            lambda r: r.path.startswith("vlib/v") and r.path.endswith(".v"),
+            axis=1,
         )
     ]
 
@@ -124,7 +127,6 @@ def heatmap_correlation(args):
         weight_map = vertex_weight
 
     elif omode in ["connections", "top-connection", "top-fraction"]:
-        coedit_weigth = {}
         dedup_set = set()
         weight_map = {}
         for it1, key in pair_list.items():
@@ -144,9 +146,9 @@ def heatmap_correlation(args):
             elif omode == "top-connection":
                 weight_map[it1] = max(adjacent_edits) if adjacent_edits else 0
 
-    count = pd.DataFrame(weight_map.items(), columns=["path_id", "count"]).sort_values(
-        ["count"], ascending=False
-    )
+    count = pd.DataFrame(
+        weight_map.items(), columns=["path_id", "count"]
+    ).sort_values(["count"], ascending=False)
 
     edit = [
         resolver.resolve_id(id)
@@ -192,7 +194,7 @@ def heatmap_correlation(args):
 
     for i in range(len(edit)):
         for j in range(len(edit)):
-            text = ax.text(j, i, heatmap[i, j], ha="center", va="center", color="w")
+            ax.text(j, i, heatmap[i, j], ha="center", va="center", color="w")
 
     descriptions = [
         ["edited", "edit count"],
@@ -200,12 +202,16 @@ def heatmap_correlation(args):
         ["connected", "maximum common edit count"],
     ]
 
-    idx = ["self-edit", "connections", "top-connection", "top-fraction"].index(omode)
+    idx = ["self-edit", "connections", "top-connection", "top-fraction"].index(
+        omode
+    )
 
     ax.set_title(
         args.title
         or "Edit {} of the top {} most {}, ignoring self-edit, showing {}".format(
-            "correlation" if args.mode == "heatmap" else "correlation fraction",
+            "correlation"
+            if args.mode == "heatmap"
+            else "correlation fraction",
             args.top,
             descriptions[idx][0],
             descriptions[idx][1],
@@ -239,7 +245,9 @@ def graph_correlation(args):
 
     g.add_edges(vertex_list, attributes={"weight": attr_list})
 
-    g.vs["inweight"] = [sum([g.es[e]["weight"] for e in g.incident(v)]) for v in g.vs]
+    g.vs["inweight"] = [
+        sum([g.es[e]["weight"] for e in g.incident(v)]) for v in g.vs
+    ]
 
     base = args.graph_min_correlation
     g.delete_edges(g.es.select(lambda e: e["weight"] < base))
@@ -254,8 +262,12 @@ def graph_correlation(args):
         for v in g.vs
     ]
     g.es["label"] = [str(size) for size in g.es["weight"]]
-    g.es["penwidth"] = [int(math.log(size - base + 1) + 1) for size in g.es["weight"]]
-    g.vs["penwidth"] = [max([g.es[e]["penwidth"] for e in g.incident(v)]) for v in g.vs]
+    g.es["penwidth"] = [
+        int(math.log(size - base + 1) + 1) for size in g.es["weight"]
+    ]
+    g.vs["penwidth"] = [
+        max([g.es[e]["penwidth"] for e in g.incident(v)]) for v in g.vs
+    ]
     g.vs["size"] = [5 * math.log(size) + 1 for size in g.vs["weight"]]
 
     if args.outfile.endswith(".dot"):
@@ -290,9 +302,10 @@ graph {{
 def overwrite_breakdown(args):
     con = sqlite3.connect(args.database)
 
-    resolver = PathResolver(con)
+    resolver = cc.PathResolver(con)
     df = pd.read_sql_query(
-        "select rcommit, added, removed, path as file_id from edited_files", con
+        "select rcommit, added, removed, path as file_id from edited_files",
+        con,
     )
 
     df["file_id"] = df["file_id"].apply(lambda id: resolver.resolve_id(id))
@@ -334,7 +347,11 @@ def overwrite_breakdown(args):
     fig, ax = plt.subplots(figsize=(12, 34))
 
     ax.barh(
-        df["name"], df["added"], color="green", edgecolor="black", label="Added lines"
+        df["name"],
+        df["added"],
+        color="green",
+        edgecolor="black",
+        label="Added lines",
     )
     ax.barh(
         df["name"],
@@ -347,7 +364,9 @@ def overwrite_breakdown(args):
 
     ax.grid(True)
     ax.legend(loc="lower right")
-    ax.set_title(args.title or "Total number of added and removed lines, per file")
+    ax.set_title(
+        args.title or "Total number of added and removed lines, per file"
+    )
     fig.savefig(args.outfile, bbox_inches="tight", dpi=300)
 
 
@@ -364,4 +383,11 @@ def impl(args):
 
 if __name__ == "__main__":
     plt.rcParams["font.family"] = "consolas"
-    impl(parse_args())
+    if len(sys.argv) == 1:
+        impl(
+            parse_args(
+                ["/tmp/v.sqlite", "/tmp/v.png", "--mode=heatmap-fraction"]
+            )
+        )
+    else:
+        impl(parse_args())
