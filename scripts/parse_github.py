@@ -33,6 +33,7 @@ from tqdm import tqdm
 from datetime import datetime as DateTime
 from datetime import timezone
 
+
 print("Created new SQL Base")
 SQLBase = declarative_base()
 
@@ -46,6 +47,9 @@ class State:
     known_issues: Set[int] = set()
     known_comments: Set[int] = set()
 
+    def __init__(self):
+        self.last_updated_issue: DateTime = None
+
     def first_processing(
         self, data: Union[gh.IssueComment.IssueComment, gh.Issue.Issue]
     ) -> bool:
@@ -57,9 +61,31 @@ class State:
         elif isinstance(data, gh.Issue):
             map_instance = self.known_issues
 
-        result = data.id in map_instance
-        map_instance.add(data.id)
+        result = data.gh_id in map_instance
+        map_instance.add(data.gh_id)
+        if result and isinstance(data, gh.Issue):
+            self.last_updated_issue = data.updated_at
+
         return result
+
+    def is_wanted_issue(self, issue: gh.Issue.Issue) -> bool:
+        return (
+            (not self.last_updated_issue)
+            or self.last_updated_issue < issue.updated_at
+            or self.first_processing(issue)
+        )
+
+    def rebuild_cache(self, session):
+        for issue in session.query(GHIssue):
+            self.known_issues.add(issue.gh_id)
+            updated = DateTime.fromtimestamp(issue.updated_at)
+            if (
+                not self.last_updated_issue
+            ) or self.last_updated_issue < updated:
+                self.last_updated_issue = updated
+
+        for comment in session.query(GHComment):
+            self.known_comments.add(comment.gh_id)
 
 
 class GHStar(SQLBase):
@@ -152,6 +178,14 @@ def parse_args(args=sys.argv[1:]):
         help="Github Access token string",
     )
 
+    parser.add_argument(
+        "--clean-write",
+        dest="clean_write",
+        default=None,
+        help="Create database from scratch, dropping all tables and "
+        + "rewriting the ",
+    )
+
     parser.add_argument("outfile", default=None, help="Output database file")
 
     return parser.parse_args(args)
@@ -176,40 +210,48 @@ def fill_stargazers(s: State):
 
 def fill_issues(c: Connect):
     s = c.state
-    issues = s.repo.get_issues()
+    last = s.last_updated_issue
+    issues = s.repo.get_issues(
+        state="all",
+        sort="updated",
+        direction="asc",
+        since=last or gh.GithubObject.NotSet,
+    )
+
     with progress(issues.totalCount) as bar:
         count = 0
         for issue in issues:
-            issue_id = c.add(
-                GHIssue(
-                    name=issue.title,
-                    gh_id=issue.id,
-                    user=c.add_user(issue.user),
-                    created_at=to_stamp(issue.created_at),
-                    updated_at=to_stamp(issue.updated_at),
-                    closed_at=to_stamp(issue.closed_at),
-                    url=issue.url,
-                )
-            )
-
-            for index, comment in enumerate(issue.get_comments()):
-                c.add(
-                    GHComment(
-                        gh_id=comment.id,
-                        issue=issue_id,
-                        index=index,
-                        user=c.add_user(comment.user),
-                        created_at=to_stamp(comment.created_at),
-                        text=comment.body,
+            if s.is_wanted_issue(issue):
+                issue_id = c.add(
+                    GHIssue(
+                        name=issue.title,
+                        gh_id=issue.id,
+                        user=c.add_user(issue.user),
+                        created_at=to_stamp(issue.created_at),
+                        updated_at=to_stamp(issue.updated_at),
+                        closed_at=to_stamp(issue.closed_at),
+                        url=issue.url,
                     )
                 )
 
-            count += 1
+                for index, comment in enumerate(issue.get_comments()):
+                    c.add(
+                        GHComment(
+                            gh_id=comment.id,
+                            issue=issue_id,
+                            index=index,
+                            user=c.add_user(comment.user),
+                            created_at=to_stamp(comment.created_at),
+                            text=comment.body,
+                        )
+                    )
+
+                count += 1
+
+                if 5 < count:
+                    break
 
             bar.update()
-
-            if 5 < count:
-                break
 
 
 def impl(args):
@@ -228,10 +270,13 @@ def impl(args):
     Session = sqa.orm.sessionmaker(bind=c.engine)
     c.session = Session()
 
-    SQLBase.metadata.drop_all(c.engine)
+    if args.clean_write:
+        SQLBase.metadata.drop_all(c.engine)
+
     SQLBase.metadata.create_all(c.engine)
     c.session.commit()
 
+    s.rebuild_cache(c.session)
     fill_issues(c)
 
     c.session.commit()
