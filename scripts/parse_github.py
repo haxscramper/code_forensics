@@ -95,6 +95,21 @@ class GHStar(SQLBase):
     user = Column(Integer, ForeignKey("user.id"))
 
 
+class GHMentionUser(SQLBase):
+    __tablename__ = "mention_user"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    comment = Column(Integer, ForeignKey("comment.id"))
+    user = Column(Integer, ForeignKey("user.id"))
+
+
+class GHMentionEntry(SQLBase):
+    __tablename__ = "mention_entry"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    comment = Column(Integer, ForeignKey("comment.id"))
+    entry_type = Column(Integer)
+    entry_gh_id = Column(Integer)
+
+
 class GHComment(SQLBase):
     __tablename__ = "comment"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -117,6 +132,7 @@ class GHLabel(SQLBase):
     __tablename__ = "label"
     id = Column(Integer, primary_key=True, autoincrement=True)
     text = Column(Text)
+    description = Column(Text)
 
 
 class GHIssue(SQLBase):
@@ -151,6 +167,7 @@ class Connect:
 
     def __init__(self):
         self.user_cache = {}
+        self.label_cache = {}
 
     def add(self, value) -> int:
         self.session.add(value)
@@ -168,6 +185,18 @@ class Connect:
 
             return self.user_cache[user.name]
 
+    def add_label(self, label: GHLabel | gh.Label.Label) -> int:
+        if isinstance(label, gh.Label.Label):
+            return self.add_label(
+                GHLabel(text=label.name, description=label.description)
+            )
+
+        else:
+            if label.text not in self.label_cache:
+                self.label_cache[label.text] = self.add(label)
+
+            return self.label_cache[label.text]
+
 
 def parse_args(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
@@ -184,6 +213,14 @@ def parse_args(args=sys.argv[1:]):
         default=None,
         help="Create database from scratch, dropping all tables and "
         + "rewriting the ",
+    )
+
+    parser.add_argument(
+        "--max-issue-fetch",
+        dest="max_issues_fetch",
+        default=5,
+        type=int,
+        help="Maximum number of issues to fetch in a single program run",
     )
 
     parser.add_argument("outfile", default=None, help="Output database file")
@@ -246,9 +283,12 @@ def fill_issues(c: Connect):
                         )
                     )
 
+                for label in issue.labels:
+                    c.add_label(label)
+
                 count += 1
 
-                if 5 < count:
+                if s.args.max_issues_fetch < count:
                     break
 
             bar.update()
@@ -277,14 +317,16 @@ def impl(args):
     c.session.commit()
 
     s.rebuild_cache(c.session)
-    fill_issues(c)
+    try:
+        fill_issues(c)
 
-    c.session.commit()
-    c.session.close()
+    finally:
+        c.session.commit()
+        c.session.close()
 
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        impl(parse_args(["/tmp/tmp.sqlite"]))
+        impl(parse_args(["/tmp/tmp.sqlite", "--max-issue-fetch=5"]))
     else:
         impl(parse_args())
