@@ -3,5 +3,6 @@
   "cSpell.ignoreWords": [
     "commiter"
   ],
-  "python.formatting.provider": "black"
+  "python.formatting.provider": "black",
+  "python.linting.enabled": true
 }

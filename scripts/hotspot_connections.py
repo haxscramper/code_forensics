@@ -65,7 +65,8 @@ def get_groups(args):
         df.apply(
             # HACK expose proper configuration options for file
             # filtering
-            lambda r: r.path.startswith("vlib/v") and r.path.endswith(".v"),
+            lambda r: r.path.startswith("compiler")
+            and r.path.endswith(".nim"),
             axis=1,
         )
     ]
@@ -384,10 +385,6 @@ def impl(args):
 if __name__ == "__main__":
     plt.rcParams["font.family"] = "consolas"
     if len(sys.argv) == 1:
-        impl(
-            parse_args(
-                ["/tmp/v.sqlite", "/tmp/v.png", "--mode=heatmap-fraction"]
-            )
-        )
+        impl(parse_args(["/tmp/Nim.sqlite", "/tmp/Nim.dot", "--mode=graph"]))
     else:
         impl(parse_args())

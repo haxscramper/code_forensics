@@ -35,7 +35,12 @@ def parse_args(args=sys.argv[1:]):
 # Remove automation boilerplate text from the message
 def clearmsg(msg: str) -> str:
     result = msg
-    for pat in [r"\(#\d+\)", r"\[backport\]", r"fixes:? *#\d+"]:
+    for pat in [
+        r"\(#\d+\)",
+        r"\[backport\]",
+        r"fixes:? *#\d+",
+        r"fix:? *#\d+",
+    ]:
         result = re.sub(pat, "", result, flags=re.IGNORECASE)
 
     return result
@@ -145,7 +150,8 @@ def impl(args):
             args.title
             or (
                 "average commit message length per contributor "
-                + "(.999th commit length percentile)"
+                + "(.999th commit length percentile, "
+                + f"top {int(args.top_contributors * 100)}% of contributors)"
             )
         )
         ax.set_ylabel(
@@ -171,6 +177,10 @@ def impl(args):
 if __name__ == "__main__":
     plt.rcParams["font.family"] = "consolas"
     if len(sys.argv) == 1:
-        impl(parse_args(["/tmp/v.sqlite", "/tmp/v.png"]))
+        impl(
+            parse_args(
+                ["/tmp/Nim.sqlite", "/tmp/Nim.png", "--config=config.cfg"]
+            )
+        )
     else:
         impl(parse_args())

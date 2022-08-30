@@ -412,3 +412,4 @@ docs
 perf.data*
 
 **/*.ipynb
+**/*token
