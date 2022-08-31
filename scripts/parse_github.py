@@ -112,6 +112,10 @@ def IntColumn(nullable: bool = False):
     return Column(Integer, nullable=nullable)
 
 
+def StrColumn(nullable: bool = False):
+    return Column(Text, nullable=nullable)
+
+
 class GHStar(SQLBase):
     __tablename__ = "star"
 
@@ -138,7 +142,7 @@ class GHComment(SQLBase):
     id = IdColumn()
     gh_id = IntColumn()
     index = IntColumn()
-    text = Column(Text)
+    text = StrColumn()
     target_kind = IntColumn()
     target = IntColumn()
     created_at = IntColumn()
@@ -149,8 +153,8 @@ class GHAssignee(SQLBase):
     __tablename__ = "assignee"
     id = IdColumn()
     user = ForeignId("user.id")
-    target = Column(Integer, nullable=False)
-    target_kind = Column(Integer, nullable=False)
+    target = IntColumn()
+    target_kind = IntColumn()
 
 
 class GHUser(SQLBase):
@@ -164,16 +168,16 @@ class GHPull(SQLBase):
     __tablename__ = "pull"
     id = IdColumn()
     text = Column(Text)
-    closed_at = Column(Integer)
-    created_at = Column(Integer)
-    gh_id = Column(Integer)
-    number = Column(Integer)
-    additions = Column(Integer)
-    deletions = Column(Integer)
-    changed_files = Column(Integer)
-    diff_url = Column(Text)
+    closed_at = IntColumn(nullable=True)
+    created_at = IntColumn()
+    gh_id = IntColumn()
+    number = IntColumn()
+    additions = IntColumn()
+    deletions = IntColumn()
+    changed_files = IntColumn()
+    diff_url = StrColumn()
     is_merged = Column(Boolean)
-    base_sha = Column(Text)
+    base_sha = StrColumn()
 
 
 class GHPullLabel(SQLBase):
@@ -186,22 +190,22 @@ class GHPullLabel(SQLBase):
 class GHLabel(SQLBase):
     __tablename__ = "label"
     id = IdColumn()
-    text = Column(Text)
-    description = Column(Text)
+    text = StrColumn()
+    description = StrColumn()
 
 
 class GHIssue(SQLBase):
     __tablename__ = "issue"
     id = IdColumn()
-    gh_id = Column(Integer)
-    name = Column(Text)
-    url = Column(Text)
-    number = Column(Integer)
+    gh_id = IntColumn()
+    name = StrColumn()
+    url = StrColumn()
+    number = IntColumn()
     user = ForeignId("user.id")
-    text = Column(Text)
-    closed_at = Column(Integer)
-    updated_at = Column(Integer)
-    created_at = Column(Integer)
+    text = StrColumn()
+    closed_at = IntColumn(nullable=True)
+    updated_at = IntColumn()
+    created_at = IntColumn()
 
 
 class GHIssueLabel(SQLBase):
@@ -326,6 +330,9 @@ def fill_mentions(c: Connect, comment_id, text: str):
     ):
         print(match)
 
+    for number in re.findall(r"#(\d+)", text):
+        print(number)
+
 
 def fill_issues(c: Connect):
     s = c.state
@@ -340,7 +347,6 @@ def fill_issues(c: Connect):
     with progress(issues.totalCount) as bar:
         count = 0
         for issue in issues:
-            print(issue)
             if s.is_wanted_issue(issue):
                 issue_id = c.add(
                     GHIssue(
@@ -351,7 +357,7 @@ def fill_issues(c: Connect):
                         updated_at=to_stamp(issue.updated_at),
                         closed_at=to_stamp(issue.closed_at),
                         url=issue.url,
-                        text=issue.body,
+                        text=issue.body or "",
                         number=issue.number,
                     )
                 )
@@ -368,7 +374,7 @@ def fill_issues(c: Connect):
                             target_kind=int(GHCommentKind.ON_ISSUE),
                             user=c.add_user(comment.user),
                             created_at=to_stamp(comment.created_at),
-                            text=comment.body,
+                            text=comment.body or "",
                         )
                     )
 
