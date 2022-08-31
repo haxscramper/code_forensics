@@ -9,7 +9,8 @@ Created on Tue Aug 30 14:28:42 2022
 # %% Import main modules
 
 import sqlalchemy as sqa
-from sqlalchemy import Column, Integer, Text, ForeignKey
+from sqlalchemy import Column, Integer, Text, ForeignKey, Boolean
+import re
 
 import argparse
 import github as gh
@@ -17,6 +18,7 @@ import sqlite3
 import sys
 
 from pydantic import BaseModel
+from enum import IntEnum
 from typing import (
     List,
     Type,
@@ -28,6 +30,7 @@ from typing import (
     Set,
     Union,
 )
+
 from sqlalchemy.orm import declarative_base
 from tqdm import tqdm
 from datetime import datetime as DateTime
@@ -46,24 +49,33 @@ class State:
 
     known_issues: Set[int] = set()
     known_comments: Set[int] = set()
+    known_pulls: Set[int] = set()
 
     def __init__(self):
         self.last_updated_issue: DateTime = None
 
     def first_processing(
-        self, data: Union[gh.IssueComment.IssueComment, gh.Issue.Issue]
+        self,
+        data: Union[
+            gh.IssueComment.IssueComment,
+            gh.Issue.Issue,
+            gh.PullRequest.PullRequest,
+        ],
     ) -> bool:
         result = True
         map_instance = None
-        if isinstance(data, gh.IssueComment):
+        if isinstance(data, gh.IssueComment.IssueComment):
             map_instance = self.known_comments
 
-        elif isinstance(data, gh.Issue):
+        elif isinstance(data, gh.Issue.Issue):
             map_instance = self.known_issues
 
-        result = data.gh_id in map_instance
-        map_instance.add(data.gh_id)
-        if result and isinstance(data, gh.Issue):
+        elif isinstance(data, gh.PullRequest.PullRequest):
+            map_instance = self.known_pulls
+
+        result = not (data.id in map_instance)
+        map_instance.add(data.id)
+        if result and isinstance(data, gh.Issue.Issue):
             self.last_updated_issue = data.updated_at
 
         return result
@@ -88,76 +100,122 @@ class State:
             self.known_comments.add(comment.gh_id)
 
 
+def IdColumn():
+    return Column(Integer, primary_key=True, autoincrement=True)
+
+
+def ForeignId(name: str, nullable: bool = False):
+    return Column(Integer, ForeignKey(name), nullable=nullable)
+
+
+def IntColumn(nullable: bool = False):
+    return Column(Integer, nullable=nullable)
+
+
 class GHStar(SQLBase):
     __tablename__ = "star"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user = Column(Integer, ForeignKey("user.id"))
+    id = IdColumn()
+    user = ForeignId("user.id")
 
 
-class GHMentionUser(SQLBase):
-    __tablename__ = "mention_user"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    comment = Column(Integer, ForeignKey("comment.id"))
-    user = Column(Integer, ForeignKey("user.id"))
+class GHReference(SQLBase):
+    __tablename__ = "reference"
+    id = IdColumn()
+    target_kind = IntColumn()
+    target = IntColumn()
+    entry_type = IntColumn()
+    entry_gh_id = IntColumn()
 
 
-class GHMentionEntry(SQLBase):
-    __tablename__ = "mention_entry"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    comment = Column(Integer, ForeignKey("comment.id"))
-    entry_type = Column(Integer)
-    entry_gh_id = Column(Integer)
+class GHCommentKind(IntEnum):
+    ON_ISSUE = 1
+    ON_PULL = 2
 
 
 class GHComment(SQLBase):
     __tablename__ = "comment"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    gh_id = Column(Integer)
-    index = Column(Integer)
+    id = IdColumn()
+    gh_id = IntColumn()
+    index = IntColumn()
     text = Column(Text)
-    issue = Column(Integer, ForeignKey("issue.id"))
-    created_at = Column(Integer)
-    user = Column(Integer)
+    target_kind = IntColumn()
+    target = IntColumn()
+    created_at = IntColumn()
+    user = IntColumn()
+
+
+class GHAssignee(SQLBase):
+    __tablename__ = "assignee"
+    id = IdColumn()
+    user = ForeignId("user.id")
+    target = Column(Integer, nullable=False)
+    target_kind = Column(Integer, nullable=False)
 
 
 class GHUser(SQLBase):
     __tablename__ = "user"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = IdColumn()
     name = Column(Text)
+
+
+class GHPull(SQLBase):
+    __tablename__ = "pull"
+    id = IdColumn()
+    text = Column(Text)
+    closed_at = Column(Integer)
+    created_at = Column(Integer)
+    gh_id = Column(Integer)
+    number = Column(Integer)
+    additions = Column(Integer)
+    deletions = Column(Integer)
+    changed_files = Column(Integer)
+    diff_url = Column(Text)
+    is_merged = Column(Boolean)
+    base_sha = Column(Text)
+
+
+class GHPullLabel(SQLBase):
+    __tablename__ = "pull_label"
+    id = IdColumn()
+    pull = ForeignId("pull.id")
+    label = ForeignId("label.id")
 
 
 class GHLabel(SQLBase):
     __tablename__ = "label"
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = IdColumn()
     text = Column(Text)
     description = Column(Text)
 
 
 class GHIssue(SQLBase):
     __tablename__ = "issue"
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = IdColumn()
     gh_id = Column(Integer)
     name = Column(Text)
     url = Column(Text)
-    user = Column(Integer, ForeignKey("user.id"))
+    number = Column(Integer)
+    user = ForeignId("user.id")
+    text = Column(Text)
     closed_at = Column(Integer)
     updated_at = Column(Integer)
     created_at = Column(Integer)
 
 
-class GHIssueLabels(SQLBase):
+class GHIssueLabel(SQLBase):
     __tablename__ = "issue_label"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    issue_id = Column(Integer, ForeignKey("issue.id"))
-    label_id = Column(Integer, ForeignKey("label.id"))
+    id = IdColumn()
+    issue = ForeignId("issue.id")
+    label = ForeignId("label.id")
 
 
 class GHIssueAssignee(SQLBase):
     __tablename__ = "issue_assignee"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user = Column(Integer, ForeignKey("user.id"))
+    id = IdColumn()
+    issue = ForeignId("issue.id")
+    user = ForeignId("user.id")
 
 
 class Connect:
@@ -223,6 +281,14 @@ def parse_args(args=sys.argv[1:]):
         help="Maximum number of issues to fetch in a single program run",
     )
 
+    parser.add_argument(
+        "--max-pull-fetch",
+        dest="max_pulls_fetch",
+        default=5,
+        type=int,
+        help="Maximum number of pull requests to fetch in a single program run",
+    )
+
     parser.add_argument("outfile", default=None, help="Output database file")
 
     return parser.parse_args(args)
@@ -245,6 +311,22 @@ def fill_stargazers(s: State):
             bar.update()
 
 
+def fill_mentions(c: Connect, comment_id, text: str):
+    s = c.state
+
+    for match in re.findall(r"[0-9a-f]{7,40}", text):
+        try:
+            commit = s.repo.get_commit(match)
+
+        except gh.GithubException:
+            pass
+
+    for (owner, repo, tail) in re.findall(
+        r"(https?://github\.com://([^\\]+)/([^\\])/[^\s]+)", text
+    ):
+        print(match)
+
+
 def fill_issues(c: Connect):
     s = c.state
     last = s.last_updated_issue
@@ -258,6 +340,7 @@ def fill_issues(c: Connect):
     with progress(issues.totalCount) as bar:
         count = 0
         for issue in issues:
+            print(issue)
             if s.is_wanted_issue(issue):
                 issue_id = c.add(
                     GHIssue(
@@ -268,28 +351,95 @@ def fill_issues(c: Connect):
                         updated_at=to_stamp(issue.updated_at),
                         closed_at=to_stamp(issue.closed_at),
                         url=issue.url,
+                        text=issue.body,
+                        number=issue.number,
                     )
                 )
 
+                if issue.body:
+                    fill_mentions(c, issue_id, issue.body)
+
                 for index, comment in enumerate(issue.get_comments()):
-                    c.add(
+                    comment_id = c.add(
                         GHComment(
                             gh_id=comment.id,
-                            issue=issue_id,
+                            target=issue_id,
                             index=index,
+                            target_kind=int(GHCommentKind.ON_ISSUE),
                             user=c.add_user(comment.user),
                             created_at=to_stamp(comment.created_at),
                             text=comment.body,
                         )
                     )
 
+                    fill_mentions(c, comment_id, comment.body)
+
                 for label in issue.labels:
-                    c.add_label(label)
+                    label_id = c.add_label(label)
+                    c.add(GHIssueLabel(issue=issue_id, label=label_id))
+
+                for assignee in issue.assignees:
+                    c.add(
+                        GHAssignee(
+                            target=issue_id,
+                            target_kind=int(GHCommentKind.ON_ISSUE),
+                            user=c.add_user(assignee),
+                        )
+                    )
 
                 count += 1
 
                 if s.args.max_issues_fetch < count:
                     break
+
+            bar.update()
+
+
+def fill_pulls(c: Connect):
+    s = c.state
+    pulls = s.repo.get_pulls(state="all", direction="asc", sort="updated")
+    count = 1
+    with progress(pulls.totalCount) as bar:
+        for pull in pulls:
+            if s.first_processing(pull):
+                pull_id = c.add(
+                    GHPull(
+                        text=pull.body,
+                        closed_at=to_stamp(pull.closed_at),
+                        created_at=to_stamp(pull.created_at),
+                        gh_id=pull.id,
+                        additions=pull.additions,
+                        deletions=pull.deletions,
+                        changed_files=pull.changed_files,
+                        number=pull.number,
+                        diff_url=pull.diff_url,
+                        is_merged=pull.is_merged(),
+                        base_sha=pull.base.sha,
+                    )
+                )
+
+                for label in pull.labels:
+                    label_id = c.add_label(label)
+                    c.add(GHPullLabel(pull=pull_id, label=label_id))
+
+                for index, comment in enumerate(pull.get_comments()):
+                    comment_id = c.add(
+                        GHComment(
+                            gh_id=comment.id,
+                            target=pull_id,
+                            index=index,
+                            target_kind=int(GHCommentKind.ON_PULL),
+                            user=c.add_user(comment.user),
+                            created_at=to_stamp(comment.created_at),
+                            text=comment.body,
+                        )
+                    )
+
+                    fill_mentions(c, comment_id, comment.body)
+
+            count += 1
+            if s.args.max_pulls_fetch < count:
+                break
 
             bar.update()
 
@@ -300,7 +450,7 @@ def impl(args):
             args.token = f.read().replace("\n", "")
 
     g = gh.Github(args.token)
-    repo = g.get_repo("nim-lang/Nim")
+    repo = g.get_repo("haxscramper/test")
     s = State()
     c = Connect()
     c.state = s
@@ -319,6 +469,7 @@ def impl(args):
     s.rebuild_cache(c.session)
     try:
         fill_issues(c)
+        fill_pulls(c)
 
     finally:
         c.session.commit()
@@ -327,6 +478,14 @@ def impl(args):
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        impl(parse_args(["/tmp/tmp.sqlite", "--max-issue-fetch=5"]))
+        impl(
+            parse_args(
+                [
+                    "/tmp/tmp.sqlite",
+                    "--max-issue-fetch=10",
+                    "--clean-write=True",
+                ]
+            )
+        )
     else:
         impl(parse_args())
