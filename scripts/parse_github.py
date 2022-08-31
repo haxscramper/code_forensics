@@ -128,13 +128,15 @@ class GHReference(SQLBase):
     id = IdColumn()
     target_kind = IntColumn()
     target = IntColumn()
-    entry_type = IntColumn()
-    entry_gh_id = IntColumn()
+    entry_kind = IntColumn()
+    entry = IntColumn()
 
 
-class GHCommentKind(IntEnum):
-    ON_ISSUE = 1
-    ON_PULL = 2
+class GHEntryKind(IntEnum):
+    ISSUE = 1
+    PULL = 2
+    COMMENT = 3
+    COMMIT = 4
 
 
 class GHComment(SQLBase):
@@ -149,6 +151,13 @@ class GHComment(SQLBase):
     user = IntColumn()
 
 
+class GHCommit(SQLBase):
+    __tablename__ = "gcommit"
+    id = IdColumn()
+    sha = StrColumn()
+    user = ForeignId("user.id")
+
+
 class GHAssignee(SQLBase):
     __tablename__ = "assignee"
     id = IdColumn()
@@ -161,7 +170,18 @@ class GHUser(SQLBase):
     __tablename__ = "user"
 
     id = IdColumn()
-    name = Column(Text)
+    name = StrColumn()
+    node_id = StrColumn()
+    twitter_username = StrColumn()
+    bio = StrColumn()
+    blog = StrColumn()
+    company = StrColumn()
+    created_at = IntColumn()
+    email = StrColumn()
+    followers = IntColumn()
+    hireable = Column(Boolean)
+    gh_id = IntColumn()
+    location = StrColumn()
 
 
 class GHPull(SQLBase):
@@ -192,6 +212,7 @@ class GHLabel(SQLBase):
     id = IdColumn()
     text = StrColumn()
     description = StrColumn()
+    color = StrColumn()
 
 
 class GHIssue(SQLBase):
@@ -215,21 +236,18 @@ class GHIssueLabel(SQLBase):
     label = ForeignId("label.id")
 
 
-class GHIssueAssignee(SQLBase):
-    __tablename__ = "issue_assignee"
-    id = IdColumn()
-    issue = ForeignId("issue.id")
-    user = ForeignId("user.id")
-
-
 class Connect:
     engine: sqa.engine.Engine
     session: sqa.orm.Session
+    meta: sqa.MetaData
     state: State
 
     def __init__(self):
         self.user_cache = {}
         self.label_cache = {}
+        self.commit_cache = {}
+        self.issue_cache = {}
+        self.pull_cache = {}
 
     def add(self, value) -> int:
         self.session.add(value)
@@ -237,9 +255,91 @@ class Connect:
         assert value.id
         return value.id
 
+        tables = self.meta.tables
+
+    def reference_issue(self, entry_id, entry_kind, number):
+        for issue in self.con.execute(
+            sqa.select(self.meta.tables["issue"]).where(
+                self.meta.tables["issue"].c.number == number
+            )
+        ):
+            self.add(
+                GHReference(
+                    target_kind=GHEntryKind.ISSUE,
+                    target=issue.id,
+                    entry=entry_id,
+                    entry_kind=entry_kind,
+                )
+            )
+
+    def reference_pull(self, entry_id, entry_kind, number):
+        for issue in self.con.execute(
+            sqa.select(self.meta.tables["pull"]).where(
+                self.meta.tables["pull"].c.number == number
+            )
+        ):
+            self.add(
+                GHReference(
+                    target_kind=GHEntryKind.PULL,
+                    target=issue.id,
+                    entry=entry_id,
+                    entry_kind=entry_kind,
+                )
+            )
+
+    def reference_commit(self, entry_id, entry_kind, number):
+        commit = self.add_commit(number)
+        if commit:
+            self.add(
+                GHReference(
+                    target_kind=GHEntryKind.COMMIT,
+                    target=commit,
+                    entry=entry_id,
+                    entry_kind=entry_kind,
+                )
+            )
+
+    def fill_mentions(self, entry_id, entry_kind: GHEntryKind, text: str):
+        s = self.state
+
+        for match in re.findall(r"[0-9a-f]{7,40}", text):
+            self.reference_commit(entry_id, entry_kind, match)
+
+        for (owner, repo, kind, number) in re.findall(
+            r"https?://github\.com/([^\\]+?)/([^\\]+?)/(issues|pulls|commit)/([^\s]+)",
+            text,
+        ):
+            if kind == "issues":
+                self.reference_issue(entry_id, entry_kind, int(number))
+
+            elif kind == "pulls":
+                self.reference_pull(entry_id, entry_kind, int(number))
+
+            elif kind == "commit":
+                self.reference_commit(entry_id, entry_kind, number)
+
+        for number in re.findall(r"#(\d+)", text):
+            self.reference_issue(entry_id, entry_kind, int(number))
+            self.reference_pull(entry_id, entry_kind, int(number))
+
     def add_user(self, user: GHUser | gh.NamedUser.NamedUser) -> int:
         if isinstance(user, gh.NamedUser.NamedUser):
-            return self.add_user(GHUser(name=user.login))
+            return self.add_user(
+                GHUser(
+                    name=user.login,
+                    node_id=user.node_id,
+                    twitter_username=user.twitter_username or "",
+                    bio=user.bio or "",
+                    blog=user.blog or "",
+                    created_at=to_stamp(user.created_at),
+                    company=user.company or "",
+                    email=user.email or "",
+                    followers=user.followers,
+                    hireable=user.hireable,
+                    gh_id=user.id,
+                    location=user.location or "",
+                )
+            )
 
         else:
             if user.name not in self.user_cache:
@@ -247,10 +347,92 @@ class Connect:
 
             return self.user_cache[user.name]
 
+    def add_commit(self, sha: str) -> Optional[int]:
+        if sha not in self.commit_cache:
+            try:
+                commit = self.state.repo.get_commit(sha)
+            except gh.GithubException:
+                return None
+
+            if commit.sha not in self.commit_cache:
+                self.commit_cache[commit.sha] = self.add(
+                    GHCommit(
+                        sha=commit.sha, user=self.add_user(commit.committer)
+                    )
+                )
+
+            self.commit_cache[sha] = self.commit_cache[commit.sha]
+
+        return self.commit_cache[sha]
+
+    def add_issue(self, issue: GHIssue | gh.Issue.Issue) -> int:
+        if isinstance(issue, gh.Issue.Issue):
+            if issue.id in self.issue_cache:
+                return self.issue_cache[issue.id]
+
+            issue_id = self.add_issue(
+                GHIssue(
+                    name=issue.title,
+                    gh_id=issue.id,
+                    user=self.add_user(issue.user),
+                    created_at=to_stamp(issue.created_at),
+                    updated_at=to_stamp(issue.updated_at),
+                    closed_at=to_stamp(issue.closed_at),
+                    url=issue.url,
+                    text=issue.body or "",
+                    number=issue.number,
+                )
+            )
+
+            if issue.body:
+                self.fill_mentions(issue_id, GHEntryKind.ISSUE, issue.body)
+
+            for index, comment in enumerate(issue.get_comments()):
+                comment_id = self.add(
+                    GHComment(
+                        gh_id=comment.id,
+                        target=issue_id,
+                        index=index,
+                        target_kind=int(GHEntryKind.ISSUE),
+                        user=self.add_user(comment.user),
+                        created_at=to_stamp(comment.created_at),
+                        text=comment.body or "",
+                    )
+                )
+
+                self.fill_mentions(
+                    comment_id, GHEntryKind.COMMENT, comment.body
+                )
+
+            for label in issue.labels:
+                label_id = self.add_label(label)
+                self.add(GHIssueLabel(issue=issue_id, label=label_id))
+
+            for assignee in issue.assignees:
+                self.add(
+                    GHAssignee(
+                        target=issue_id,
+                        target_kind=int(GHEntryKind.ISSUE),
+                        user=self.add_user(assignee),
+                    )
+                )
+
+            return issue_id
+
+        else:
+            if issue.gh_id not in self.issue_cache:
+                self.issue_cache[issue.gh_id] = self.add(issue)
+
+            return self.issue_cache[issue.gh_id]
+
     def add_label(self, label: GHLabel | gh.Label.Label) -> int:
         if isinstance(label, gh.Label.Label):
             return self.add_label(
-                GHLabel(text=label.name, description=label.description)
+                GHLabel(
+                    text=label.name,
+                    description=label.description,
+                    color=label.color,
+                )
             )
 
         else:
@@ -315,25 +497,6 @@ def fill_stargazers(s: State):
             bar.update()
 
 
-def fill_mentions(c: Connect, comment_id, text: str):
-    s = c.state
-
-    for match in re.findall(r"[0-9a-f]{7,40}", text):
-        try:
-            commit = s.repo.get_commit(match)
-
-        except gh.GithubException:
-            pass
-
-    for (owner, repo, tail) in re.findall(
-        r"(https?://github\.com://([^\\]+)/([^\\])/[^\s]+)", text
-    ):
-        print(match)
-
-    for number in re.findall(r"#(\d+)", text):
-        print(number)
-
-
 def fill_issues(c: Connect):
     s = c.state
     last = s.last_updated_issue
@@ -348,51 +511,7 @@ def fill_issues(c: Connect):
         count = 0
         for issue in issues:
             if s.is_wanted_issue(issue):
-                issue_id = c.add(
-                    GHIssue(
-                        name=issue.title,
-                        gh_id=issue.id,
-                        user=c.add_user(issue.user),
-                        created_at=to_stamp(issue.created_at),
-                        updated_at=to_stamp(issue.updated_at),
-                        closed_at=to_stamp(issue.closed_at),
-                        url=issue.url,
-                        text=issue.body or "",
-                        number=issue.number,
-                    )
-                )
-
-                if issue.body:
-                    fill_mentions(c, issue_id, issue.body)
-
-                for index, comment in enumerate(issue.get_comments()):
-                    comment_id = c.add(
-                        GHComment(
-                            gh_id=comment.id,
-                            target=issue_id,
-                            index=index,
-                            target_kind=int(GHCommentKind.ON_ISSUE),
-                            user=c.add_user(comment.user),
-                            created_at=to_stamp(comment.created_at),
-                            text=comment.body or "",
-                        )
-                    )
-
-                    fill_mentions(c, comment_id, comment.body)
-
-                for label in issue.labels:
-                    label_id = c.add_label(label)
-                    c.add(GHIssueLabel(issue=issue_id, label=label_id))
-
-                for assignee in issue.assignees:
-                    c.add(
-                        GHAssignee(
-                            target=issue_id,
-                            target_kind=int(GHCommentKind.ON_ISSUE),
-                            user=c.add_user(assignee),
-                        )
-                    )
-
+                c.add_issue(issue)
                 count += 1
 
                 if s.args.max_issues_fetch < count:
@@ -410,7 +529,7 @@ def fill_pulls(c: Connect):
             if s.first_processing(pull):
                 pull_id = c.add(
                     GHPull(
-                        text=pull.body,
+                        text=pull.body or "",
                         closed_at=to_stamp(pull.closed_at),
                         created_at=to_stamp(pull.created_at),
                         gh_id=pull.id,
@@ -424,6 +543,9 @@ def fill_pulls(c: Connect):
                     )
                 )
 
+                if pull.body:
+                    c.fill_mentions(pull_id, GHEntryKind.PULL, pull.body)
+
                 for label in pull.labels:
                     label_id = c.add_label(label)
                     c.add(GHPullLabel(pull=pull_id, label=label_id))
@@ -434,14 +556,16 @@ def fill_pulls(c: Connect):
                             gh_id=comment.id,
                             target=pull_id,
                             index=index,
-                            target_kind=int(GHCommentKind.ON_PULL),
+                            target_kind=int(GHEntryKind.PULL),
                             user=c.add_user(comment.user),
                             created_at=to_stamp(comment.created_at),
                             text=comment.body,
                         )
                     )
 
-                    fill_mentions(c, comment_id, comment.body)
+                    c.fill_mentions(
+                        comment_id, GHEntryKind.COMMENT, comment.body
+                    )
 
             count += 1
             if s.args.max_pulls_fetch < count:
@@ -465,6 +589,8 @@ def impl(args):
     c.engine = sqa.create_engine(f"sqlite:///{args.outfile}")
     Session = sqa.orm.sessionmaker(bind=c.engine)
     c.session = Session()
+    c.meta = SQLBase.metadata
+    c.con = c.engine.connect()
 
     if args.clean_write:
         SQLBase.metadata.drop_all(c.engine)
@@ -487,7 +613,7 @@ if __name__ == "__main__":
         impl(
             parse_args(
                 [
-                    "/tmp/tmp.sqlite",
+                    "parse_github.sqlite",
                     "--max-issue-fetch=10",
                     "--clean-write=True",
                 ]
