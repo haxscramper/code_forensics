@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
+cmake_policy(SET CMP0102 NEW)
 
 project(code_forensics LANGUAGES CXX)
 
@@ -10,14 +11,14 @@ set(CONAN_CMAKE_SILENT_OUTPUT ON)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-set(CMAKE_CXX_COMPILER clang++)
+# set(CMAKE_CXX_COMPILER clang++)
+#
 # Treat included conan libraries as a system headers - ignore warnings.
 set(CONAN_SYSTEM_INCLUDES ON)
 
 # Otherwise boost compilation fails to work due to internal compilation errors.
 # No, 'SYSTEM_INCLUDES' does not help.
 add_compile_options(-Wno-c++11-narrowing)
-add_compile_options(-glldb)
 add_compile_options(-Wno-deprecated-declarations)
 
 set(DEPS_DIR ${CMAKE_SOURCE_DIR}/build/dependencies/conan)
@@ -33,8 +34,8 @@ find_package(libgit2 REQUIRED)
 find_package(SQLite3 REQUIRED)
 # For parallel execution policies in the standard library algorithms
 
-add_compile_options(-ferror-limit=1)
-add_compile_options(-fcoroutines-ts)
+# add_compile_options(-ferror-limit=1) add_compile_options(-fcoroutines-ts)
+# add_compile_options(-glldb)
 
 add_compile_options(-Wno-format-security)
 add_compile_options(-Wno-c99-designator)
@@ -57,6 +58,16 @@ target_link_libraries(
          SQLite::SQLite
          libgit2::libgit2)
 
-target_include_directories(
-  code_forensics PUBLIC Python::Python Boost::system Boost::program_options
-                        SqliteOrm::sqlite_orm)
+include(external/hcxx_common/CMakeLists.txt)
+
+target_include_directories(code_forensics PUBLIC external/hcxx_common/src)
+
+# target_include_directories( code_forensics PUBLIC Python::Python Boost::system
+# Boost::program_options SqliteOrm::sqlite_orm)
+
+get_target_property(list code_forensics INCLUDE_DIRECTORIES)
+
+message(WARNING "---------------")
+foreach(dir ${list})
+  message(INFO " > " ${dir})
+endforeach()

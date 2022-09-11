@@ -10,7 +10,6 @@
 #include <boost/asio/post.hpp>
 
 #include <algorithm>
-#include <execution>
 
 using namespace ir;
 

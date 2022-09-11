@@ -116,7 +116,18 @@ tasks:
     deps: [conan_install]
     summary: "Build build the binary file"
     cmds:
-      - cmake ..
+      # - >
+      #   cmake --build .. --target clean
+      - >
+        cmake
+        ..
+        --trace
+        --trace-expand
+        --trace-redirect=/tmp/cmake-trace.txt
+        # --trace-source=CMakeLists.txt
+        # --trace-source=external/hcxx_common/CMakeLists.txt
+        # --trace-expand
+
       - make -j12
 
   conan_install:

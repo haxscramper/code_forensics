@@ -1,3 +1,6 @@
+#include <range/v3/all.hpp>
+#warning "Building code forensics CPP"
+
 #include "common.hpp"
 #include "git_ir.hpp"
 
@@ -18,7 +21,6 @@
 #include <unordered_set>
 #include <set>
 
-#include <range/v3/all.hpp>
 
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/lock_guard.hpp>

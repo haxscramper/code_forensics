@@ -1,7 +1,7 @@
 #ifndef CLI_OPTIONS_HPP
 #define CLI_OPTIONS_HPP
 
-#include "common.hpp"
+#include <common.hpp>
 #include "program_state.hpp"
 #include <boost/program_options.hpp>
 #include <boost/describe.hpp>

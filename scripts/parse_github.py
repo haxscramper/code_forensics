@@ -83,7 +83,9 @@ class State:
         for issue in session.query(GHIssue):
             self.known_issues.add(issue.gh_id)
             updated = DateTime.fromtimestamp(issue.updated_at)
-            if (not self.last_updated_issue) or self.last_updated_issue < updated:
+            if (
+                not self.last_updated_issue
+            ) or self.last_updated_issue < updated:
                 self.last_updated_issue = updated
 
         for comment in session.query(GHComment):
@@ -398,7 +400,9 @@ class Connect:
 
             if commit.sha not in self.commit_cache:
                 self.commit_cache[commit.sha] = self.add(
-                    GHCommit(sha=commit.sha, user=self.get_user(commit.committer))
+                    GHCommit(
+                        sha=commit.sha, user=self.get_user(commit.committer)
+                    )
                 )
 
             self.commit_cache[sha] = self.commit_cache[commit.sha]
@@ -440,7 +444,9 @@ class Connect:
                     )
                 )
 
-                self.fill_mentions(comment_id, GHEntryKind.COMMENT, comment.body)
+                self.fill_mentions(
+                    comment_id, GHEntryKind.COMMENT, comment.body
+                )
 
             for label in issue.labels:
                 label_id = self.get_label(label)
@@ -506,8 +512,8 @@ class Connect:
                         label=event.label and self.get_label(event.label),
                         assigner=event.assigner
                         and self.get_user(event.assigner),
-                        review_requester=event.review_requester and
-                        self.get_user(event.review_requester),
+                        review_requester=event.review_requester
+                        and self.get_user(event.review_requester),
                     )
                 )
 
@@ -524,7 +530,9 @@ class Connect:
                     )
                 )
 
-                self.fill_mentions(comment_id, GHEntryKind.COMMENT, comment.body)
+                self.fill_mentions(
+                    comment_id, GHEntryKind.COMMENT, comment.body
+                )
 
             # FIXME don't know how to get the review comments properly -
             # code returns nothing
@@ -543,7 +551,9 @@ class Connect:
                 print(review)
                 comment_id = self.add(review)
 
-                self.fill_mentions(comment_id, GHEntryKind.REVIEW_COMMENT, comment.body)
+                self.fill_mentions(
+                    comment_id, GHEntryKind.REVIEW_COMMENT, comment.body
+                )
 
         else:
             if pull.gh_id not in self.pull_cache:
