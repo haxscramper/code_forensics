@@ -1,8 +1,4 @@
 var searchData=
 [
-  ['severity_2297',['severity',['../namespaceboost_1_1log.html#aa0f34afeca93658a00499f5f7ca6dbda',1,'boost::log']]],
-  ['sink_5ft_2298',['sink_t',['../logging_8hpp.html#aae6e8800f73d2cfd43f503ed13e6332d',1,'logging.hpp']]],
-  ['slock_2299',['SLock',['../repo__processing_8hpp.html#a1b7cad9d7b9b32f86ec7b8028cd0bc26',1,'repo_processing.hpp']]],
-  ['sptr_2300',['SPtr',['../common_8hpp.html#a5076b1659821c8d7ce06da09452ba382',1,'common.hpp']]],
-  ['str_2301',['Str',['../common_8hpp.html#a376207d46bd161163b9089964e8fbed6',1,'common.hpp']]]
+  ['u_2138',['U',['../structfmt_1_1formatter_3_01_t_00_01char_00_01std_1_1enable__if__t_3_01boost_1_1describe_1_1has__82caa5c447a9324d6094a99b0fdff09a.html#adda6b35118439551e495b25a0a39fd32',1,'fmt::formatter&lt; T, char, std::enable_if_t&lt; boost::describe::has_describe_enumerators&lt; T &gt;::value &gt; &gt;']]]
 ];

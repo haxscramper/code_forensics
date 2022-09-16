@@ -93,7 +93,7 @@ $(document).ready(function(){initNavTree('git__interface_8hpp.html',''); initRes
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;git2.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="common_8hpp_source.html">common.hpp</a>&quot;</code><br />
+<code>#include &quot;common.hpp&quot;</code><br />
 <code>#include &lt;fmt/core.h&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &quot;<a class="el" href="gitwrap_8hpp_source.html">gitwrap.hpp</a>&quot;</code><br />
@@ -137,18 +137,18 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a4a74fe013dba8d87176fee4b5e5cb80d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a4a74fe013dba8d87176fee4b5e5cb80d">oid_tostr</a> (git_oid oid)</td></tr>
+<tr class="memitem:a4a74fe013dba8d87176fee4b5e5cb80d"><td class="memItemLeft" align="right" valign="top">Str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a4a74fe013dba8d87176fee4b5e5cb80d">oid_tostr</a> (git_oid oid)</td></tr>
 <tr class="memdesc:a4a74fe013dba8d87176fee4b5e5cb80d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert git ID object to it's string representation.  <a href="git__interface_8hpp.html#a4a74fe013dba8d87176fee4b5e5cb80d">More...</a><br /></td></tr>
 <tr class="separator:a4a74fe013dba8d87176fee4b5e5cb80d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1eb912b18555e43af6f1dffb1438a3d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a1eb912b18555e43af6f1dffb1438a3d0">tree_walk</a> (const git_tree *tree, git_treewalk_mode mode, <a class="el" href="common_8hpp.html#ade2480cf7cadbc49262a063a63264a62">Func</a>&lt; int(const char *, const git_tree_entry *)&gt; callback)</td></tr>
+<tr class="memitem:a1eb912b18555e43af6f1dffb1438a3d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a1eb912b18555e43af6f1dffb1438a3d0">tree_walk</a> (const git_tree *tree, git_treewalk_mode mode, Func&lt; int(const char *, const git_tree_entry *)&gt; callback)</td></tr>
 <tr class="memdesc:a1eb912b18555e43af6f1dffb1438a3d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterate over the git tree in specified order using provided callback.  <a href="git__interface_8hpp.html#a1eb912b18555e43af6f1dffb1438a3d0">More...</a><br /></td></tr>
 <tr class="separator:a1eb912b18555e43af6f1dffb1438a3d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a024361d819e1689d15a9bf09e222bb75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a024361d819e1689d15a9bf09e222bb75">diff_foreach</a> (git_diff *diff, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="struct_diff_foreach_params.html">DiffForeachParams</a> &gt; foreach)</td></tr>
+<tr class="memitem:a024361d819e1689d15a9bf09e222bb75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a024361d819e1689d15a9bf09e222bb75">diff_foreach</a> (git_diff *diff, CR&lt; <a class="el" href="struct_diff_foreach_params.html">DiffForeachParams</a> &gt; foreach)</td></tr>
 <tr class="separator:a024361d819e1689d15a9bf09e222bb75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57aad2e609d0f5569322369832487e0b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a57aad2e609d0f5569322369832487e0b">operator==</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; lhs, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; rhs)</td></tr>
+<tr class="memitem:a57aad2e609d0f5569322369832487e0b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a57aad2e609d0f5569322369832487e0b">operator==</a> (CR&lt; git_oid &gt; lhs, CR&lt; git_oid &gt; rhs)</td></tr>
 <tr class="memdesc:a57aad2e609d0f5569322369832487e0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare git OID for equality.  <a href="git__interface_8hpp.html#a57aad2e609d0f5569322369832487e0b">More...</a><br /></td></tr>
 <tr class="separator:a57aad2e609d0f5569322369832487e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f5101279d75d7ce87255703d7d0cd8a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a4f5101279d75d7ce87255703d7d0cd8a">operator&lt;</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; lhs, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; rhs)</td></tr>
+<tr class="memitem:a4f5101279d75d7ce87255703d7d0cd8a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#a4f5101279d75d7ce87255703d7d0cd8a">operator&lt;</a> (CR&lt; git_oid &gt; lhs, CR&lt; git_oid &gt; rhs)</td></tr>
 <tr class="separator:a4f5101279d75d7ce87255703d7d0cd8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abede973bc5bb6a24cecd2147a7183599"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="git__interface_8hpp.html#abede973bc5bb6a24cecd2147a7183599">operator&lt;&lt;</a> (std::ostream &amp;out, git_oid const &amp;oid)</td></tr>
 <tr class="separator:abede973bc5bb6a24cecd2147a7183599"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -203,7 +203,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="struct_diff_foreach_params.html">DiffForeachParams</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; <a class="el" href="struct_diff_foreach_params.html">DiffForeachParams</a> &gt;&#160;</td>
           <td class="paramname"><em>foreach</em>&#160;</td>
         </tr>
         <tr>
@@ -237,7 +237,7 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> oid_tostr </td>
+          <td class="memname">Str oid_tostr </td>
           <td>(</td>
           <td class="paramtype">git_oid&#160;</td>
           <td class="paramname"><em>oid</em></td><td>)</td>
@@ -267,13 +267,13 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool operator&lt; </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramtype">CR&lt; git_oid &gt;&#160;</td>
           <td class="paramname"><em>lhs</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramtype">CR&lt; git_oid &gt;&#160;</td>
           <td class="paramname"><em>rhs</em>&#160;</td>
         </tr>
         <tr>
@@ -339,13 +339,13 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool operator== </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramtype">CR&lt; git_oid &gt;&#160;</td>
           <td class="paramname"><em>lhs</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramtype">CR&lt; git_oid &gt;&#160;</td>
           <td class="paramname"><em>rhs</em>&#160;</td>
         </tr>
         <tr>
@@ -389,7 +389,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#ade2480cf7cadbc49262a063a63264a62">Func</a>&lt; int(const char *, const git_tree_entry *)&gt;&#160;</td>
+          <td class="paramtype">Func&lt; int(const char *, const git_tree_entry *)&gt;&#160;</td>
           <td class="paramname"><em>callback</em>&#160;</td>
         </tr>
         <tr>

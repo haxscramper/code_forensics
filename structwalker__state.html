@@ -104,30 +104,30 @@ Collaboration diagram for walker_state:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad81de230fbe18406483b5007640d5d8b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ad81de230fbe18406483b5007640d5d8b">add_full_commit</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; oid, int period)</td></tr>
+<tr class="memitem:ad81de230fbe18406483b5007640d5d8b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ad81de230fbe18406483b5007640d5d8b">add_full_commit</a> (CR&lt; git_oid &gt; oid, int period)</td></tr>
 <tr class="separator:ad81de230fbe18406483b5007640d5d8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bf6b3071faecf11fdb0aea85c1a6d8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a7bf6b3071faecf11fdb0aea85c1a6d8f">add_id_mapping</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; oid, ir::CommitId id)</td></tr>
+<tr class="memitem:a7bf6b3071faecf11fdb0aea85c1a6d8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a7bf6b3071faecf11fdb0aea85c1a6d8f">add_id_mapping</a> (CR&lt; git_oid &gt; oid, ir::CommitId id)</td></tr>
 <tr class="separator:a7bf6b3071faecf11fdb0aea85c1a6d8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2623bc430daef94d1df48e0307e49c3"><td class="memItemLeft" align="right" valign="top">ir::CommitId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ad2623bc430daef94d1df48e0307e49c3">get_id</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; oid)</td></tr>
+<tr class="memitem:ad2623bc430daef94d1df48e0307e49c3"><td class="memItemLeft" align="right" valign="top">ir::CommitId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ad2623bc430daef94d1df48e0307e49c3">get_id</a> (CR&lt; git_oid &gt; oid)</td></tr>
 <tr class="separator:ad2623bc430daef94d1df48e0307e49c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22e666a8188e9317791d0d3f20f0a1a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a831800a61c1b662adafb727abe4ef552">Opt</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a22e666a8188e9317791d0d3f20f0a1a1">get_period</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; commit) const noexcept</td></tr>
+<tr class="memitem:a22e666a8188e9317791d0d3f20f0a1a1"><td class="memItemLeft" align="right" valign="top">Opt&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a22e666a8188e9317791d0d3f20f0a1a1">get_period</a> (CR&lt; git_oid &gt; commit) const noexcept</td></tr>
 <tr class="separator:a22e666a8188e9317791d0d3f20f0a1a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a944e7933895be2cc42e4c4c0774be923"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a944e7933895be2cc42e4c4c0774be923">get_period</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; commit, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; line) const noexcept</td></tr>
+<tr class="memitem:a944e7933895be2cc42e4c4c0774be923"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a944e7933895be2cc42e4c4c0774be923">get_period</a> (CR&lt; git_oid &gt; commit, CR&lt; git_oid &gt; line) const noexcept</td></tr>
 <tr class="memdesc:a944e7933895be2cc42e4c4c0774be923"><td class="mdescLeft">&#160;</td><td class="mdescRight">get period the line was attributed to, otherwise fall back to the commit period  <a href="structwalker__state.html#a944e7933895be2cc42e4c4c0774be923">More...</a><br /></td></tr>
 <tr class="separator:a944e7933895be2cc42e4c4c0774be923"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0f44c43ce52bc9bdd3ddcc2991f2c26"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ac0f44c43ce52bc9bdd3ddcc2991f2c26">consider_changed</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; <a class="el" href="gitwrap_8hpp.html#a23114cb7e9dc6fbb95d307b28af92354">commit_id</a>, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt; line_change_id) const -&gt; bool</td></tr>
+<tr class="memitem:ac0f44c43ce52bc9bdd3ddcc2991f2c26"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ac0f44c43ce52bc9bdd3ddcc2991f2c26">consider_changed</a> (CR&lt; git_oid &gt; <a class="el" href="gitwrap_8hpp.html#a23114cb7e9dc6fbb95d307b28af92354">commit_id</a>, CR&lt; git_oid &gt; line_change_id) const -&gt; bool</td></tr>
 <tr class="separator:ac0f44c43ce52bc9bdd3ddcc2991f2c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a7d4de3c70d5cfd425d8c4aa39ad275e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a263a0aec5ff7da05cd470ba00a967e3e">CP</a>&lt; <a class="el" href="structwalker__config.html">walker_config</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a7d4de3c70d5cfd425d8c4aa39ad275e1">config</a></td></tr>
+<tr class="memitem:a7d4de3c70d5cfd425d8c4aa39ad275e1"><td class="memItemLeft" align="right" valign="top">CP&lt; <a class="el" href="structwalker__config.html">walker_config</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a7d4de3c70d5cfd425d8c4aa39ad275e1">config</a></td></tr>
 <tr class="separator:a7d4de3c70d5cfd425d8c4aa39ad275e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a317196c21f89a6d470e3d415f6c263"><td class="memItemLeft" align="right" valign="top">git_revwalk *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a7a317196c21f89a6d470e3d415f6c263">walker</a></td></tr>
 <tr class="separator:a7a317196c21f89a6d470e3d415f6c263"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a751d26f1268e1cbcdabea0f7ab6ac7c7"><td class="memItemLeft" align="right" valign="top">git_repository *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a751d26f1268e1cbcdabea0f7ab6ac7c7">repo</a></td></tr>
 <tr class="memdesc:a751d26f1268e1cbcdabea0f7ab6ac7c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current git repository.  <a href="structwalker__state.html#a751d26f1268e1cbcdabea0f7ab6ac7c7">More...</a><br /></td></tr>
 <tr class="separator:a751d26f1268e1cbcdabea0f7ab6ac7c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66a31e5b9d09a62f815f4de9d4de0af6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt; git_oid &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a66a31e5b9d09a62f815f4de9d4de0af6">full_commits</a></td></tr>
+<tr class="memitem:a66a31e5b9d09a62f815f4de9d4de0af6"><td class="memItemLeft" align="right" valign="top">Vec&lt; git_oid &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a66a31e5b9d09a62f815f4de9d4de0af6">full_commits</a></td></tr>
 <tr class="memdesc:a66a31e5b9d09a62f815f4de9d4de0af6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ordered list of commits that were considered for the processing run.  <a href="structwalker__state.html#a66a31e5b9d09a62f815f4de9d4de0af6">More...</a><br /></td></tr>
 <tr class="separator:a66a31e5b9d09a62f815f4de9d4de0af6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9824ad10b26625a021ee2a332288c34"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; git_oid, ir::CommitId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#ad9824ad10b26625a021ee2a332288c34">commit_ids</a></td></tr>
@@ -145,7 +145,7 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a161ce5118cda3eab460d27a193637251"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a808b305b6826411c16d21db04ad7c15f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structir_1_1content__manager.html">ir::content_manager</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a808b305b6826411c16d21db04ad7c15f">content</a></td></tr>
 <tr class="separator:a808b305b6826411c16d21db04ad7c15f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25289bbfbc778fc387189b1379154eab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a5076b1659821c8d7ce06da09452ba382">SPtr</a>&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a25289bbfbc778fc387189b1379154eab">logger</a></td></tr>
+<tr class="memitem:a25289bbfbc778fc387189b1379154eab"><td class="memItemLeft" align="right" valign="top">SPtr&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwalker__state.html#a25289bbfbc778fc387189b1379154eab">logger</a></td></tr>
 <tr class="memdesc:a25289bbfbc778fc387189b1379154eab"><td class="mdescLeft">&#160;</td><td class="mdescRight">main application logger entry  <a href="structwalker__state.html#a25289bbfbc778fc387189b1379154eab">More...</a><br /></td></tr>
 <tr class="separator:a25289bbfbc778fc387189b1379154eab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -164,7 +164,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">void walker_state::add_full_commit </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramtype">CR&lt; git_oid &gt;&#160;</td>
           <td class="paramname"><em>oid</em>, </td>
         </tr>
         <tr>
@@ -208,7 +208,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">void walker_state::add_id_mapping </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramtype">CR&lt; git_oid &gt;&#160;</td>
           <td class="paramname"><em>oid</em>, </td>
         </tr>
         <tr>
@@ -244,13 +244,13 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">auto walker_state::consider_changed </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramtype">CR&lt; git_oid &gt;&#160;</td>
           <td class="paramname"><em>commit_id</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramtype">CR&lt; git_oid &gt;&#160;</td>
           <td class="paramname"><em>line_change_id</em>&#160;</td>
         </tr>
         <tr>
@@ -285,7 +285,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">ir::CommitId walker_state::get_id </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramtype">CR&lt; git_oid &gt;&#160;</td>
           <td class="paramname"><em>oid</em></td><td>)</td>
           <td></td>
         </tr>
@@ -309,9 +309,9 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="common_8hpp.html#a831800a61c1b662adafb727abe4ef552">Opt</a>&lt;int&gt; walker_state::get_period </td>
+          <td class="memname">Opt&lt;int&gt; walker_state::get_period </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramtype">CR&lt; git_oid &gt;&#160;</td>
           <td class="paramname"><em>commit</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -338,13 +338,13 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">int walker_state::get_period </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramtype">CR&lt; git_oid &gt;&#160;</td>
           <td class="paramname"><em>commit</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; git_oid &gt;&#160;</td>
+          <td class="paramtype">CR&lt; git_oid &gt;&#160;</td>
           <td class="paramname"><em>line</em>&#160;</td>
         </tr>
         <tr>
@@ -386,7 +386,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="common_8hpp.html#a263a0aec5ff7da05cd470ba00a967e3e">CP</a>&lt;<a class="el" href="structwalker__config.html">walker_config</a>&gt; walker_state::config</td>
+          <td class="memname">CP&lt;<a class="el" href="structwalker__config.html">walker_config</a>&gt; walker_state::config</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -414,7 +414,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt;git_oid&gt; walker_state::full_commits</td>
+          <td class="memname">Vec&lt;git_oid&gt; walker_state::full_commits</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -430,7 +430,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="common_8hpp.html#a5076b1659821c8d7ce06da09452ba382">SPtr</a>&lt;<a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a>&gt; walker_state::logger</td>
+          <td class="memname">SPtr&lt;<a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a>&gt; walker_state::logger</td>
         </tr>
       </table>
 </div><div class="memdoc">

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['hash_3c_20git_5foid_20_3e_1180',['hash&lt; git_oid &gt;',['../structstd_1_1hash_3_01git__oid_01_4.html',1,'std']]],
-  ['hash_3c_20id_20_3e_1181',['hash&lt; Id &gt;',['../structstd_1_1hash_3_01_id_01_4.html',1,'std']]]
+  ['id_5ftype_3c_20str_20_3e_1093',['id_type&lt; Str &gt;',['../structdod_1_1id__type_3_01_str_01_4.html',1,'dod']]]
 ];

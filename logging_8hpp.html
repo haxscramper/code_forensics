@@ -104,7 +104,7 @@ $(document).ready(function(){initNavTree('logging_8hpp.html',''); initResizable(
 <code>#include &lt;boost/log/sources/logger.hpp&gt;</code><br />
 <code>#include &lt;boost/log/utility/record_ordering.hpp&gt;</code><br />
 <code>#include &lt;boost/core/null_deleter.hpp&gt;</code><br />
-<code>#include &quot;<a class="el" href="common_8hpp_source.html">common.hpp</a>&quot;</code><br />
+<code>#include &quot;common.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="program__state_8hpp_source.html">program_state.hpp</a>&quot;</code><br />
 <code>#include &lt;shared_mutex&gt;</code><br />
 <code>#include &lt;indicators/progress_bar.hpp&gt;</code><br />
@@ -172,22 +172,22 @@ Typedefs</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a1a9f24f242157b98741f53bf6350f901"><td class="memItemLeft" align="right" valign="top">indicators::BlockProgressBar&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#a1a9f24f242157b98741f53bf6350f901">init_progress</a> (int max, int width=60)</td></tr>
 <tr class="separator:a1a9f24f242157b98741f53bf6350f901"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace28ad681438536cf06e7996ef3427f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#ace28ad681438536cf06e7996ef3427f5">tick_next</a> (indicators::BlockProgressBar &amp;bar, int &amp;count, int max, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; name, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; extra=&quot;&quot;)</td></tr>
+<tr class="memitem:ace28ad681438536cf06e7996ef3427f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#ace28ad681438536cf06e7996ef3427f5">tick_next</a> (indicators::BlockProgressBar &amp;bar, int &amp;count, int max, CR&lt; Str &gt; name, CR&lt; Str &gt; extra=&quot;&quot;)</td></tr>
 <tr class="separator:ace28ad681438536cf06e7996ef3427f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga349a35edd1f9e7a71ce6c8a0738886cb"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:ga349a35edd1f9e7a71ce6c8a0738886cb"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__all__logging.html#ga349a35edd1f9e7a71ce6c8a0738886cb">set_get_attrib</a> (const char *name, ValueType value) -&gt; ValueType</td></tr>
 <tr class="separator:ga349a35edd1f9e7a71ce6c8a0738886cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae41f8f82869f05b57f3af212463aff7b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__all__logging.html#gae41f8f82869f05b57f3af212463aff7b">get_logger</a> (<a class="el" href="structwalker__state.html">walker_state</a> *state) -&gt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &amp;</td></tr>
 <tr class="separator:gae41f8f82869f05b57f3af212463aff7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5f2bd8e72733c814acea57943bc5d198"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__all__logging.html#ga5f2bd8e72733c814acea57943bc5d198">get_logger</a> (<a class="el" href="common_8hpp.html#aa6d98c828559a00e7b99f2f84cff0c32">UPtr</a>&lt; <a class="el" href="structwalker__state.html">walker_state</a> &gt; &amp;state) -&gt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &amp;</td></tr>
+<tr class="memitem:ga5f2bd8e72733c814acea57943bc5d198"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__all__logging.html#ga5f2bd8e72733c814acea57943bc5d198">get_logger</a> (UPtr&lt; <a class="el" href="structwalker__state.html">walker_state</a> &gt; &amp;state) -&gt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &amp;</td></tr>
 <tr class="separator:ga5f2bd8e72733c814acea57943bc5d198"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf0bdd0fad8a3e784d27ecf5743c238ef"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__all__logging.html#gaf0bdd0fad8a3e784d27ecf5743c238ef">get_logger</a> (<a class="el" href="common_8hpp.html#a5076b1659821c8d7ce06da09452ba382">SPtr</a>&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt; &amp;in) -&gt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &amp;</td></tr>
+<tr class="memitem:gaf0bdd0fad8a3e784d27ecf5743c238ef"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__all__logging.html#gaf0bdd0fad8a3e784d27ecf5743c238ef">get_logger</a> (SPtr&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt; &amp;in) -&gt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &amp;</td></tr>
 <tr class="separator:gaf0bdd0fad8a3e784d27ecf5743c238ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6b55e6cf0357fa986512190ceefe8ec"><td class="memItemLeft" align="right" valign="top">BOOST_LOG_ATTRIBUTE_KEYWORD(severity, &quot;Severity&quot;, logging::trivial::severity_level) void <a class="el" href="logging_8cpp.html#aa19fa41017122b3de372db939ce6ff3f">log_formatter</a>(logging <a class="el" href="common_8hpp.html#a13aad120833e878b232c905e7d92834e">Pair</a>&lt; char, fmt::text_style &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#ad6b55e6cf0357fa986512190ceefe8ec">format_style</a> (<a class="el" href="namespaceboost_1_1log.html#aa0f34afeca93658a00499f5f7ca6dbda">logging::severity</a> level)</td></tr>
+<tr class="memitem:ad6b55e6cf0357fa986512190ceefe8ec"><td class="memItemLeft" align="right" valign="top">BOOST_LOG_ATTRIBUTE_KEYWORD(severity, &quot;Severity&quot;, logging::trivial::severity_level) void <a class="el" href="logging_8cpp.html#aa19fa41017122b3de372db939ce6ff3f">log_formatter</a>(logging Pair&lt; char, fmt::text_style &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#ad6b55e6cf0357fa986512190ceefe8ec">format_style</a> (<a class="el" href="namespaceboost_1_1log.html#aa0f34afeca93658a00499f5f7ca6dbda">logging::severity</a> level)</td></tr>
 <tr class="separator:ad6b55e6cf0357fa986512190ceefe8ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25cf6c1872144edab2d73802b1969245"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#a25cf6c1872144edab2d73802b1969245">out_formatter</a> (logging::record_view const &amp;rec, logging::formatting_ostream &amp;strm)</td></tr>
 <tr class="separator:a25cf6c1872144edab2d73802b1969245"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d90e11d77890557687ed30cf72e45ec"><td class="memItemLeft" align="right" valign="top">boost::shared_ptr&lt; <a class="el" href="logging_8hpp.html#aae6e8800f73d2cfd43f503ed13e6332d">sink_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#a6d90e11d77890557687ed30cf72e45ec">create_file_sink</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; outfile)</td></tr>
+<tr class="memitem:a6d90e11d77890557687ed30cf72e45ec"><td class="memItemLeft" align="right" valign="top">boost::shared_ptr&lt; <a class="el" href="logging_8hpp.html#aae6e8800f73d2cfd43f503ed13e6332d">sink_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#a6d90e11d77890557687ed30cf72e45ec">create_file_sink</a> (CR&lt; Str &gt; outfile)</td></tr>
 <tr class="separator:a6d90e11d77890557687ed30cf72e45ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34ec48faac1c82194d696bd2fd471c76"><td class="memItemLeft" align="right" valign="top">boost::shared_ptr&lt; <a class="el" href="logging_8hpp.html#aae6e8800f73d2cfd43f503ed13e6332d">sink_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8hpp.html#a34ec48faac1c82194d696bd2fd471c76">create_std_sink</a> ()</td></tr>
 <tr class="separator:a34ec48faac1c82194d696bd2fd471c76"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -261,7 +261,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">boost::shared_ptr&lt;<a class="el" href="logging_8hpp.html#aae6e8800f73d2cfd43f503ed13e6332d">sink_t</a>&gt; create_file_sink </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; Str &gt;&#160;</td>
           <td class="paramname"><em>outfile</em></td><td>)</td>
           <td></td>
         </tr>
@@ -294,7 +294,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">BOOST_LOG_ATTRIBUTE_KEYWORD ( severity, &quot;Severity&quot;, logging::trivial::severity_level) void <a class="el" href="logging_8cpp.html#aa19fa41017122b3de372db939ce6ff3f">log_formatter</a>( logging <a class="el" href="common_8hpp.html#a13aad120833e878b232c905e7d92834e">Pair</a>&lt;char, fmt::text_style&gt; format_style </td>
+          <td class="memname">BOOST_LOG_ATTRIBUTE_KEYWORD ( severity, &quot;Severity&quot;, logging::trivial::severity_level) void <a class="el" href="logging_8cpp.html#aa19fa41017122b3de372db939ce6ff3f">log_formatter</a>( logging Pair&lt;char, fmt::text_style&gt; format_style </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespaceboost_1_1log.html#aa0f34afeca93658a00499f5f7ca6dbda">logging::severity</a>&#160;</td>
           <td class="paramname"><em>level</em></td><td>)</td>
@@ -405,13 +405,13 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; Str &gt;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; Str &gt;&#160;</td>
           <td class="paramname"><em>extra</em> = <code>&quot;&quot;</code>&#160;</td>
         </tr>
         <tr>

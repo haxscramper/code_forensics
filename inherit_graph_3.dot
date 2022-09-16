@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="BoolOption",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bool_option.html",tooltip="specify boolean true/false flags on the boost command line"];
+  Node0 [label="CommitEdge",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$struct_commit_edge.html",tooltip=" "];
 }

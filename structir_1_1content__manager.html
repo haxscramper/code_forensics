@@ -96,39 +96,34 @@ $(document).ready(function(){initNavTree('structir_1_1content__manager.html','')
  <a href="structir_1_1content__manager.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="git__ir_8hpp_source.html">git_ir.hpp</a>&gt;</code></p>
-<div class="dynheader">
-Collaboration diagram for ir::content_manager:</div>
-<div class="dyncontent">
-<div class="center"><img src="structir_1_1content__manager__coll__graph.png" border="0" usemap="#ir_1_1content__manager_coll__map" alt="Collaboration graph"/></div>
-<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab240b54ad497c0158c7d36ff03374689"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#ab240b54ad497c0158c7d36ff03374689">parentDirectory</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#aa20d22486508f139f743e51d510c9b78">Path</a> &gt; dir) -&gt; <a class="el" href="common_8hpp.html#a831800a61c1b662adafb727abe4ef552">Opt</a>&lt; DirectoryId &gt;</td></tr>
+<tr class="memitem:ab240b54ad497c0158c7d36ff03374689"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#ab240b54ad497c0158c7d36ff03374689">parentDirectory</a> (CR&lt; Path &gt; dir) -&gt; Opt&lt; DirectoryId &gt;</td></tr>
 <tr class="memdesc:ab240b54ad497c0158c7d36ff03374689"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get <em>optional</em> parent directory Id from the path.  <a href="structir_1_1content__manager.html#ab240b54ad497c0158c7d36ff03374689">More...</a><br /></td></tr>
 <tr class="separator:ab240b54ad497c0158c7d36ff03374689"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a240d29adbeaf7e561c2ee1a41ef76fb7"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#a240d29adbeaf7e561c2ee1a41ef76fb7">getDirectory</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#aa20d22486508f139f743e51d510c9b78">Path</a> &gt; dir) -&gt; DirectoryId</td></tr>
+<tr class="memitem:a240d29adbeaf7e561c2ee1a41ef76fb7"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#a240d29adbeaf7e561c2ee1a41ef76fb7">getDirectory</a> (CR&lt; Path &gt; dir) -&gt; DirectoryId</td></tr>
 <tr class="memdesc:a240d29adbeaf7e561c2ee1a41ef76fb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get directory ID from the provided path.  <a href="structir_1_1content__manager.html#a240d29adbeaf7e561c2ee1a41ef76fb7">More...</a><br /></td></tr>
 <tr class="separator:a240d29adbeaf7e561c2ee1a41ef76fb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:accc422bcdea2adc1e70760f80a5723bf"><td class="memItemLeft" align="right" valign="top">FilePathId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#accc422bcdea2adc1e70760f80a5723bf">getFilePath</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; file)</td></tr>
+<tr class="memitem:accc422bcdea2adc1e70760f80a5723bf"><td class="memItemLeft" align="right" valign="top">FilePathId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#accc422bcdea2adc1e70760f80a5723bf">getFilePath</a> (CR&lt; Str &gt; file)</td></tr>
 <tr class="separator:accc422bcdea2adc1e70760f80a5723bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aecde7f7fa96079a3a95cef47a923c922"><td class="memTemplParams" colspan="2">template&lt;dod::IsIdType Id&gt; </td></tr>
-<tr class="memitem:aecde7f7fa96079a3a95cef47a923c922"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#aecde7f7fa96079a3a95cef47a923c922">at</a> (Id id) -&gt; typename <a class="el" href="namespacedod.html#a90d2ece056b0d6b205602755ec9df792">dod::value_type_t</a>&lt; Id &gt; &amp;</td></tr>
+<tr class="memitem:aecde7f7fa96079a3a95cef47a923c922"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#aecde7f7fa96079a3a95cef47a923c922">at</a> (Id id) -&gt; typename dod::value_type_t&lt; Id &gt; &amp;</td></tr>
 <tr class="memdesc:aecde7f7fa96079a3a95cef47a923c922"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get reference to value pointed to by the ID.  <a href="structir_1_1content__manager.html#aecde7f7fa96079a3a95cef47a923c922">More...</a><br /></td></tr>
 <tr class="separator:aecde7f7fa96079a3a95cef47a923c922"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1bcc198b2eb382451cb6d8228d2484e8"><td class="memTemplParams" colspan="2">template&lt;dod::IsIdType Id&gt; </td></tr>
-<tr class="memitem:a1bcc198b2eb382451cb6d8228d2484e8"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#a1bcc198b2eb382451cb6d8228d2484e8">cat</a> (Id id) const -&gt; <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="namespacedod.html#a90d2ece056b0d6b205602755ec9df792">dod::value_type_t</a>&lt; Id &gt;&gt;</td></tr>
+<tr class="memitem:a1bcc198b2eb382451cb6d8228d2484e8"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#a1bcc198b2eb382451cb6d8228d2484e8">cat</a> (Id id) const -&gt; CR&lt; dod::value_type_t&lt; Id &gt;&gt;</td></tr>
 <tr class="separator:a1bcc198b2eb382451cb6d8228d2484e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb86bfff27fb0c36810ebfb49fb8f151"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:acb86bfff27fb0c36810ebfb49fb8f151"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#acb86bfff27fb0c36810ebfb49fb8f151">add</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; T &gt; it) -&gt; <a class="el" href="namespacedod.html#a29c5bf718f2aee7ce2858fd1d5698bca">dod::id_type_t</a>&lt; T &gt;</td></tr>
+<tr class="memitem:acb86bfff27fb0c36810ebfb49fb8f151"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#acb86bfff27fb0c36810ebfb49fb8f151">add</a> (CR&lt; T &gt; it) -&gt; dod::id_type_t&lt; T &gt;</td></tr>
 <tr class="memdesc:acb86bfff27fb0c36810ebfb49fb8f151"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push in a value, return newly generated ID.  <a href="structir_1_1content__manager.html#acb86bfff27fb0c36810ebfb49fb8f151">More...</a><br /></td></tr>
 <tr class="separator:acb86bfff27fb0c36810ebfb49fb8f151"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ad3c457d995e9c9922cf11013f6c7cd5b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdod_1_1_multi_store.html">dod::MultiStore</a>&lt; <a class="el" href="structdod_1_1_intern_store.html">dod::InternStore</a>&lt; AuthorId, <a class="el" href="structir_1_1_author.html">Author</a> &gt;, <a class="el" href="structdod_1_1_intern_store.html">dod::InternStore</a>&lt; LineId, <a class="el" href="structir_1_1_line_data.html">LineData</a> &gt;, <a class="el" href="structdod_1_1_store.html">dod::Store</a>&lt; FileId, <a class="el" href="structir_1_1_file.html">File</a> &gt;, <a class="el" href="structdod_1_1_intern_store.html">dod::InternStore</a>&lt; FilePathId, <a class="el" href="structir_1_1_file_path.html">FilePath</a> &gt;, <a class="el" href="structdod_1_1_store.html">dod::Store</a>&lt; CommitId, <a class="el" href="structir_1_1_commit.html">Commit</a> &gt;, <a class="el" href="structdod_1_1_intern_store.html">dod::InternStore</a>&lt; DirectoryId, <a class="el" href="structir_1_1_directory.html">Directory</a> &gt;, <a class="el" href="structdod_1_1_intern_store.html">dod::InternStore</a>&lt; StringId, <a class="el" href="structir_1_1_string.html">String</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#ad3c457d995e9c9922cf11013f6c7cd5b">multi</a></td></tr>
+<tr class="memitem:ad3c457d995e9c9922cf11013f6c7cd5b"><td class="memItemLeft" align="right" valign="top">dod::MultiStore&lt; dod::InternStore&lt; AuthorId, <a class="el" href="structir_1_1_author.html">Author</a> &gt;, dod::InternStore&lt; LineId, <a class="el" href="structir_1_1_line_data.html">LineData</a> &gt;, dod::Store&lt; FileId, <a class="el" href="structir_1_1_file.html">File</a> &gt;, dod::InternStore&lt; FilePathId, <a class="el" href="structir_1_1_file_path.html">FilePath</a> &gt;, dod::Store&lt; CommitId, <a class="el" href="structir_1_1_commit.html">Commit</a> &gt;, dod::InternStore&lt; DirectoryId, <a class="el" href="structir_1_1_directory.html">Directory</a> &gt;, dod::InternStore&lt; StringId, <a class="el" href="structir_1_1_string.html">String</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#ad3c457d995e9c9922cf11013f6c7cd5b">multi</a></td></tr>
 <tr class="separator:ad3c457d995e9c9922cf11013f6c7cd5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a2bab3af5f98b7483912d6ad7196dbc"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a>, DirectoryId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#a9a2bab3af5f98b7483912d6ad7196dbc">prefixes</a></td></tr>
+<tr class="memitem:a9a2bab3af5f98b7483912d6ad7196dbc"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; Str, DirectoryId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structir_1_1content__manager.html#a9a2bab3af5f98b7483912d6ad7196dbc">prefixes</a></td></tr>
 <tr class="separator:a9a2bab3af5f98b7483912d6ad7196dbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -148,9 +143,9 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">auto ir::content_manager::add </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; T &gt;&#160;</td>
+          <td class="paramtype">CR&lt; T &gt;&#160;</td>
           <td class="paramname"><em>it</em></td><td>)</td>
-          <td> -&gt; <a class="el" href="namespacedod.html#a29c5bf718f2aee7ce2858fd1d5698bca">dod::id_type_t</a>&lt;T&gt; </td>
+          <td> -&gt; dod::id_type_t&lt;T&gt; </td>
         </tr>
       </table>
   </td>
@@ -180,7 +175,7 @@ template&lt;dod::IsIdType Id&gt; </div>
           <td>(</td>
           <td class="paramtype">Id&#160;</td>
           <td class="paramname"><em>id</em></td><td>)</td>
-          <td> -&gt; typename <a class="el" href="namespacedod.html#a90d2ece056b0d6b205602755ec9df792">dod::value_type_t</a>&lt;Id&gt;&amp; </td>
+          <td> -&gt; typename dod::value_type_t&lt;Id&gt;&amp; </td>
         </tr>
       </table>
   </td>
@@ -210,7 +205,7 @@ template&lt;dod::IsIdType Id&gt; </div>
           <td>(</td>
           <td class="paramtype">Id&#160;</td>
           <td class="paramname"><em>id</em></td><td>)</td>
-          <td> const -&gt; <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt;<a class="el" href="namespacedod.html#a90d2ece056b0d6b205602755ec9df792">dod::value_type_t</a>&lt;Id&gt;&gt; </td>
+          <td> const -&gt; CR&lt;dod::value_type_t&lt;Id&gt;&gt; </td>
         </tr>
       </table>
   </td>
@@ -234,7 +229,7 @@ template&lt;dod::IsIdType Id&gt; </div>
         <tr>
           <td class="memname">auto ir::content_manager::getDirectory </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#aa20d22486508f139f743e51d510c9b78">Path</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; Path &gt;&#160;</td>
           <td class="paramname"><em>dir</em></td><td>)</td>
           <td> -&gt; DirectoryId </td>
         </tr>
@@ -262,7 +257,7 @@ template&lt;dod::IsIdType Id&gt; </div>
         <tr>
           <td class="memname">FilePathId ir::content_manager::getFilePath </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; Str &gt;&#160;</td>
           <td class="paramname"><em>file</em></td><td>)</td>
           <td></td>
         </tr>
@@ -288,9 +283,9 @@ template&lt;dod::IsIdType Id&gt; </div>
         <tr>
           <td class="memname">auto ir::content_manager::parentDirectory </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#aa20d22486508f139f743e51d510c9b78">Path</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; Path &gt;&#160;</td>
           <td class="paramname"><em>dir</em></td><td>)</td>
-          <td> -&gt; <a class="el" href="common_8hpp.html#a831800a61c1b662adafb727abe4ef552">Opt</a>&lt;DirectoryId&gt; </td>
+          <td> -&gt; Opt&lt;DirectoryId&gt; </td>
         </tr>
       </table>
   </td>
@@ -312,7 +307,7 @@ template&lt;dod::IsIdType Id&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structdod_1_1_multi_store.html">dod::MultiStore</a>&lt; <a class="el" href="structdod_1_1_intern_store.html">dod::InternStore</a>&lt;AuthorId, <a class="el" href="structir_1_1_author.html">Author</a>&gt;, <a class="el" href="structdod_1_1_intern_store.html">dod::InternStore</a>&lt;LineId, <a class="el" href="structir_1_1_line_data.html">LineData</a>&gt;, <a class="el" href="structdod_1_1_store.html">dod::Store</a>&lt;FileId, <a class="el" href="structir_1_1_file.html">File</a>&gt;, <a class="el" href="structdod_1_1_intern_store.html">dod::InternStore</a>&lt;FilePathId, <a class="el" href="structir_1_1_file_path.html">FilePath</a>&gt;, <a class="el" href="structdod_1_1_store.html">dod::Store</a>&lt;CommitId, <a class="el" href="structir_1_1_commit.html">Commit</a>&gt;, <a class="el" href="structdod_1_1_intern_store.html">dod::InternStore</a>&lt;DirectoryId, <a class="el" href="structir_1_1_directory.html">Directory</a>&gt;, <a class="el" href="structdod_1_1_intern_store.html">dod::InternStore</a>&lt;StringId, <a class="el" href="structir_1_1_string.html">String</a>&gt; &gt; ir::content_manager::multi</td>
+          <td class="memname">dod::MultiStore&lt; dod::InternStore&lt;AuthorId, <a class="el" href="structir_1_1_author.html">Author</a>&gt;, dod::InternStore&lt;LineId, <a class="el" href="structir_1_1_line_data.html">LineData</a>&gt;, dod::Store&lt;FileId, <a class="el" href="structir_1_1_file.html">File</a>&gt;, dod::InternStore&lt;FilePathId, <a class="el" href="structir_1_1_file_path.html">FilePath</a>&gt;, dod::Store&lt;CommitId, <a class="el" href="structir_1_1_commit.html">Commit</a>&gt;, dod::InternStore&lt;DirectoryId, <a class="el" href="structir_1_1_directory.html">Directory</a>&gt;, dod::InternStore&lt;StringId, <a class="el" href="structir_1_1_string.html">String</a>&gt; &gt; ir::content_manager::multi</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -326,7 +321,7 @@ template&lt;dod::IsIdType Id&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_map&lt;<a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a>, DirectoryId&gt; ir::content_manager::prefixes</td>
+          <td class="memname">std::unordered_map&lt;Str, DirectoryId&gt; ir::content_manager::prefixes</td>
         </tr>
       </table>
 </div><div class="memdoc">

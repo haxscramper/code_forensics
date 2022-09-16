@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['file_5fcb_5ft_2275',['file_cb_t',['../struct_diff_foreach_params.html#a2a356aabfecf8d1d1a1b16a735eeea51',1,'DiffForeachParams']]],
-  ['func_2276',['Func',['../common_8hpp.html#ade2480cf7cadbc49262a063a63264a62',1,'common.hpp']]]
+  ['graph_2124',['Graph',['../struct_commit_graph.html#a219a3ec1c6729bfd813771162aedf94f',1,'CommitGraph']]],
+  ['graphtraits_2125',['GraphTraits',['../struct_commit_graph.html#a1213100a9b68a821ce3767ac9d6f74bf',1,'CommitGraph']]]
 ];

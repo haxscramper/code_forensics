@@ -96,15 +96,15 @@ $(document).ready(function(){initNavTree('struct_diff_foreach_params.html',''); 
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a2a356aabfecf8d1d1a1b16a735eeea51"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_diff_foreach_params.html#a2a356aabfecf8d1d1a1b16a735eeea51">file_cb_t</a> = <a class="el" href="common_8hpp.html#ade2480cf7cadbc49262a063a63264a62">Func</a>&lt; int(const git_diff_delta *, float)&gt;</td></tr>
+<tr class="memitem:a2a356aabfecf8d1d1a1b16a735eeea51"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_diff_foreach_params.html#a2a356aabfecf8d1d1a1b16a735eeea51">file_cb_t</a> = Func&lt; int(const git_diff_delta *, float)&gt;</td></tr>
 <tr class="memdesc:a2a356aabfecf8d1d1a1b16a735eeea51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to make per file in the diff.  <a href="struct_diff_foreach_params.html#a2a356aabfecf8d1d1a1b16a735eeea51">More...</a><br /></td></tr>
 <tr class="separator:a2a356aabfecf8d1d1a1b16a735eeea51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c78a62343c6cc72cb91f444be7e34f3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_diff_foreach_params.html#a5c78a62343c6cc72cb91f444be7e34f3">binary_cb_t</a> = <a class="el" href="common_8hpp.html#ade2480cf7cadbc49262a063a63264a62">Func</a>&lt; int(const git_diff_delta *, const git_diff_binary *)&gt;</td></tr>
+<tr class="memitem:a5c78a62343c6cc72cb91f444be7e34f3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_diff_foreach_params.html#a5c78a62343c6cc72cb91f444be7e34f3">binary_cb_t</a> = Func&lt; int(const git_diff_delta *, const git_diff_binary *)&gt;</td></tr>
 <tr class="memdesc:a5c78a62343c6cc72cb91f444be7e34f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional callback to make for binary files.  <a href="struct_diff_foreach_params.html#a5c78a62343c6cc72cb91f444be7e34f3">More...</a><br /></td></tr>
 <tr class="separator:a5c78a62343c6cc72cb91f444be7e34f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af010f0b4ea178b3e0f4cfc9c8d5eb57e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_diff_foreach_params.html#af010f0b4ea178b3e0f4cfc9c8d5eb57e">hunk_cb_t</a> = <a class="el" href="common_8hpp.html#ade2480cf7cadbc49262a063a63264a62">Func</a>&lt; int(const git_diff_delta *, const git_diff_hunk *)&gt;</td></tr>
+<tr class="memitem:af010f0b4ea178b3e0f4cfc9c8d5eb57e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_diff_foreach_params.html#af010f0b4ea178b3e0f4cfc9c8d5eb57e">hunk_cb_t</a> = Func&lt; int(const git_diff_delta *, const git_diff_hunk *)&gt;</td></tr>
 <tr class="separator:af010f0b4ea178b3e0f4cfc9c8d5eb57e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6206066b7921c7e29dbe839c0231d16d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_diff_foreach_params.html#a6206066b7921c7e29dbe839c0231d16d">line_cb_t</a> = <a class="el" href="common_8hpp.html#ade2480cf7cadbc49262a063a63264a62">Func</a>&lt; int(const git_diff_delta *, const git_diff_hunk *, const git_diff_line *)&gt;</td></tr>
+<tr class="memitem:a6206066b7921c7e29dbe839c0231d16d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_diff_foreach_params.html#a6206066b7921c7e29dbe839c0231d16d">line_cb_t</a> = Func&lt; int(const git_diff_delta *, const git_diff_hunk *, const git_diff_line *)&gt;</td></tr>
 <tr class="separator:a6206066b7921c7e29dbe839c0231d16d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -126,7 +126,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="struct_diff_foreach_params.html#a5c78a62343c6cc72cb91f444be7e34f3">DiffForeachParams::binary_cb_t</a> =  <a class="el" href="common_8hpp.html#ade2480cf7cadbc49262a063a63264a62">Func</a>&lt; int(const git_diff_delta*, const git_diff_binary*)&gt;</td>
+          <td class="memname">using <a class="el" href="struct_diff_foreach_params.html#a5c78a62343c6cc72cb91f444be7e34f3">DiffForeachParams::binary_cb_t</a> =  Func&lt; int(const git_diff_delta*, const git_diff_binary*)&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -142,7 +142,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="struct_diff_foreach_params.html#a2a356aabfecf8d1d1a1b16a735eeea51">DiffForeachParams::file_cb_t</a> =  <a class="el" href="common_8hpp.html#ade2480cf7cadbc49262a063a63264a62">Func</a>&lt;int(const git_diff_delta*, float)&gt;</td>
+          <td class="memname">using <a class="el" href="struct_diff_foreach_params.html#a2a356aabfecf8d1d1a1b16a735eeea51">DiffForeachParams::file_cb_t</a> =  Func&lt;int(const git_diff_delta*, float)&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -158,7 +158,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="struct_diff_foreach_params.html#af010f0b4ea178b3e0f4cfc9c8d5eb57e">DiffForeachParams::hunk_cb_t</a> =  <a class="el" href="common_8hpp.html#ade2480cf7cadbc49262a063a63264a62">Func</a>&lt; int(const git_diff_delta*, const git_diff_hunk*)&gt;</td>
+          <td class="memname">using <a class="el" href="struct_diff_foreach_params.html#af010f0b4ea178b3e0f4cfc9c8d5eb57e">DiffForeachParams::hunk_cb_t</a> =  Func&lt; int(const git_diff_delta*, const git_diff_hunk*)&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -173,7 +173,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="struct_diff_foreach_params.html#a6206066b7921c7e29dbe839c0231d16d">DiffForeachParams::line_cb_t</a> =  <a class="el" href="common_8hpp.html#ade2480cf7cadbc49262a063a63264a62">Func</a>&lt;int( const git_diff_delta*, const git_diff_hunk*, const git_diff_line*)&gt;</td>
+          <td class="memname">using <a class="el" href="struct_diff_foreach_params.html#a6206066b7921c7e29dbe839c0231d16d">DiffForeachParams::line_cb_t</a> =  Func&lt;int( const git_diff_delta*, const git_diff_hunk*, const git_diff_line*)&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">

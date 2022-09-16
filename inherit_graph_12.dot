@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="dod::MultiStore\< Args \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structdod_1_1_multi_store.html",tooltip="Wrapper for multiple different stores."];
+  Node0 [label="fmt::formatter\< T,\l char, std::enable_if\l_t\< boost::describe::has\l_describe_enumerators\< T\l \>::value \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structfmt_1_1formatter_3_01_t_00_01char_00_01std_1_1enable__if__t_3_01boost_1_1describe_1_1has__82caa5c447a9324d6094a99b0fdff09a.html",tooltip="templated formatter for all classes that were 'described' using boost/describe macros."];
 }

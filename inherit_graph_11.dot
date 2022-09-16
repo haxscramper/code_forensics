@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="dod::InternStore\< Id,\l Val \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structdod_1_1_intern_store.html",tooltip="Stores values with with automatic deduplication."];
+  Node0 [label="fmt::formatter\< T,\l char, std::enable_if\l_t\< boost::describe::has\l_describe_bases\< T \>::value\l &&boost::describe::has_describe\l_members\< T \>::value &&!std::is\l_union\< T \>::value \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structfmt_1_1formatter_3_01_t_00_01char_00_01std_1_1enable__if__t_3_01boost_1_1describe_1_1has__70059db84d41efe19b45131ba41e5c1b.html",tooltip=" "];
 }

@@ -29,7 +29,6 @@ var NAVTREE =
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", null ],
         [ "Functions", "namespacemembers_func.html", null ],
-        [ "Variables", "namespacemembers_vars.html", null ],
         [ "Typedefs", "namespacemembers_type.html", null ]
       ] ]
     ] ],
@@ -63,11 +62,11 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"gitwrap_8hpp.html#a1665db2447a3ec6f60d311b880d64649",
-"gitwrap_8hpp.html#a62e68e135c725d6b66fe6701d92bae03",
-"gitwrap_8hpp.html#abae9e6df5516cee6955284f7d090ff22",
-"group__all__logging.html#ga5f2bd8e72733c814acea57943bc5d198",
-"structfmt_1_1formatter_3_01_t_00_01char_00_01std_1_1enable__if__t_3_01boost_1_1describe_1_1has__82caa5c447a9324d6094a99b0fdff09a.html#a184398e2e454920497db57f8d8c24bcc"
+"gitwrap_8hpp.html#a24565e548061ed9f9ee638508e243e16",
+"gitwrap_8hpp.html#a71774e6b8aacf763a333b3c7762ac34c",
+"gitwrap_8hpp.html#aca102b17acdab65e21ff95d492429c94",
+"namespacebg.html",
+"structsqlite__orm_1_1statement__binder_3_01_t_01_4.html#a65fddd33cf68358865921629c101adc0"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -90,7 +90,8 @@ $(document).ready(function(){initNavTree('code__forensics_8cpp.html',''); initRe
 <div class="title">code_forensics.cpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="common_8hpp_source.html">common.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;range/v3/all.hpp&gt;</code><br />
+<code>#include &quot;common.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="git__ir_8hpp_source.html">git_ir.hpp</a>&quot;</code><br />
 <code>#include &lt;exception&gt;</code><br />
 <code>#include &lt;signal.h&gt;</code><br />
@@ -108,10 +109,9 @@ $(document).ready(function(){initNavTree('code__forensics_8cpp.html',''); initRe
 <code>#include &lt;unordered_map&gt;</code><br />
 <code>#include &lt;unordered_set&gt;</code><br />
 <code>#include &lt;set&gt;</code><br />
-<code>#include &lt;range/v3/all.hpp&gt;</code><br />
 <code>#include &lt;boost/thread/mutex.hpp&gt;</code><br />
 <code>#include &lt;boost/thread/lock_guard.hpp&gt;</code><br />
-<code>#include &quot;<a class="el" href="dod__base_8hpp_source.html">dod_base.hpp</a>&quot;</code><br />
+<code>#include &quot;dod_base.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="repo__graph_8hpp_source.html">repo_graph.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="python__interop_8hpp_source.html">python_interop.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="cli__options_8hpp_source.html">cli_options.hpp</a>&quot;</code><br />
@@ -134,11 +134,11 @@ Macros</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:adf5ff084617abb3c66719ba2e3915404"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="code__forensics_8cpp.html#adf5ff084617abb3c66719ba2e3915404">load_content</a> (<a class="el" href="structwalker__config.html">walker_config</a> *config, <a class="el" href="structir_1_1content__manager.html">ir::content_manager</a> &amp;content)</td></tr>
 <tr class="separator:adf5ff084617abb3c66719ba2e3915404"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad375a6ee9b50c7082571db84c4213fe6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="code__forensics_8cpp.html#ad375a6ee9b50c7082571db84c4213fe6">store_content</a> (<a class="el" href="structwalker__state.html">walker_state</a> *state, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="structir_1_1content__manager.html">ir::content_manager</a> &gt; content)</td></tr>
+<tr class="memitem:ad375a6ee9b50c7082571db84c4213fe6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="code__forensics_8cpp.html#ad375a6ee9b50c7082571db84c4213fe6">store_content</a> (<a class="el" href="structwalker__state.html">walker_state</a> *state, CR&lt; <a class="el" href="structir_1_1content__manager.html">ir::content_manager</a> &gt; content)</td></tr>
 <tr class="separator:ad375a6ee9b50c7082571db84c4213fe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a306418411b34a32b65734af4bb3598ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="code__forensics_8cpp.html#a306418411b34a32b65734af4bb3598ad">parse_python_exception</a> ()</td></tr>
+<tr class="memitem:a306418411b34a32b65734af4bb3598ad"><td class="memItemLeft" align="right" valign="top">Str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="code__forensics_8cpp.html#a306418411b34a32b65734af4bb3598ad">parse_python_exception</a> ()</td></tr>
 <tr class="separator:a306418411b34a32b65734af4bb3598ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc48e32ca5502ec7c9258416e038d036"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_py_forensics.html">PyForensics</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="code__forensics_8cpp.html#adc48e32ca5502ec7c9258416e038d036">exec_python_filter</a> (<a class="el" href="common_8hpp.html#a5076b1659821c8d7ce06da09452ba382">SPtr</a>&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt; logger, po::variables_map vm)</td></tr>
+<tr class="memitem:adc48e32ca5502ec7c9258416e038d036"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_py_forensics.html">PyForensics</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="code__forensics_8cpp.html#adc48e32ca5502ec7c9258416e038d036">exec_python_filter</a> (SPtr&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt; logger, po::variables_map vm)</td></tr>
 <tr class="separator:adc48e32ca5502ec7c9258416e038d036"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af675374954cdabdf63d036fe3c12d348"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="code__forensics_8cpp.html#af675374954cdabdf63d036fe3c12d348">signal_handler</a> (int signum)</td></tr>
 <tr class="separator:af675374954cdabdf63d036fe3c12d348"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -193,7 +193,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="class_py_forensics.html">PyForensics</a>* exec_python_filter </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5076b1659821c8d7ce06da09452ba382">SPtr</a>&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt;&#160;</td>
+          <td class="paramtype">SPtr&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt;&#160;</td>
           <td class="paramname"><em>logger</em>, </td>
         </tr>
         <tr>
@@ -275,7 +275,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> parse_python_exception </td>
+          <td class="memname">Str parse_python_exception </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -319,7 +319,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="structir_1_1content__manager.html">ir::content_manager</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; <a class="el" href="structir_1_1content__manager.html">ir::content_manager</a> &gt;&#160;</td>
           <td class="paramname"><em>content</em>&#160;</td>
         </tr>
         <tr>
@@ -334,7 +334,7 @@ Functions</h2></td></tr>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="acode__forensics_8cpp_html_a306418411b34a32b65734af4bb3598ad"><div class="ttname"><a href="code__forensics_8cpp.html#a306418411b34a32b65734af4bb3598ad">parse_python_exception</a></div><div class="ttdeci">Str parse_python_exception()</div><div class="ttdef"><b>Definition:</b> code_forensics.cpp:189</div></div>
+<div class="ttc" id="acode__forensics_8cpp_html_a306418411b34a32b65734af4bb3598ad"><div class="ttname"><a href="code__forensics_8cpp.html#a306418411b34a32b65734af4bb3598ad">parse_python_exception</a></div><div class="ttdeci">Str parse_python_exception()</div><div class="ttdef"><b>Definition:</b> code_forensics.cpp:191</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

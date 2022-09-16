@@ -96,7 +96,7 @@ $(document).ready(function(){initNavTree('repo__processing_8hpp.html',''); initR
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;mutex&gt;</code><br />
 <code>#include &lt;boost/process.hpp&gt;</code><br />
-<code>#include &quot;<a class="el" href="common_8hpp_source.html">common.hpp</a>&quot;</code><br />
+<code>#include &quot;common.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="git__ir_8hpp_source.html">git_ir.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="program__state_8hpp_source.html">program_state.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -124,23 +124,23 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a1039cd1e47f06280b614d6015f0d62a1"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#a1039cd1e47f06280b614d6015f0d62a1">get_nesting</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; line) -&gt; int</td></tr>
+<tr class="memitem:a1039cd1e47f06280b614d6015f0d62a1"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#a1039cd1e47f06280b614d6015f0d62a1">get_nesting</a> (CR&lt; Str &gt; line) -&gt; int</td></tr>
 <tr class="separator:a1039cd1e47f06280b614d6015f0d62a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff327bc5bbe276545ae0813eade97901"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#aff327bc5bbe276545ae0813eade97901">push_line</a> (ir::FileId id, <a class="el" href="structwalker__state.html">walker_state</a> *walker, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="structir_1_1_line_data.html">ir::LineData</a> &gt; line, bool changed, int period)</td></tr>
+<tr class="memitem:aff327bc5bbe276545ae0813eade97901"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#aff327bc5bbe276545ae0813eade97901">push_line</a> (ir::FileId id, <a class="el" href="structwalker__state.html">walker_state</a> *walker, CR&lt; <a class="el" href="structir_1_1_line_data.html">ir::LineData</a> &gt; line, bool changed, int period)</td></tr>
 <tr class="separator:aff327bc5bbe276545ae0813eade97901"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13c0e5be7aa46e5ebbe1bb4e41b34634"><td class="memItemLeft" align="right" valign="top">ir::FileId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#a13c0e5be7aa46e5ebbe1bb4e41b34634">stats_via_subprocess</a> (git_oid commit_oid, <a class="el" href="structwalker__state.html">walker_state</a> *walker, <a class="el" href="structir_1_1_file.html">ir::File</a> file, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; relpath)</td></tr>
+<tr class="memitem:a13c0e5be7aa46e5ebbe1bb4e41b34634"><td class="memItemLeft" align="right" valign="top">ir::FileId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#a13c0e5be7aa46e5ebbe1bb4e41b34634">stats_via_subprocess</a> (git_oid commit_oid, <a class="el" href="structwalker__state.html">walker_state</a> *walker, <a class="el" href="structir_1_1_file.html">ir::File</a> file, CR&lt; Str &gt; relpath)</td></tr>
 <tr class="separator:a13c0e5be7aa46e5ebbe1bb4e41b34634"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf88e2042b69c27916ecd58d2bd72117"><td class="memItemLeft" align="right" valign="top">ir::FileId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#adf88e2042b69c27916ecd58d2bd72117">stats_via_libgit</a> (<a class="el" href="structwalker__state.html">walker_state</a> *state, git_oid commit_oid, const git_tree_entry *entry, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; relpath, <a class="el" href="structir_1_1_file.html">ir::File</a> file)</td></tr>
+<tr class="memitem:adf88e2042b69c27916ecd58d2bd72117"><td class="memItemLeft" align="right" valign="top">ir::FileId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#adf88e2042b69c27916ecd58d2bd72117">stats_via_libgit</a> (<a class="el" href="structwalker__state.html">walker_state</a> *state, git_oid commit_oid, const git_tree_entry *entry, CR&lt; Str &gt; relpath, <a class="el" href="structir_1_1_file.html">ir::File</a> file)</td></tr>
 <tr class="separator:adf88e2042b69c27916ecd58d2bd72117"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af949dd4047ec4be863422b2900381d17"><td class="memItemLeft" align="right" valign="top">ir::FileId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#af949dd4047ec4be863422b2900381d17">exec_walker</a> (git_oid commit_oid, <a class="el" href="structwalker__state.html">walker_state</a> *state, ir::CommitId commit, const char *root, const git_tree_entry *entry)</td></tr>
 <tr class="separator:af949dd4047ec4be863422b2900381d17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e6dd84d49ff7f56e28251be9b50350a"><td class="memItemLeft" align="right" valign="top">ir::CommitId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#a8e6dd84d49ff7f56e28251be9b50350a">process_commit</a> (git_oid commit_oid, <a class="el" href="structwalker__state.html">walker_state</a> *state)</td></tr>
 <tr class="separator:a8e6dd84d49ff7f56e28251be9b50350a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a757797aa342db967eaa29f3f13fed26f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#a757797aa342db967eaa29f3f13fed26f">file_tasks</a> (<a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt; <a class="el" href="struct_sub_task_params.html">SubTaskParams</a> &gt; &amp;treewalk, <a class="el" href="structwalker__state.html">walker_state</a> *state, git_oid commit_oid, ir::CommitId out_commit)</td></tr>
+<tr class="memitem:a757797aa342db967eaa29f3f13fed26f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#a757797aa342db967eaa29f3f13fed26f">file_tasks</a> (Vec&lt; <a class="el" href="struct_sub_task_params.html">SubTaskParams</a> &gt; &amp;treewalk, <a class="el" href="structwalker__state.html">walker_state</a> *state, git_oid commit_oid, ir::CommitId out_commit)</td></tr>
 <tr class="separator:a757797aa342db967eaa29f3f13fed26f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a2dfc3ba97405a8daef3e3cc2a5dbbe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#a2a2dfc3ba97405a8daef3e3cc2a5dbbe">open_walker</a> (git_oid &amp;oid, <a class="el" href="structwalker__state.html">walker_state</a> &amp;state)</td></tr>
 <tr class="separator:a2a2dfc3ba97405a8daef3e3cc2a5dbbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74103ac55c01549152ffb58761265bec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt; ir::CommitId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#a74103ac55c01549152ffb58761265bec">launch_analysis</a> (git_oid &amp;oid, <a class="el" href="structwalker__state.html">walker_state</a> *state)</td></tr>
+<tr class="memitem:a74103ac55c01549152ffb58761265bec"><td class="memItemLeft" align="right" valign="top">Vec&lt; ir::CommitId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="repo__processing_8hpp.html#a74103ac55c01549152ffb58761265bec">launch_analysis</a> (git_oid &amp;oid, <a class="el" href="structwalker__state.html">walker_state</a> *state)</td></tr>
 <tr class="separator:a74103ac55c01549152ffb58761265bec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -216,7 +216,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void file_tasks </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt; <a class="el" href="struct_sub_task_params.html">SubTaskParams</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">Vec&lt; <a class="el" href="struct_sub_task_params.html">SubTaskParams</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>treewalk</em>, </td>
         </tr>
         <tr>
@@ -262,7 +262,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">auto get_nesting </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; Str &gt;&#160;</td>
           <td class="paramname"><em>line</em></td><td>)</td>
           <td> -&gt;  int</td>
         </tr>
@@ -278,7 +278,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="common_8hpp.html#a1b01c504448c96cd2191a5184dd31acf">Vec</a>&lt;ir::CommitId&gt; launch_analysis </td>
+          <td class="memname">Vec&lt;ir::CommitId&gt; launch_analysis </td>
           <td>(</td>
           <td class="paramtype">git_oid &amp;&#160;</td>
           <td class="paramname"><em>oid</em>, </td>
@@ -377,7 +377,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="structir_1_1_line_data.html">ir::LineData</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; <a class="el" href="structir_1_1_line_data.html">ir::LineData</a> &gt;&#160;</td>
           <td class="paramname"><em>line</em>, </td>
         </tr>
         <tr>
@@ -430,7 +430,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; Str &gt;&#160;</td>
           <td class="paramname"><em>relpath</em>, </td>
         </tr>
         <tr>
@@ -476,7 +476,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; Str &gt;&#160;</td>
           <td class="paramname"><em>relpath</em>&#160;</td>
         </tr>
         <tr>

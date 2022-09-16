@@ -107,7 +107,7 @@ Collaboration diagram for bad_lexical_cast:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a827ca9a2f31952b514b56f7988fa3565"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbad__lexical__cast.html#a827ca9a2f31952b514b56f7988fa3565">bad_lexical_cast</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; std::type_info &gt; S, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; std::type_info &gt; T, <a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; _msg)</td></tr>
+<tr class="memitem:a827ca9a2f31952b514b56f7988fa3565"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbad__lexical__cast.html#a827ca9a2f31952b514b56f7988fa3565">bad_lexical_cast</a> (CR&lt; std::type_info &gt; S, CR&lt; std::type_info &gt; T, CR&lt; Str &gt; _msg)</td></tr>
 <tr class="separator:a827ca9a2f31952b514b56f7988fa3565"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a142243fd2c4be0469b260b9f6740248f"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbad__lexical__cast.html#a142243fd2c4be0469b260b9f6740248f">what</a> () const noexcept override</td></tr>
 <tr class="separator:a142243fd2c4be0469b260b9f6740248f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,12 +115,12 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a00a3a3f39facbc5ffdb77b928004183f"><td class="memTemplParams" colspan="2">template&lt;typename S , typename T &gt; </td></tr>
-<tr class="memitem:a00a3a3f39facbc5ffdb77b928004183f"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classbad__lexical__cast.html">bad_lexical_cast</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbad__lexical__cast.html#a00a3a3f39facbc5ffdb77b928004183f">init</a> (<a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt; <a class="el" href="classbad__lexical__cast.html#a78f5bbdd43d407c7c22a5e738ec2fd99">msg</a>)</td></tr>
+<tr class="memitem:a00a3a3f39facbc5ffdb77b928004183f"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classbad__lexical__cast.html">bad_lexical_cast</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbad__lexical__cast.html#a00a3a3f39facbc5ffdb77b928004183f">init</a> (CR&lt; Str &gt; <a class="el" href="classbad__lexical__cast.html#a78f5bbdd43d407c7c22a5e738ec2fd99">msg</a>)</td></tr>
 <tr class="separator:a00a3a3f39facbc5ffdb77b928004183f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a78f5bbdd43d407c7c22a5e738ec2fd99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbad__lexical__cast.html#a78f5bbdd43d407c7c22a5e738ec2fd99">msg</a></td></tr>
+<tr class="memitem:a78f5bbdd43d407c7c22a5e738ec2fd99"><td class="memItemLeft" align="right" valign="top">Str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbad__lexical__cast.html#a78f5bbdd43d407c7c22a5e738ec2fd99">msg</a></td></tr>
 <tr class="separator:a78f5bbdd43d407c7c22a5e738ec2fd99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -139,19 +139,19 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">bad_lexical_cast::bad_lexical_cast </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; std::type_info &gt;&#160;</td>
+          <td class="paramtype">CR&lt; std::type_info &gt;&#160;</td>
           <td class="paramname"><em>S</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; std::type_info &gt;&#160;</td>
+          <td class="paramtype">CR&lt; std::type_info &gt;&#160;</td>
           <td class="paramname"><em>T</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; Str &gt;&#160;</td>
           <td class="paramname"><em>_msg</em>&#160;</td>
         </tr>
         <tr>
@@ -184,7 +184,7 @@ template&lt;typename S , typename T &gt; </div>
         <tr>
           <td class="memname">static <a class="el" href="classbad__lexical__cast.html">bad_lexical_cast</a> bad_lexical_cast::init </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5081aeec6e9553f43277bd9c15946e12">CR</a>&lt; <a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> &gt;&#160;</td>
+          <td class="paramtype">CR&lt; Str &gt;&#160;</td>
           <td class="paramname"><em>msg</em></td><td>)</td>
           <td></td>
         </tr>
@@ -234,7 +234,7 @@ template&lt;typename S , typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a> bad_lexical_cast::msg</td>
+          <td class="memname">Str bad_lexical_cast::msg</td>
         </tr>
       </table>
   </td>

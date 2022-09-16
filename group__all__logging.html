@@ -133,9 +133,9 @@ Functions</h2></td></tr>
 <tr class="separator:ga349a35edd1f9e7a71ce6c8a0738886cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae41f8f82869f05b57f3af212463aff7b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__all__logging.html#gae41f8f82869f05b57f3af212463aff7b">get_logger</a> (<a class="el" href="structwalker__state.html">walker_state</a> *state) -&gt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &amp;</td></tr>
 <tr class="separator:gae41f8f82869f05b57f3af212463aff7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5f2bd8e72733c814acea57943bc5d198"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__all__logging.html#ga5f2bd8e72733c814acea57943bc5d198">get_logger</a> (<a class="el" href="common_8hpp.html#aa6d98c828559a00e7b99f2f84cff0c32">UPtr</a>&lt; <a class="el" href="structwalker__state.html">walker_state</a> &gt; &amp;state) -&gt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &amp;</td></tr>
+<tr class="memitem:ga5f2bd8e72733c814acea57943bc5d198"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__all__logging.html#ga5f2bd8e72733c814acea57943bc5d198">get_logger</a> (UPtr&lt; <a class="el" href="structwalker__state.html">walker_state</a> &gt; &amp;state) -&gt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &amp;</td></tr>
 <tr class="separator:ga5f2bd8e72733c814acea57943bc5d198"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf0bdd0fad8a3e784d27ecf5743c238ef"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__all__logging.html#gaf0bdd0fad8a3e784d27ecf5743c238ef">get_logger</a> (<a class="el" href="common_8hpp.html#a5076b1659821c8d7ce06da09452ba382">SPtr</a>&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt; &amp;in) -&gt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &amp;</td></tr>
+<tr class="memitem:gaf0bdd0fad8a3e784d27ecf5743c238ef"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__all__logging.html#gaf0bdd0fad8a3e784d27ecf5743c238ef">get_logger</a> (SPtr&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt; &amp;in) -&gt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &amp;</td></tr>
 <tr class="separator:gaf0bdd0fad8a3e784d27ecf5743c238ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -166,9 +166,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <a class="code" href="group__all__logging.html#ga349a35edd1f9e7a71ce6c8a0738886cb">set_get_attrib</a>(<span class="stringliteral">&quot;File&quot;</span>, <a class="code" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a>{__FILE__});                                \</div>
+<b>Value:</b><div class="fragment"><div class="line">    <a class="code" href="group__all__logging.html#ga349a35edd1f9e7a71ce6c8a0738886cb">set_get_attrib</a>(<span class="stringliteral">&quot;File&quot;</span>, Str{__FILE__});                                \</div>
 <div class="line">    set_get_attrib(<span class="stringliteral">&quot;Line&quot;</span>, __LINE__);                                     \</div>
-<div class="line">    set_get_attrib(<span class="stringliteral">&quot;Func&quot;</span>, <a class="code" href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a>{__PRETTY_FUNCTION__});                     \</div>
+<div class="line">    set_get_attrib(<span class="stringliteral">&quot;Func&quot;</span>, Str{__PRETTY_FUNCTION__});                     \</div>
 <div class="line">    BOOST_LOG_SEV(logger, sev)</div>
 </div><!-- fragment --><p>Wrapper around the logger call for setting the 'File', 'Line', and 'Func' attributes. </p>
 
@@ -313,7 +313,7 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">auto get_logger </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#a5076b1659821c8d7ce06da09452ba382">SPtr</a>&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">SPtr&lt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>in</em></td><td>)</td>
           <td> -&gt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a>&amp; </td>
         </tr>
@@ -339,7 +339,7 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">auto get_logger </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="common_8hpp.html#aa6d98c828559a00e7b99f2f84cff0c32">UPtr</a>&lt; <a class="el" href="structwalker__state.html">walker_state</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">UPtr&lt; <a class="el" href="structwalker__state.html">walker_state</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>state</em></td><td>)</td>
           <td> -&gt; <a class="el" href="logging_8hpp.html#a3b569e0bbbe97a9e888e525add292287">Logger</a>&amp; </td>
         </tr>
@@ -413,7 +413,6 @@ template&lt;typename ValueType &gt; </div>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="acommon_8hpp_html_a376207d46bd161163b9089964e8fbed6"><div class="ttname"><a href="common_8hpp.html#a376207d46bd161163b9089964e8fbed6">Str</a></div><div class="ttdeci">std::string Str</div><div class="ttdef"><b>Definition:</b> common.hpp:23</div></div>
 <div class="ttc" id="agroup__all__logging_html_ga349a35edd1f9e7a71ce6c8a0738886cb"><div class="ttname"><a href="group__all__logging.html#ga349a35edd1f9e7a71ce6c8a0738886cb">set_get_attrib</a></div><div class="ttdeci">auto set_get_attrib(const char *name, ValueType value) -&gt; ValueType</div><div class="ttdef"><b>Definition:</b> logging.hpp:131</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
