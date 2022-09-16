@@ -26,6 +26,8 @@ vars:
     -ex "run"
     -ex "bt"
     --args
+  IMAGE: code_forensics_arch
+  CONTAINER: code_forensics_run
 
 tasks:
   arch_docker_image:
@@ -34,8 +36,31 @@ tasks:
       IMAGE: code_forensics_arch
 
     cmds:
-      - ( docker image ls | grep {{.IMAGE}} && docker image rm {{.IMAGE}} ) || true
+      - docker image rm {{.IMAGE}} || true
       - docker image build -t {{.IMAGE}} .
+
+  arch_interactive_copy:
+    desc: "Run an interactive session with repository copied to the container"
+    cmds:
+      - docker rm -f {{.CONTAINER}} || true
+      - docker container create -it --name {{.CONTAINER}} {{.IMAGE}}
+      - docker cp {{.PWD}} {{.CONTAINER}}:/tmp/
+      - docker start --attach --interactive {{.CONTAINER}}
+
+  arch_interactive_pass:
+    desc: "Run an interactive section with repository passed directly to the container"
+    cmds:
+      - docker rm -f {{.CONTAINER}} || true
+      - >
+        docker
+        container
+        create
+        -v={{.PWD}}:/tmp/code_forensics
+        -it
+        --name {{.CONTAINER}}
+        {{.IMAGE}}
+
+      - docker start --attach --interactive {{.CONTAINER}}
 
   ensure_deps:
     desc: "Ensure test directory exists"

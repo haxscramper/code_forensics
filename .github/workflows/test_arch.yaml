@@ -8,15 +8,31 @@ jobs:
     #   run:
     #     working-directory: ./code_forensics
     steps:
+      # git must be installed first, otherwise "Input 'submodules' not
+      # supported when falling back to download using the GitHub REST API.
+      # To create a local Git repository instead, add Git 2.18 or higher to
+      # the PATH." error happens on the checkout.
       - name: "Install git"
         run: |
           pacman --noconfirm -Syu
           pacman --noconfirm -S git
-      - name: "Checkout submodules"
-        run: |
-          echo $PWD
-          ls -R .
-          ./tests/ci_general_fetch.sh
+
+      - name: "Checkout the repository"
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      # - name: copy file
+      #   uses: canastro/copy-file-action@master
+      #   with:
+      #     source: "tests/ci_general_fetch.sh"
+      #     target: "/tmp/ci_general_fetch.sh"
+
+      # - name: "Checkout submodules"
+      #   run: |
+      #     echo $PWD
+      #     ls -R .
+      #     /tmp/ci_general_fetch.sh
 
       - name: "Install remaining dependencies"
         run: ./tests/ci_arch_pacman.sh
