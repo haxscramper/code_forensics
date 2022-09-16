@@ -4,9 +4,10 @@ jobs:
   test:
     runs-on: ubuntu-22.04
     container: archlinux:latest
+    # defaults:
+    #   run:
+    #     working-directory: ./code_forensics
     steps:
-      - name: "Checkout the repository"
-        uses: actions/checkout@v2
       - name: "Update installed packages"
         run: pacman --noconfirm -Syu
       - name: "Install package dependencies"
@@ -15,20 +16,47 @@ jobs:
             gcc \
             clang \
             python-pip \
+            base-devel \
             wget \
             curl \
             git \
             cmake \
             make \
+            sudo \
             boost
 
-        env:
-          DEBIAN_FRONTEND: noninteractive
+      - name: "Checkout submodules"
+        run: |
+          echo $PWD
+          cd ..
+          echo $PWD
+          git config --global --add safe.directory $PWD/code_forensics
+          git clone https://github.com/haxscramper/code_forensics.git
+          echo $PWD
+          cd code_forensics
+          git submodule update --init --recursive
+          echo $PWD
+
+      - name: "Install yay"
+        run: |
+          echo $PWD
+          useradd nopass
+          mkdir /home/nopass
+          chown -R nopass /home/nopass
+          passwd -d nopass
+          echo ' nopass ALL=(ALL)   ALL' >> /etc/sudoers
+
+          cd /tmp
+          git clone https://aur.archlinux.org/consolas-font.git
+          chown -R nopass consolas-font
+          cd consolas-font
+          sudo -u nopass makepkg -si --noconfirm
 
       - name: "Install conan"
         run: pip install conan matplotlib igraph pandas numpy
       - name: "Install conan dependencies"
         run: |
+          echo $PWD
           conan install . \
             -if build/dependencies/conan \
             --build=missing \

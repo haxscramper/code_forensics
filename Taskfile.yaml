@@ -29,17 +29,15 @@ vars:
 
 tasks:
   ensure_deps:
-    summary: "Ensure test directory exists"
+    desc: "Ensure test directory exists"
     status:
       - test -e /tmp/{{.TARGET}}
 
     cmds:
-      - echo "Running git clone"
       - git clone https://github.com/{{.GH_ORG}}/{{.TARGET}}.git /tmp/{{.TARGET}}
-      - echo "Done git clone"
 
   ensure_test_db:
-    summary: "Ensure test database exists"
+    desc: "Ensure test database exists"
     deps: [ensure_deps]
     status:
       - test -s {{.DB_FILE}}
@@ -48,25 +46,25 @@ tasks:
 
   burndown:
     deps: [ensure_test_db]
-    summary: Build sampled burndown plot
+    desc: Build sampled burndown plot
     cmds:
       - "./scripts/table_per_period.py {{.DB_FILE}} {{.PNG_FILE}} --per-year={{.PER_YEAR}}"
 
   ridgeline:
     deps: [ensure_test_db]
-    summary: "Build top commiter activity ridgeline"
+    desc: "Build top commiter activity ridgeline"
     cmds:
       - ./scripts/author_ridgeline.py {{.SCRIPT_OPTS}} --top=10
 
   authorship:
     deps: [ensure_test_db]
-    summary: "Burndown chart for the code ownership"
+    desc: "Burndown chart for the code ownership"
     cmds:
       - ./scripts/code_authorship.py {{.SCRIPT_OPTS}}
 
   hotspot_connections:
     deps: [ensure_test_db]
-    summary: "Generate connectivity graph for the most edited files"
+    desc: "Generate connectivity graph for the most edited files"
     cmds:
       - >
         ./scripts/hotspot_connections.py
@@ -79,13 +77,13 @@ tasks:
 
   top_comitter:
     deps: [ensure_test_db]
-    summary: "Generate top comitters for the code"
+    desc: "Generate top comitters for the code"
     cmds:
       - ./scripts/top_comitters.py {{.SCRIPT_OPTS}}
 
   line_category:
     deps: [ensure_test_db]
-    summary: "Line category breakdown"
+    desc: "Line category breakdown"
     cmds:
       - ./scripts/line_category.py --subdir-breakdown={{.PER_DIR}} {{.SCRIPT_OPTS}}
     vars:
@@ -93,12 +91,12 @@ tasks:
 
   message_length:
     deps: [ensure_test_db]
-    summary: "Generate stats for the commit message lenght"
+    desc: "Generate stats for the commit message lenght"
     cmds:
       - ./scripts/commit_message_length.py {{.SCRIPT_OPTS}}
 
   all_stats:
-    summary: "Execute all statistics scripts in sequence"
+    desc: "Execute all statistics scripts in sequence"
     cmds:
       - >
         ./scripts/all_stats.py
@@ -114,7 +112,7 @@ tasks:
   build_binary:
     dir: build
     deps: [conan_install]
-    summary: "Build build the binary file"
+    desc: "Build build the binary file"
     cmds:
       # - >
       #   cmake --build .. --target clean
