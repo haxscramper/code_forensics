@@ -8,86 +8,27 @@ jobs:
     #   run:
     #     working-directory: ./code_forensics
     steps:
-      - name: "Update installed packages"
-        run: pacman --noconfirm -Syu
-      - name: "Install package dependencies"
+      - name: "Install git"
         run: |
-          pacman --noconfirm -S \
-            gcc \
-            clang \
-            python-pip \
-            base-devel \
-            wget \
-            curl \
-            git \
-            cmake \
-            make \
-            sudo \
-            boost
-
+          pacman --noconfirm -Syu
+          pacman --noconfirm -S git
       - name: "Checkout submodules"
         run: |
           echo $PWD
-          cd ..
-          echo $PWD
-          git config --global --add safe.directory $PWD/code_forensics
-          git clone https://github.com/haxscramper/code_forensics.git
-          echo $PWD
-          cd code_forensics
-          git submodule update --init --recursive
-          echo $PWD
+          ls -R .
+          ./tests/ci_general_fetch.sh
 
-      - name: "Install yay"
-        run: |
-          echo $PWD
-          useradd nopass
-          mkdir /home/nopass
-          chown -R nopass /home/nopass
-          passwd -d nopass
-          echo ' nopass ALL=(ALL)   ALL' >> /etc/sudoers
+      - name: "Install remaining dependencies"
+        run: ./tests/ci_arch_pacman.sh
 
-          cd /tmp
-          git clone https://aur.archlinux.org/consolas-font.git
-          chown -R nopass consolas-font
-          cd consolas-font
-          sudo -u nopass makepkg -si --noconfirm
-
-      - name: "Install conan"
-        run: pip install conan matplotlib igraph pandas numpy
-      - name: "Install conan dependencies"
-        run: |
-          echo $PWD
-          conan install . \
-            -if build/dependencies/conan \
-            --build=missing \
-            --settings compiler.libcxx="libstdc++11"
+      - name: "Install general dependencies"
+        run: ./tests/ci_general_deps.sh
 
       - name: "Build code analyzer"
-        run: |
-          mkdir -p build
-          cd build
-          cmake ..
-          make -j10
-          cd ..
+        run: ./tests/ci_general_build.sh
 
-      - name: "Compare repositories"
-        run: |
-          git clone https://github.com/nim-works/nimskull.git /tmp/nimskull
-          ./build/bin/code_forensics \
-              /tmp/nimskull \
-              --filter-script=scripts/code_filter.py \
-              --branch=devel \
-              --logfile=nimskull.log \
-              --outfile=nimskull.sqlite
-
-      - name: "Run all stats"
-        run: |
-          mkdir nimskull_plots
-          ./scripts/all_stats.py \
-            nimskull.sqlite \
-            nimskull_plots \
-            --config=scripts/all_config.yaml \
-            --subconfig=scripts/config.cfg
+      - name: "Execute main test commands"
+        run: ./tests/ci_general_run.sh
 
       - uses: actions/upload-artifact@v3
         with:

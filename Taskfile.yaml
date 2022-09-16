@@ -28,6 +28,15 @@ vars:
     --args
 
 tasks:
+  arch_docker_image:
+    desc: "Build a docker test image or re-build if one already exists"
+    vars:
+      IMAGE: code_forensics_arch
+
+    cmds:
+      - ( docker image ls | grep {{.IMAGE}} && docker image rm {{.IMAGE}} ) || true
+      - docker image build -t {{.IMAGE}} .
+
   ensure_deps:
     desc: "Ensure test directory exists"
     status:
@@ -96,6 +105,7 @@ tasks:
       - ./scripts/commit_message_length.py {{.SCRIPT_OPTS}}
 
   all_stats:
+    deps: [ensure_test_db]
     desc: "Execute all statistics scripts in sequence"
     cmds:
       - >
