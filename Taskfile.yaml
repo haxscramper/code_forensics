@@ -48,7 +48,7 @@ tasks:
       - docker start --attach --interactive {{.CONTAINER}}
 
   arch_interactive_pass:
-    desc: "Run an interactive section with repository passed directly to the container"
+    desc: "Run an interactive section with repository passed directly to the container."
     cmds:
       - docker rm -f {{.CONTAINER}} || true
       - >
@@ -61,6 +61,13 @@ tasks:
         {{.IMAGE}}
 
       - docker start --attach --interactive {{.CONTAINER}}
+
+  arch_interactive_copy_gh:
+    desc: "Run an interactive session with code_forensics packaged image"
+    cmds:
+      - task: arch_interactive_copy
+        vars:
+          IMAGE: ghcr.io/haxscramper/code_forensics:master
 
   ensure_deps:
     desc: "Ensure test directory exists"

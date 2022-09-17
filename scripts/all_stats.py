@@ -41,7 +41,10 @@ modules = [
     "hotspot_connections",
     "line_category",
     "code_authorship",
-    "commit_message_length",
+    # FIXME commit message length is WIP - need to handle negative xerr
+    # ranges that mmight occur sometimes.
+    #
+    # "commit_message_length",
     # "author_ridgeline",
 ]
 
