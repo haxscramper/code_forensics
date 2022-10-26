@@ -16,6 +16,10 @@ import argparse
 import github as gh
 import sys
 
+import logging
+from rich.logging import RichHandler
+
+log = None
 from enum import IntEnum
 from typing import (
     Optional,
@@ -149,12 +153,14 @@ class GHIssueEventKind(IntEnum):
     LOCKED = 2
     LABELED = 3
     ASSIGNED = 4
+    REFERENCED = 5
+    SUBSCRIBED = 6
 
 
 class GHIssueEvent(SQLBase):
     __tablename__ = "issue_event"
     id = IdColumn()
-    actor = ForeignId("user.id")
+    actor = ForeignId("user.id", True)
     commit_id = ForeignId("gcommit.id", True)
     created_at = IntColumn()
     event = IntColumn()
@@ -220,8 +226,12 @@ class GHPull(SQLBase):
     __tablename__ = "pull"
     id = IdColumn()
     text = Column(Text)
+    title = Column(Text)
     closed_at = IntColumn(nullable=True)
     created_at = IntColumn()
+    merged_at = IntColumn(nullable=True)
+    updated_at = IntColumn()
+
     gh_id = IntColumn()
     number = IntColumn()
     additions = IntColumn()
@@ -231,6 +241,15 @@ class GHPull(SQLBase):
     is_merged = Column(Boolean)
     base_sha = StrColumn()
 
+class GHPullFile(SQLBase):
+    __tablename__ = "pull_file"
+    id = IdColumn()
+    pull = ForeignId("pull.id")
+    additions = IntColumn()
+    changes = IntColumn()
+    deletions = IntColumn()
+    filename = StrColumn()
+    previous_filename = StrColumn(nullable=True)
 
 class GHPullLabel(SQLBase):
     __tablename__ = "pull_label"
@@ -278,6 +297,15 @@ def event_name_to_kind(event: str) -> GHIssueEventKind:
 
         case "assigned":
             return GHIssueEventKind.ASSIGNED
+
+        case "referenced":
+            return GHIssueEventKind.REFERENCED
+
+        case "subscribed":
+            return GHIssueEventKind.SUBSCRIBED
+
+        case "closed":
+            return GHIssueEventKind.CLOSED
 
         case _:
             assert False, event
@@ -401,7 +429,8 @@ class Connect:
             if commit.sha not in self.commit_cache:
                 self.commit_cache[commit.sha] = self.add(
                     GHCommit(
-                        sha=commit.sha, user=self.get_user(commit.committer)
+                        sha=commit.sha,
+                        user=self.get_user(commit.committer),
                     )
                 )
 
@@ -414,9 +443,10 @@ class Connect:
             if issue.id in self.issue_cache:
                 return self.issue_cache[issue.id]
 
+            log.info("Issue [red]" + issue.title + "[/]")
             issue_id = self.get_issue(
                 GHIssue(
-                    name=issue.title,
+                    name=issue.title or "",
                     gh_id=issue.id,
                     user=self.get_user(issue.user),
                     created_at=to_stamp(issue.created_at),
@@ -474,10 +504,14 @@ class Connect:
             if pull.id in self.pull_cache:
                 return self.pull_cache[pull.id]
 
+            log.info("Pull [red]" + pull.title + "[/]")
             gh_pull = GHPull(
                 text=pull.body or "",
+                title=pull.title or "",
                 closed_at=to_stamp(pull.closed_at),
                 created_at=to_stamp(pull.created_at),
+                merged_at=to_stamp(pull.merged_at),
+                updated_at=to_stamp(pull.updated_at),
                 gh_id=pull.id,
                 additions=pull.additions,
                 deletions=pull.deletions,
@@ -498,13 +532,12 @@ class Connect:
                 self.add(GHPullLabel(pull=pull_id, label=label_id))
 
             for event in pull.get_issue_events():
-                print(event.label)
                 self.add(
                     GHIssueEvent(
                         gh_id=event.id,
-                        actor=self.get_user(event.actor),
+                        actor=event.actor and self.get_user(event.actor),
                         commit_id=event.commit_id
-                        and self.get_commit(event.commit_id.sha),
+                        and self.get_commit(event.commit_id),
                         created_at=to_stamp(event.created_at),
                         event=int(event_name_to_kind(event.event)),
                         issue=self.get_issue(event.issue),
@@ -514,6 +547,18 @@ class Connect:
                         and self.get_user(event.assigner),
                         review_requester=event.review_requester
                         and self.get_user(event.review_requester),
+                    )
+                )
+
+            for file in pull.get_files():
+                self.add(
+                    GHPullFile(
+                        pull=pull_id,
+                        additions=file.additions,
+                        changes=file.changes,
+                        deletions=file.deletions,
+                        filename=file.filename,
+                        previous_filename=file.previous_filename
                     )
                 )
 
@@ -545,7 +590,9 @@ class Connect:
                     created_at=to_stamp(comment.created_at),
                     diff_hunk=comment.diff_hunk,
                     commit=self.get_commit(comment.commit),
-                    original_commit=self.get_commit(comment.original_commit),
+                    original_commit=self.get_commit(
+                        comment.original_commit
+                    ),
                 )
 
                 print(review)
@@ -589,6 +636,13 @@ def parse_args(args=sys.argv[1:]):
     )
 
     parser.add_argument(
+        "--repo",
+        dest="repo",
+        default=None,
+        help="Github repository name in form of user/repo"
+    )
+
+    parser.add_argument(
         "--clean-write",
         dest="clean_write",
         default=None,
@@ -612,16 +666,14 @@ def parse_args(args=sys.argv[1:]):
         help="Maximum number of pull requests to fetch in a single program run",
     )
 
-    parser.add_argument("outfile", default=None, help="Output database file")
+    parser.add_argument(
+        "outfile", default=None, help="Output database file"
+    )
 
     return parser.parse_args(args)
 
 
 # %% Reading the data from the GitHub repository
-
-
-def progress(size: int) -> tqdm:
-    return tqdm(total=size, bar_format="{l_bar}{bar:40}{r_bar}{bar:-10b}")
 
 
 def to_stamp(date_time: DateTime) -> Optional[int]:
@@ -633,9 +685,8 @@ def to_stamp(date_time: DateTime) -> Optional[int]:
 
 
 def fill_stargazers(s: State):
-    with progress(s.repo.stargazers_count) as bar:
-        for star in s.repo.get_stargazers_with_dates():
-            bar.update()
+    for star in s.repo.get_stargazers_with_dates():
+        pass
 
 
 def fill_issues(c: Connect):
@@ -648,17 +699,14 @@ def fill_issues(c: Connect):
         since=last or gh.GithubObject.NotSet,
     )
 
-    with progress(issues.totalCount) as bar:
-        count = 0
-        for issue in issues:
-            if s.is_wanted_issue(issue):
-                c.get_issue(issue)
-                count += 1
+    count = 0
+    for issue in issues:
+        if s.is_wanted_issue(issue):
+            c.get_issue(issue)
+            count += 1
 
-                if s.args.max_issues_fetch < count:
-                    break
-
-            bar.update()
+            if s.args.max_issues_fetch < count:
+                break
 
 
 def fill_pulls(c: Connect):
@@ -679,9 +727,8 @@ def impl(args):
         with open("github-access-token", "r") as f:
             args.token = f.read().replace("\n", "")
 
-    print(args.token)
     g = gh.Github(args.token)
-    repo = g.get_repo("haxscramper/test")
+    repo = g.get_repo(args.repo)
     s = State()
     c = Connect()
     c.state = s
@@ -693,6 +740,24 @@ def impl(args):
     c.meta = SQLBase.metadata
     c.con = c.engine.connect()
 
+    logging.basicConfig(
+        level="NOTSET",
+        format="%(message)s",
+        datefmt="[%X]",
+        handlers=[RichHandler(
+            rich_tracebacks=True,
+            markup=True
+        )],
+    )
+
+    for name in logging.root.manager.loggerDict:
+        logger = logging.getLogger(name)
+        logger.setLevel(logging.WARNING)
+
+    global log
+    log = logging.getLogger("rich")
+    log.setLevel(logging.DEBUG)
+
     if args.clean_write:
         SQLBase.metadata.drop_all(c.engine)
 
@@ -701,7 +766,7 @@ def impl(args):
 
     s.rebuild_cache(c.session)
     try:
-        # fill_issues(c)
+        fill_issues(c)
         fill_pulls(c)
 
     finally:
@@ -716,9 +781,12 @@ if __name__ == "__main__":
                 [
                     "parse_github.sqlite",
                     "--max-issue-fetch=10",
-                    "--clean-write=True",
+                    # "--clean-write=True",
+                    "--repo=nim-lang/Nim"
                 ]
             )
         )
     else:
         impl(parse_args())
+
+    print("analysis done")
