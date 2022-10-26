@@ -319,7 +319,6 @@ class Connect:
     con: sqa.engine.Connection
 
     def __init__(self):
-        self.user_cache = {}
         self.label_cache = {}
         self.commit_cache = {}
 
@@ -356,6 +355,18 @@ class Connect:
             return res[0]
 
 
+    def get_user_by_name(self, name):
+        res = [it for it in self.con.execute(
+            sqa.select(self.table("user")).where(
+                self.table("user").c.name == name
+            )
+        )]
+
+        if len(res) == 0:
+            return None
+
+        else:
+            return res[0]
 
     def get_pull_by_id(self, gh_id):
        return self.get_from_github_id(gh_id, "pull")
@@ -432,9 +443,14 @@ class Connect:
             self.reference_issue(entry_id, entry_kind, int(number))
             self.reference_pull(entry_id, entry_kind, int(number))
 
-    def get_user(self, user: GHUser | gh.NamedUser.NamedUser) -> int:
-        if isinstance(user, gh.NamedUser.NamedUser):
-            return self.get_user(
+    def get_user(self, user: gh.NamedUser.NamedUser) -> int:
+        stored = self.get_user_by_name(user.login)
+        if stored:
+            log.debug(f"Cached user data {user.login}")
+            return stored.id
+
+        else:
+            return self.add(
                 GHUser(
                     name=user.login,
                     node_id=user.node_id,
@@ -451,11 +467,6 @@ class Connect:
                 )
             )
 
-        else:
-            if user.name not in self.user_cache:
-                self.user_cache[user.name] = self.add(user)
-
-            return self.user_cache[user.name]
 
     def get_commit(self, sha: str) -> Optional[int]:
         if sha not in self.commit_cache:
@@ -479,7 +490,7 @@ class Connect:
     def get_issue(self, issue: gh.Issue.Issue) -> int:
         stored = self.get_issue_by_id(issue.id)
         if stored:
-            log.info("Getting issue ID from the stored cache")
+            log.debug("Getting issue ID from the stored cache")
             return stored.id
 
         else:
