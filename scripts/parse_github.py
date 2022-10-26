@@ -322,16 +322,51 @@ class Connect:
         self.user_cache = {}
         self.label_cache = {}
         self.commit_cache = {}
-        self.issue_cache = {}
-        self.pull_cache = {}
 
     def add(self, value: Any) -> int:
         self.session.add(value)
+        self.session.commit()
         self.session.flush()
         assert value.id
         return value.id
 
+    def table(self, name):
+        return self.meta.tables[name]
+
+
+    def get_from_github_id(self, gh_id, table):
+        """
+        Return a DB pull ID (if stores) from github ID,
+        otherwise return `None`
+        """
+        res = [it for it in self.con.execute(
+            sqa.select(self.table(table)).where(
+                self.table(table).c.gh_id == gh_id
+            )
+        )]
+
+        if len(res) == 0:
+            return None
+
+        else:
+            if 1 < len(res):
+                log.error(
+                    f"{table} {gh_id} has more than one stored counterpart")
+
+            return res[0]
+
+
+
+    def get_pull_by_id(self, gh_id):
+       return self.get_from_github_id(gh_id, "pull")
+
+    def get_issue_by_id(self, gh_id):
+       return self.get_from_github_id(gh_id, "issue")
+
     def reference_issue(self, entry_id, entry_kind, number):
+        """
+        Add reference to a github issue from the same repository
+        """
         for issue in self.con.execute(
             sqa.select(self.meta.tables["issue"]).where(
                 self.meta.tables["issue"].c.number == number
@@ -347,6 +382,9 @@ class Connect:
             )
 
     def reference_pull(self, entry_id, entry_kind, number):
+        """
+        Reference a pull request from the same repository
+        """
         for issue in self.con.execute(
             sqa.select(self.meta.tables["pull"]).where(
                 self.meta.tables["pull"].c.number == number
@@ -438,13 +476,20 @@ class Connect:
 
         return self.commit_cache[sha]
 
-    def get_issue(self, issue: GHIssue | gh.Issue.Issue) -> int:
-        if isinstance(issue, gh.Issue.Issue):
-            if issue.id in self.issue_cache:
-                return self.issue_cache[issue.id]
+    def get_issue(self, issue: gh.Issue.Issue) -> int:
+        stored = self.get_issue_by_id(issue.id)
+        if stored:
+            log.info("Getting issue ID from the stored cache")
+            return stored.id
 
+        else:
             log.info("Issue [red]" + issue.title + "[/]")
-            issue_id = self.get_issue(
+            log.info({
+                "created": issue.created_at,
+                "id": issue.id
+            })
+
+            issue_id = self.add(
                 GHIssue(
                     name=issue.title or "",
                     gh_id=issue.id,
@@ -493,16 +538,21 @@ class Connect:
 
             return issue_id
 
+        # else:
+        #     if issue.gh_id not in self.issue_cache:
+        #         self.issue_cache[issue.gh_id] = self.add(issue)
+
+        #     return self.issue_cache[issue.gh_id]
+
+    def get_pull(self, pull: gh.PullRequest.PullRequest) -> int:
+        stored = self.get_pull_by_id(pull.id)
+        if stored:
+            log.info("Getting pull ID from stored cache")
+            return stored.id
+
         else:
-            if issue.gh_id not in self.issue_cache:
-                self.issue_cache[issue.gh_id] = self.add(issue)
-
-            return self.issue_cache[issue.gh_id]
-
-    def get_pull(self, pull: GHPull | gh.PullRequest.PullRequest) -> int:
-        if isinstance(pull, gh.PullRequest.PullRequest):
-            if pull.id in self.pull_cache:
-                return self.pull_cache[pull.id]
+            # if pull.id in self.pull_cache:
+            #     return self.pull_cache[pull.id]
 
             log.info("Pull [red]" + pull.title + "[/]")
             gh_pull = GHPull(
@@ -602,11 +652,11 @@ class Connect:
                     comment_id, GHEntryKind.REVIEW_COMMENT, comment.body
                 )
 
-        else:
-            if pull.gh_id not in self.pull_cache:
-                self.pull_cache[pull.gh_id] = self.add(pull)
+        # else:
+        #     if pull.gh_id not in self.pull_cache:
+        #         self.pull_cache[pull.gh_id] = self.add(pull)
 
-            return self.pull_cache[pull.gh_id]
+        #     return self.pull_cache[pull.gh_id]
 
     def get_label(self, label: GHLabel | gh.Label.Label) -> int:
         if isinstance(label, gh.Label.Label):
@@ -781,7 +831,7 @@ if __name__ == "__main__":
                 [
                     "parse_github.sqlite",
                     "--max-issue-fetch=10",
-                    # "--clean-write=True",
+                    "--clean-write=True",
                     "--repo=nim-lang/Nim"
                 ]
             )
