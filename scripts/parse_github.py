@@ -34,7 +34,6 @@ from datetime import datetime as DateTime
 from datetime import timezone
 
 
-print("Created new SQL Base")
 SQLBase = declarative_base()
 
 # %% Main state configuration
@@ -727,7 +726,7 @@ class Connect:
                     diff_hunk=comment.diff_hunk,
                     commit=self.get_commit(comment.commit_id),
                     original_commit=self.get_commit(
-                        comment.original_commit
+                        comment.original_commit_id
                     ),
                 )
 
