@@ -155,6 +155,10 @@ class GHIssueEventKind(IntEnum):
     ASSIGNED = 4
     REFERENCED = 5
     SUBSCRIBED = 6
+    MERGED = 7
+    REOPENED = 8
+    HEAD_REF_DELETED = 9
+    MENTIONED = 10
 
 
 class GHIssueEvent(SQLBase):
@@ -165,7 +169,6 @@ class GHIssueEvent(SQLBase):
     created_at = IntColumn()
     event = IntColumn()
     gh_id = IntColumn()
-    issue = ForeignId("issue.id", True)
     node_id = StrColumn()
     label = ForeignId("label.id", True)
     assigner = ForeignId("user.id", True)
@@ -193,7 +196,7 @@ class GHCommit(SQLBase):
     __tablename__ = "gcommit"
     id = IdColumn()
     sha = StrColumn()
-    user = ForeignId("user.id")
+    user = ForeignId("user.id", nullable=True)
 
 
 class GHAssignee(SQLBase):
@@ -221,6 +224,24 @@ class GHUser(SQLBase):
     gh_id = IntColumn()
     location = StrColumn()
 
+class GHReactionKind(IntEnum):
+    PLUS_ONE = 1
+    MINUS_ONE = 2
+    LAUGH = 3
+    HOORAY = 4
+    CONFUSED = 5
+    HEART = 6
+    ROCKET = 7
+    EYES = 8
+
+class GHReaction(SQLBase):
+    __tablename__ = "reaction"
+    id = IdColumn()
+    user = ForeignId("user.id")
+    kind = IntColumn()
+    created_at = IntColumn()
+    target = IntColumn()
+    target_kind = IntColumn()
 
 class GHPull(SQLBase):
     __tablename__ = "pull"
@@ -271,13 +292,16 @@ class GHIssue(SQLBase):
     id = IdColumn()
     gh_id = IntColumn()
     name = StrColumn()
-    url = StrColumn()
     number = IntColumn()
     user = ForeignId("user.id")
     text = StrColumn()
     closed_at = IntColumn(nullable=True)
+    closed_by = ForeignId("user.id", nullable=True)
     updated_at = IntColumn()
     created_at = IntColumn()
+
+    locked = Column(Boolean)
+    active_lock_reason = StrColumn(nullable=True)
 
 
 class GHIssueLabel(SQLBase):
@@ -307,8 +331,49 @@ def event_name_to_kind(event: str) -> GHIssueEventKind:
         case "closed":
             return GHIssueEventKind.CLOSED
 
+        case "merged":
+            return GHIssueEventKind.MERGED
+
+        case "reopened":
+            return GHIssueEventKind.REOPENED
+
+        case "head_ref_deleted":
+            return GHIssueEventKind.HEAD_REF_DELETED
+
+        case "mentioned":
+            return GHIssueEventKind.MENTIONED
+
         case _:
             assert False, event
+
+def reaction_name_to_kind(reaction: str) -> GHReactionKind:
+    match reaction:
+        case "+1":
+            return GHReactionKind.PLUS_ONE
+
+        case "-1":
+            return GHReactionKind.MINUS_ONE
+
+        case "laugh":
+            return GHReactionKind.LAUGH
+
+        case "hooray":
+            return GHReactionKind.HOORAY
+
+        case "confused":
+            return GHReactionKind.CONFUSED
+
+        case "heart":
+            return GHReactionKind.HEART
+
+        case "rocket":
+            return GHReactionKind.ROCKET
+
+        case "eyes":
+            return GHReactionKind.EYES
+
+        case _:
+            assert False, reaction
 
 
 class Connect:
@@ -427,7 +492,7 @@ class Connect:
             self.reference_commit(entry_id, entry_kind, match)
 
         for (owner, repo, kind, number) in re.findall(
-            r"https?://github\.com/([^\\]+?)/([^\\]+?)/(issues|pulls|commit)/(\S+)",
+            r"https?://github\.com/([^\\]+?)/([^\\]+?)/(issues|pulls|commit)/(\d+).*",
             text,
         ):
             if kind == "issues":
@@ -446,7 +511,7 @@ class Connect:
     def get_user(self, user: gh.NamedUser.NamedUser) -> int:
         stored = self.get_user_by_name(user.login)
         if stored:
-            log.debug(f"Cached user data {user.login}")
+            # log.debug(f"Cached user data {user.login}")
             return stored.id
 
         else:
@@ -479,7 +544,8 @@ class Connect:
                 self.commit_cache[commit.sha] = self.add(
                     GHCommit(
                         sha=commit.sha,
-                        user=self.get_user(commit.committer),
+                        user=commit.committer and
+                             self.get_user(commit.committer),
                     )
                 )
 
@@ -490,25 +556,29 @@ class Connect:
     def get_issue(self, issue: gh.Issue.Issue) -> int:
         stored = self.get_issue_by_id(issue.id)
         if stored:
-            log.debug("Getting issue ID from the stored cache")
+            # log.debug("Getting issue ID from the stored cache")
             return stored.id
 
         else:
-            log.info("Issue [red]" + issue.title + "[/]")
-            log.info({
-                "created": issue.created_at,
-                "id": issue.id
-            })
+            log.info(f"Issue {issue.number} [red]" + issue.title + "[/]")
+            # log.debug({
+            #     "created": issue.created_at,
+            #     "id": issue.id,
+            #     "url": issue.url
+            # })
 
             issue_id = self.add(
                 GHIssue(
                     name=issue.title or "",
                     gh_id=issue.id,
                     user=self.get_user(issue.user),
+                    closed_by=issue.closed_by and self.get_user(
+                        issue.closed_by),
                     created_at=to_stamp(issue.created_at),
                     updated_at=to_stamp(issue.updated_at),
                     closed_at=to_stamp(issue.closed_at),
-                    url=issue.url,
+                    locked=issue.locked,
+                    active_lock_reason=issue.active_lock_reason,
                     text=issue.body or "",
                     number=issue.number,
                 )
@@ -538,6 +608,17 @@ class Connect:
                 label_id = self.get_label(label)
                 self.add(GHIssueLabel(issue=issue_id, label=label_id))
 
+            for reaction in issue.get_reactions():
+                self.add(
+                    GHReaction(
+                        target = issue_id,
+                        target_kind = GHEntryKind.ISSUE,
+                        created_at = to_stamp(reaction.created_at),
+                        user = self.get_user(reaction.user),
+                        kind = reaction_name_to_kind(reaction.content)
+                    )
+                )
+
             for assignee in issue.assignees:
                 self.add(
                     GHAssignee(
@@ -549,23 +630,20 @@ class Connect:
 
             return issue_id
 
-        # else:
-        #     if issue.gh_id not in self.issue_cache:
-        #         self.issue_cache[issue.gh_id] = self.add(issue)
-
-        #     return self.issue_cache[issue.gh_id]
-
     def get_pull(self, pull: gh.PullRequest.PullRequest) -> int:
         stored = self.get_pull_by_id(pull.id)
         if stored:
-            log.info("Getting pull ID from stored cache")
+            # log.info("Getting pull ID from stored cache")
             return stored.id
 
         else:
-            # if pull.id in self.pull_cache:
-            #     return self.pull_cache[pull.id]
+            log.info(f"Pull {pull.number} [red]" + pull.title + "[/]")
+            # log.debug({
+            #     "created": pull.created_at,
+            #     "id": pull.id,
+            #     "url": pull.url
+            # })
 
-            log.info("Pull [red]" + pull.title + "[/]")
             gh_pull = GHPull(
                 text=pull.body or "",
                 title=pull.title or "",
@@ -601,7 +679,6 @@ class Connect:
                         and self.get_commit(event.commit_id),
                         created_at=to_stamp(event.created_at),
                         event=int(event_name_to_kind(event.event)),
-                        issue=self.get_issue(event.issue),
                         node_id=event.node_id,
                         label=event.label and self.get_label(event.label),
                         assigner=event.assigner
@@ -640,8 +717,6 @@ class Connect:
                     comment_id, GHEntryKind.COMMENT, comment.body
                 )
 
-            # FIXME don't know how to get the review comments properly -
-            # code returns nothing
             for comment in pull.get_review_comments():
                 review = GHReviewComment(
                     gh_id=comment.id,
@@ -650,7 +725,7 @@ class Connect:
                     user=self.get_user(comment.user),
                     created_at=to_stamp(comment.created_at),
                     diff_hunk=comment.diff_hunk,
-                    commit=self.get_commit(comment.commit),
+                    commit=self.get_commit(comment.commit_id),
                     original_commit=self.get_commit(
                         comment.original_commit
                     ),
@@ -662,12 +737,6 @@ class Connect:
                 self.fill_mentions(
                     comment_id, GHEntryKind.REVIEW_COMMENT, comment.body
                 )
-
-        # else:
-        #     if pull.gh_id not in self.pull_cache:
-        #         self.pull_cache[pull.gh_id] = self.add(pull)
-
-        #     return self.pull_cache[pull.gh_id]
 
     def get_label(self, label: GHLabel | gh.Label.Label) -> int:
         if isinstance(label, gh.Label.Label):
@@ -762,7 +831,11 @@ def fill_issues(c: Connect):
 
     count = 0
     for issue in issues:
-        if s.is_wanted_issue(issue):
+        # HACK this check is necessary because `get_issues` consistently
+        # returns pull request URLs as well and they even manage to pass
+        # into the API, returning valid responses.
+        if issue.html_url.endswith(f"issues/{issue.number}") \
+           and s.is_wanted_issue(issue):
             c.get_issue(issue)
             count += 1
 
@@ -775,7 +848,9 @@ def fill_pulls(c: Connect):
     pulls = s.repo.get_pulls(state="all", direction="asc", sort="updated")
     count = 1
     for pull in pulls:
-        if s.first_processing(pull):
+        # HACK same hack reason as in `fill_issues`
+        if pull.html_url.endswith(f"pull/{pull.number}")  \
+           and s.first_processing(pull):
             c.get_pull(pull)
 
             count += 1
@@ -841,8 +916,9 @@ if __name__ == "__main__":
             parse_args(
                 [
                     "parse_github.sqlite",
-                    "--max-issue-fetch=10",
-                    "--clean-write=True",
+                    "--max-issue-fetch=100",
+                    "--max-pull-fetch=100",
+                    # "--clean-write=True",
                     "--repo=nim-lang/Nim"
                 ]
             )
