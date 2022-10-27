@@ -158,6 +158,8 @@ class GHIssueEventKind(IntEnum):
     REOPENED = 8
     HEAD_REF_DELETED = 9
     MENTIONED = 10
+    HEAD_REF_RESTORED = 11
+    RENAMED = 12
 
 
 class GHIssueEvent(SQLBase):
@@ -187,6 +189,7 @@ class GHReviewComment(SQLBase):
     original_position = IntColumn()
     diff_hunk = StrColumn()
     created_at = IntColumn()
+    target = ForeignId("pull.id")
     commit = ForeignId("gcommit.id", nullable=True)
     user = ForeignId("user.id")
 
@@ -341,6 +344,12 @@ def event_name_to_kind(event: str) -> GHIssueEventKind:
 
         case "mentioned":
             return GHIssueEventKind.MENTIONED
+
+        case "head_ref_restored":
+            return GHIssueEventKind.HEAD_REF_RESTORED
+
+        case "renamed":
+            return GHIssueEventKind.RENAMED
 
         case _:
             assert False, event
@@ -720,7 +729,6 @@ class Connect:
                 review = GHReviewComment(
                     gh_id=comment.id,
                     target=pull_id,
-                    target_kind=int(GHEntryKind.PULL),
                     user=self.get_user(comment.user),
                     created_at=to_stamp(comment.created_at),
                     diff_hunk=comment.diff_hunk,
@@ -915,8 +923,8 @@ if __name__ == "__main__":
             parse_args(
                 [
                     "parse_github.sqlite",
-                    "--max-issue-fetch=100",
-                    "--max-pull-fetch=100",
+                    "--max-issue-fetch=1000",
+                    "--max-pull-fetch=1000",
                     # "--clean-write=True",
                     "--repo=nim-lang/Nim"
                 ]
