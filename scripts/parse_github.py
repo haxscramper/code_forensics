@@ -160,6 +160,7 @@ class GHIssueEventKind(IntEnum):
     MENTIONED = 10
     HEAD_REF_RESTORED = 11
     RENAMED = 12
+    HEAD_REF_FORCE_PUSHED = 13
 
 
 class GHIssueEvent(SQLBase):
@@ -252,7 +253,9 @@ class GHPull(SQLBase):
     title = Column(Text)
     closed_at = IntColumn(nullable=True)
     created_at = IntColumn()
+    user = ForeignId("user.id")
     merged_at = IntColumn(nullable=True)
+    merged_by = ForeignId("user.id", nullable=True)
     updated_at = IntColumn()
 
     gh_id = IntColumn()
@@ -355,6 +358,9 @@ def event_name_to_kind(event: str) -> GHIssueEventKind:
 
         case "head_ref_restored":
             return GHIssueEventKind.HEAD_REF_RESTORED
+
+        case "head_ref_force_pushed":
+            return GHIssueEventKind.HEAD_REF_FORCE_PUSHED
 
         case "renamed":
             return GHIssueEventKind.RENAMED
@@ -658,11 +664,19 @@ class Connect:
 
             return issue_id
 
-    def get_pull(self, pull: gh.PullRequest.PullRequest) -> int:
+    def get_stored_pull_id(self, pull: gh.PullRequest.PullRequest) -> int:
         stored = self.get_pull_by_id(pull.id)
         if stored:
-            # log.info("Getting pull ID from stored cache")
+            log.info(f"Cached pull {pull.number}")
             return stored.id
+
+        else:
+            return None
+
+    def get_pull(self, pull: gh.PullRequest.PullRequest) -> int:
+        stored = self.get_stored_pull_id(pull)
+        if stored:
+            return stored
 
         else:
             log.info(f"Pull {pull.number} [red]" + pull.title + "[/]")
@@ -677,8 +691,13 @@ class Connect:
                 title=pull.title or "",
                 closed_at=to_stamp(pull.closed_at),
                 created_at=to_stamp(pull.created_at),
+                user = pull.user and self.get_user(pull.user),
+
                 merged_at=to_stamp(pull.merged_at),
+                merged_by=pull.merged_by and self.get_user(pull.merged_by),
+
                 updated_at=to_stamp(pull.updated_at),
+
                 gh_id=pull.id,
                 additions=pull.additions,
                 deletions=pull.deletions,
@@ -745,25 +764,28 @@ class Connect:
                     comment_id, GHEntryKind.COMMENT, comment.body
                 )
 
-            for comment in pull.get_review_comments():
-                review = GHReviewComment(
-                    gh_id=comment.id,
-                    target=pull_id,
-                    user=self.get_user(comment.user),
-                    created_at=to_stamp(comment.created_at),
-                    diff_hunk=comment.diff_hunk,
-                    commit=self.get_commit(comment.commit_id),
-                    original_commit=self.get_commit(
-                        comment.original_commit_id
-                    ),
-                )
+            if False:
+                # HACK temporarily disabled because old database did not
+                # have nullable constraint enabled.
+                for comment in pull.get_review_comments():
+                    review = GHReviewComment(
+                        gh_id=comment.id,
+                        target=pull_id,
+                        user=self.get_user(comment.user),
+                        created_at=to_stamp(comment.created_at),
+                        diff_hunk=comment.diff_hunk,
+                        commit=self.get_commit(comment.commit_id),
+                        original_commit=self.get_commit(
+                            comment.original_commit_id
+                        ),
+                    )
 
-                print(review)
-                comment_id = self.add(review)
+                    print(review)
+                    comment_id = self.add(review)
 
-                self.fill_mentions(
-                    comment_id, GHEntryKind.REVIEW_COMMENT, comment.body
-                )
+                    self.fill_mentions(
+                        comment_id, GHEntryKind.REVIEW_COMMENT, comment.body
+                    )
 
     def get_label(self, label: gh.Label.Label) -> int:
         stored = self.get_label_by_name(label.name)
@@ -774,7 +796,9 @@ class Connect:
             return self.add(
                 GHLabel(
                     text=label.name,
-                    description=label.description,
+                    description="FIXME", # HACK. Trying to get
+                    # description=label.description, causes the '400
+                    # returned object contains no URL' error
                     color=label.color,
                 )
             )
@@ -873,13 +897,25 @@ def fill_pulls(c: Connect):
     count = 1
     for pull in pulls:
         # HACK same hack reason as in `fill_issues`
-        if pull.html_url.endswith(f"pull/{pull.number}")  \
-           and s.first_processing(pull):
+        if pull.html_url.endswith(f"pull/{pull.number}"):
+            stored = c.get_stored_pull_id(pull)
+            if stored:
+                continue
+
             c.get_pull(pull)
 
             count += 1
             if s.args.max_pulls_fetch < count:
+                log.warning(
+                    f"Reached max number of pulls ({count}), withdrawing")
+
                 break
+
+        else:
+            log.debug({
+                "url": pull.html_url,
+                "num": pull.number
+            })
 
 
 def impl(args):

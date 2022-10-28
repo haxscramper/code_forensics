@@ -8,4 +8,6 @@ SELECT avg((
   -- issue.closed_at as closed,
   -- strftime('%s', 'now') as time,
   -- issue.name
-  FROM issue;
+  FROM issue
+  WHERE NOT (issue.closed_at IS NULL)
+  ;

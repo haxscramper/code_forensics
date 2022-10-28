@@ -6,4 +6,9 @@ SELECT avg((
       END
   ) - pull.created_at) AS "average"
   FROM pull
+  -- WHERE (
+  --   CASE
+  --     WHEN NOT (pull.closed_by IS NULL) AND
+  --          NOT (pull.)
+  -- )
   ;
