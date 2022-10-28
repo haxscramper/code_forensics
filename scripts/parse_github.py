@@ -184,7 +184,7 @@ class GHReviewComment(SQLBase):
     __tablename__ = "review_comment"
     id = IdColumn()
     gh_id = IntColumn()
-    in_reply_to = ForeignId("review_comment.id")
+    in_reply_to = ForeignId("review_comment.id", nullable=True)
     original_commit = ForeignId("gcommit.id", nullable=True)
     original_position = IntColumn()
     diff_hunk = StrColumn()
@@ -275,6 +275,10 @@ class GHPullFile(SQLBase):
     previous_filename = StrColumn(nullable=True)
 
 class GHPullLabel(SQLBase):
+    """
+    Single instance of a pull label attached to the database
+    """
+
     __tablename__ = "pull_label"
     id = IdColumn()
     pull = ForeignId("pull.id")
@@ -282,6 +286,10 @@ class GHPullLabel(SQLBase):
 
 
 class GHLabel(SQLBase):
+    """
+    Shared github label that can be referred in multiple differen
+    instances of `GHPullLabel` etc. throughout the database
+    """
     __tablename__ = "label"
     id = IdColumn()
     text = StrColumn()
@@ -392,7 +400,6 @@ class Connect:
     con: sqa.engine.Connection
 
     def __init__(self):
-        self.label_cache = {}
         self.commit_cache = {}
 
     def add(self, value: Any) -> int:
@@ -427,6 +434,19 @@ class Connect:
 
             return res[0]
 
+
+    def get_label_by_name(self, name):
+        res = [it for it in self.con.execute(
+            sqa.select(self.table("label")).where(
+                self.table("label").c.text == name
+            )
+        )]
+
+        if len(res) == 0:
+            return None
+
+        else:
+            return res[0]
 
     def get_user_by_name(self, name):
         res = [it for it in self.con.execute(
@@ -745,22 +765,19 @@ class Connect:
                     comment_id, GHEntryKind.REVIEW_COMMENT, comment.body
                 )
 
-    def get_label(self, label: GHLabel | gh.Label.Label) -> int:
-        if isinstance(label, gh.Label.Label):
-            return self.get_label(
+    def get_label(self, label: gh.Label.Label) -> int:
+        stored = self.get_label_by_name(label.name)
+        if stored:
+            return stored.id
+
+        else:
+            return self.add(
                 GHLabel(
                     text=label.name,
-                    description="FIXME",
-                    # description= label.description,
+                    description=label.description,
                     color=label.color,
                 )
             )
-
-        else:
-            if label.text not in self.label_cache:
-                self.label_cache[label.text] = self.add(label)
-
-            return self.label_cache[label.text]
 
 
 def parse_args(args=sys.argv[1:]):
