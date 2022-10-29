@@ -161,7 +161,15 @@ class GHIssueEventKind(IntEnum):
     HEAD_REF_RESTORED = 11
     RENAMED = 12
     HEAD_REF_FORCE_PUSHED = 13
-
+    UNLABELED = 14
+    BASE_REF_CHANGED = 15
+    REVIEW_REQUESTED = 16
+    REVIEW_REQUEST_REMOVED = 17
+    REVIEW_DISMISSED = 18
+    BASE_REF_FORCE_PUSHED = 19
+    UNASSIGNED = 20
+    UNSUBSCRIBED = 21
+    MILESTONED = 22
 
 class GHIssueEvent(SQLBase):
     __tablename__ = "issue_event"
@@ -365,6 +373,33 @@ def event_name_to_kind(event: str) -> GHIssueEventKind:
         case "renamed":
             return GHIssueEventKind.RENAMED
 
+        case "unlabeled":
+            return GHIssueEventKind.UNLABELED
+
+        case "base_ref_changed":
+            return GHIssueEventKind.BASE_REF_CHANGED
+
+        case "review_requested":
+            return GHIssueEventKind.REVIEW_REQUESTED
+
+        case "review_request_removed":
+            return GHIssueEventKind.REVIEW_REQUEST_REMOVED
+
+        case "review_dismissed":
+            return GHIssueEventKind.REVIEW_DISMISSED
+
+        case "milestoned":
+            return GHIssueEventKind.MILESTONED
+
+        case "base_ref_force_pushed":
+            return GHIssueEventKind.BASE_REF_FORCE_PUSHED
+
+        case "unassigned":
+            return GHIssueEventKind.UNASSIGNED
+
+        case "unsubscribed":
+            return GHIssueEventKind.UNSUBSCRIBED
+
         case _:
             assert False, event
 
@@ -418,6 +453,11 @@ class Connect:
     def table(self, name):
         return self.meta.tables[name]
 
+    def get_last_updated_pull(self):
+        next(self.con.execute(
+            sqa.select(self.table("pull")).
+              order_by(GHPull.updated_at.desc())
+        ))
 
     def get_from_github_id(self, gh_id, table):
         """
@@ -667,16 +707,16 @@ class Connect:
     def get_stored_pull_id(self, pull: gh.PullRequest.PullRequest) -> int:
         stored = self.get_pull_by_id(pull.id)
         if stored:
-            log.info(f"Cached pull {pull.number}")
+            log.info(f"Cached pull {pull.number} [red]{pull.title}[/]")
             return stored.id
 
         else:
             return None
 
     def get_pull(self, pull: gh.PullRequest.PullRequest) -> int:
-        stored = self.get_stored_pull_id(pull)
+        stored = self.get_pull_by_id(pull.id)
         if stored:
-            return stored
+            return stored.id
 
         else:
             log.info(f"Pull {pull.number} [red]" + pull.title + "[/]")
@@ -736,6 +776,8 @@ class Connect:
                 )
 
             for file in pull.get_files():
+                # TODO Use file IDs, move names into secondary directory.
+                log.debug(f"Edited {file.filename}")
                 self.add(
                     GHPullFile(
                         pull=pull_id,
@@ -893,7 +935,12 @@ def fill_issues(c: Connect):
 
 def fill_pulls(c: Connect):
     s = c.state
-    pulls = s.repo.get_pulls(state="all", direction="asc", sort="updated")
+    pulls = s.repo.get_pulls(
+        state="all",
+        direction="asc",
+        sort="updated"
+    )
+
     count = 1
     for pull in pulls:
         # HACK same hack reason as in `fill_issues`
