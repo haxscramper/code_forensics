@@ -6,8 +6,6 @@ Created on Tue Aug 30 14:28:42 2022
 @author: haxscramper
 """
 
-# %% Import main modules
-
 import sqlalchemy as sqa
 from sqlalchemy import Column, Integer, Text, ForeignKey, Boolean
 import re
@@ -19,7 +17,7 @@ import sys
 import logging
 from rich.logging import RichHandler
 
-log = None
+
 from enum import IntEnum
 from typing import (
     Optional,
@@ -32,11 +30,9 @@ from sqlalchemy.orm import declarative_base
 from tqdm import tqdm
 from datetime import datetime as DateTime
 from datetime import timezone
+from parse_github_sql_schema import *
 
-
-SQLBase = declarative_base()
-
-# %% Main state configuration
+log = None
 
 
 class State:
@@ -93,243 +89,6 @@ class State:
 
         for comment in session.query(GHComment):
             self.known_comments.add(comment.gh_id)
-
-
-def IdColumn():
-    return Column(Integer, primary_key=True, autoincrement=True)
-
-
-def ForeignId(name: str, nullable: bool = False):
-    return Column(Integer, ForeignKey(name), nullable=nullable)
-
-
-def IntColumn(nullable: bool = False):
-    return Column(Integer, nullable=nullable)
-
-
-def StrColumn(nullable: bool = False):
-    return Column(Text, nullable=nullable)
-
-
-class GHStar(SQLBase):
-    __tablename__ = "star"
-
-    id = IdColumn()
-    user = ForeignId("user.id")
-
-
-class GHReference(SQLBase):
-    __tablename__ = "reference"
-    id = IdColumn()
-    target_kind = IntColumn()
-    target = IntColumn()
-    entry_kind = IntColumn()
-    entry = IntColumn()
-
-
-class GHEntryKind(IntEnum):
-    ISSUE = 1
-    PULL = 2
-    COMMENT = 3
-    COMMIT = 4
-    REVIEW_COMMENT = 5
-
-
-class GHComment(SQLBase):
-    __tablename__ = "comment"
-    id = IdColumn()
-    gh_id = IntColumn()
-    index = IntColumn()
-    text = StrColumn()
-    target_kind = IntColumn()
-    target = IntColumn()
-    created_at = IntColumn()
-    user = IntColumn()
-
-
-class GHIssueEventKind(IntEnum):
-    CLOSED = 1
-    LOCKED = 2
-    LABELED = 3
-    ASSIGNED = 4
-    REFERENCED = 5
-    SUBSCRIBED = 6
-    MERGED = 7
-    REOPENED = 8
-    HEAD_REF_DELETED = 9
-    MENTIONED = 10
-    HEAD_REF_RESTORED = 11
-    RENAMED = 12
-    HEAD_REF_FORCE_PUSHED = 13
-    UNLABELED = 14
-    BASE_REF_CHANGED = 15
-    REVIEW_REQUESTED = 16
-    REVIEW_REQUEST_REMOVED = 17
-    REVIEW_DISMISSED = 18
-    BASE_REF_FORCE_PUSHED = 19
-    UNASSIGNED = 20
-    UNSUBSCRIBED = 21
-    MILESTONED = 22
-
-class GHIssueEvent(SQLBase):
-    __tablename__ = "issue_event"
-    id = IdColumn()
-    actor = ForeignId("user.id", True)
-    commit_id = ForeignId("gcommit.id", True)
-    created_at = IntColumn()
-    event = IntColumn()
-    gh_id = IntColumn()
-    node_id = StrColumn()
-    label = ForeignId("label.id", True)
-    assigner = ForeignId("user.id", True)
-    review_requester = ForeignId("user.id", True)
-    requested_reviewer = ForeignId("user.id", True)
-    rename_from = StrColumn(True)
-    rename_to = StrColumn(True)
-    lock_reason = StrColumn(True)
-
-
-class GHReviewComment(SQLBase):
-    __tablename__ = "review_comment"
-    id = IdColumn()
-    gh_id = IntColumn()
-    in_reply_to = ForeignId("review_comment.id", nullable=True)
-    original_commit = ForeignId("gcommit.id", nullable=True)
-    original_position = IntColumn()
-    diff_hunk = StrColumn()
-    created_at = IntColumn()
-    target = ForeignId("pull.id")
-    commit = ForeignId("gcommit.id", nullable=True)
-    user = ForeignId("user.id")
-
-
-class GHCommit(SQLBase):
-    __tablename__ = "gcommit"
-    id = IdColumn()
-    sha = StrColumn()
-    user = ForeignId("user.id", nullable=True)
-
-
-class GHAssignee(SQLBase):
-    __tablename__ = "assignee"
-    id = IdColumn()
-    user = ForeignId("user.id")
-    target = IntColumn()
-    target_kind = IntColumn()
-
-
-class GHUser(SQLBase):
-    __tablename__ = "user"
-
-    id = IdColumn()
-    name = StrColumn()
-    node_id = StrColumn()
-    twitter_username = StrColumn()
-    bio = StrColumn()
-    blog = StrColumn()
-    company = StrColumn()
-    created_at = IntColumn()
-    email = StrColumn()
-    followers = IntColumn()
-    hireable = Column(Boolean)
-    gh_id = IntColumn()
-    location = StrColumn()
-
-class GHReactionKind(IntEnum):
-    PLUS_ONE = 1
-    MINUS_ONE = 2
-    LAUGH = 3
-    HOORAY = 4
-    CONFUSED = 5
-    HEART = 6
-    ROCKET = 7
-    EYES = 8
-
-class GHReaction(SQLBase):
-    __tablename__ = "reaction"
-    id = IdColumn()
-    user = ForeignId("user.id")
-    kind = IntColumn()
-    created_at = IntColumn()
-    target = IntColumn()
-    target_kind = IntColumn()
-
-class GHPull(SQLBase):
-    __tablename__ = "pull"
-    id = IdColumn()
-    text = Column(Text)
-    title = Column(Text)
-    closed_at = IntColumn(nullable=True)
-    created_at = IntColumn()
-    user = ForeignId("user.id")
-    merged_at = IntColumn(nullable=True)
-    merged_by = ForeignId("user.id", nullable=True)
-    updated_at = IntColumn()
-
-    gh_id = IntColumn()
-    number = IntColumn()
-    additions = IntColumn()
-    deletions = IntColumn()
-    changed_files = IntColumn()
-    diff_url = StrColumn()
-    is_merged = Column(Boolean)
-    base_sha = StrColumn()
-
-class GHPullFile(SQLBase):
-    __tablename__ = "pull_file"
-    id = IdColumn()
-    pull = ForeignId("pull.id")
-    additions = IntColumn()
-    changes = IntColumn()
-    deletions = IntColumn()
-    filename = StrColumn()
-    previous_filename = StrColumn(nullable=True)
-
-class GHPullLabel(SQLBase):
-    """
-    Single instance of a pull label attached to the database
-    """
-
-    __tablename__ = "pull_label"
-    id = IdColumn()
-    pull = ForeignId("pull.id")
-    label = ForeignId("label.id")
-
-
-class GHLabel(SQLBase):
-    """
-    Shared github label that can be referred in multiple differen
-    instances of `GHPullLabel` etc. throughout the database
-    """
-    __tablename__ = "label"
-    id = IdColumn()
-    text = StrColumn()
-    description = StrColumn()
-    color = StrColumn()
-
-
-class GHIssue(SQLBase):
-    __tablename__ = "issue"
-    id = IdColumn()
-    gh_id = IntColumn()
-    name = StrColumn()
-    number = IntColumn()
-    user = ForeignId("user.id")
-    text = StrColumn()
-    closed_at = IntColumn(nullable=True)
-    closed_by = ForeignId("user.id", nullable=True)
-    updated_at = IntColumn()
-    created_at = IntColumn()
-
-    locked = Column(Boolean)
-    active_lock_reason = StrColumn(nullable=True)
-
-
-class GHIssueLabel(SQLBase):
-    __tablename__ = "issue_label"
-    id = IdColumn()
-    issue = ForeignId("issue.id")
-    label = ForeignId("label.id")
 
 
 def event_name_to_kind(event: str) -> GHIssueEventKind:
@@ -400,8 +159,15 @@ def event_name_to_kind(event: str) -> GHIssueEventKind:
         case "unsubscribed":
             return GHIssueEventKind.UNSUBSCRIBED
 
+        case "comment_deleted":
+            return GHIssueEventKind.COMMENT_DELETED
+
+        case "ready_for_review":
+            return GHIssueEventKind.READY_FOR_REVIEW
+
         case _:
             assert False, event
+
 
 def reaction_name_to_kind(reaction: str) -> GHReactionKind:
     match reaction:
@@ -433,12 +199,15 @@ def reaction_name_to_kind(reaction: str) -> GHReactionKind:
             assert False, reaction
 
 
-class Connect:
+class ConnectBase:
     engine: sqa.engine.Engine
     session: sqa.orm.Session
     meta: sqa.MetaData
-    state: State
     con: sqa.engine.Connection
+
+
+class Connect(ConnectBase):
+    state: State
 
     def __init__(self):
         self.commit_cache = {}
@@ -454,21 +223,27 @@ class Connect:
         return self.meta.tables[name]
 
     def get_last_updated_pull(self):
-        next(self.con.execute(
-            sqa.select(self.table("pull")).
-              order_by(GHPull.updated_at.desc())
-        ))
+        next(
+            self.con.execute(
+                sqa.select(self.table("pull")).order_by(
+                    GHPull.updated_at.desc()
+                )
+            )
+        )
 
     def get_from_github_id(self, gh_id, table):
         """
         Return a DB pull ID (if stores) from github ID,
         otherwise return `None`
         """
-        res = [it for it in self.con.execute(
-            sqa.select(self.table(table)).where(
-                self.table(table).c.gh_id == gh_id
+        res = [
+            it
+            for it in self.con.execute(
+                sqa.select(self.table(table)).where(
+                    self.table(table).c.gh_id == gh_id
+                )
             )
-        )]
+        ]
 
         if len(res) == 0:
             return None
@@ -476,17 +251,20 @@ class Connect:
         else:
             if 1 < len(res):
                 log.error(
-                    f"{table} {gh_id} has more than one stored counterpart")
+                    f"{table} {gh_id} has more than one stored counterpart"
+                )
 
             return res[0]
 
-
     def get_label_by_name(self, name):
-        res = [it for it in self.con.execute(
-            sqa.select(self.table("label")).where(
-                self.table("label").c.text == name
+        res = [
+            it
+            for it in self.con.execute(
+                sqa.select(self.table("label")).where(
+                    self.table("label").c.text == name
+                )
             )
-        )]
+        ]
 
         if len(res) == 0:
             return None
@@ -495,11 +273,14 @@ class Connect:
             return res[0]
 
     def get_user_by_name(self, name):
-        res = [it for it in self.con.execute(
-            sqa.select(self.table("user")).where(
-                self.table("user").c.name == name
+        res = [
+            it
+            for it in self.con.execute(
+                sqa.select(self.table("user")).where(
+                    self.table("user").c.name == name
+                )
             )
-        )]
+        ]
 
         if len(res) == 0:
             return None
@@ -508,10 +289,10 @@ class Connect:
             return res[0]
 
     def get_pull_by_id(self, gh_id):
-       return self.get_from_github_id(gh_id, "pull")
+        return self.get_from_github_id(gh_id, "pull")
 
     def get_issue_by_id(self, gh_id):
-       return self.get_from_github_id(gh_id, "issue")
+        return self.get_from_github_id(gh_id, "issue")
 
     def reference_issue(self, entry_id, entry_kind, number):
         """
@@ -606,7 +387,6 @@ class Connect:
                 )
             )
 
-
     def get_commit(self, sha: str) -> Optional[int]:
         if sha not in self.commit_cache:
             try:
@@ -618,8 +398,8 @@ class Connect:
                 self.commit_cache[commit.sha] = self.add(
                     GHCommit(
                         sha=commit.sha,
-                        user=commit.committer and
-                             self.get_user(commit.committer),
+                        user=commit.committer
+                        and self.get_user(commit.committer),
                     )
                 )
 
@@ -646,8 +426,8 @@ class Connect:
                     name=issue.title or "",
                     gh_id=issue.id,
                     user=self.get_user(issue.user),
-                    closed_by=issue.closed_by and self.get_user(
-                        issue.closed_by),
+                    closed_by=issue.closed_by
+                    and self.get_user(issue.closed_by),
                     created_at=to_stamp(issue.created_at),
                     updated_at=to_stamp(issue.updated_at),
                     closed_at=to_stamp(issue.closed_at),
@@ -685,11 +465,11 @@ class Connect:
             for reaction in issue.get_reactions():
                 self.add(
                     GHReaction(
-                        target = issue_id,
-                        target_kind = GHEntryKind.ISSUE,
-                        created_at = to_stamp(reaction.created_at),
-                        user = self.get_user(reaction.user),
-                        kind = reaction_name_to_kind(reaction.content)
+                        target=issue_id,
+                        target_kind=GHEntryKind.ISSUE,
+                        created_at=to_stamp(reaction.created_at),
+                        user=self.get_user(reaction.user),
+                        kind=reaction_name_to_kind(reaction.content),
                     )
                 )
 
@@ -731,13 +511,10 @@ class Connect:
                 title=pull.title or "",
                 closed_at=to_stamp(pull.closed_at),
                 created_at=to_stamp(pull.created_at),
-                user = pull.user and self.get_user(pull.user),
-
+                user=pull.user and self.get_user(pull.user),
                 merged_at=to_stamp(pull.merged_at),
                 merged_by=pull.merged_by and self.get_user(pull.merged_by),
-
                 updated_at=to_stamp(pull.updated_at),
-
                 gh_id=pull.id,
                 additions=pull.additions,
                 deletions=pull.deletions,
@@ -785,7 +562,7 @@ class Connect:
                         changes=file.changes,
                         deletions=file.deletions,
                         filename=file.filename,
-                        previous_filename=file.previous_filename
+                        previous_filename=file.previous_filename,
                     )
                 )
 
@@ -838,7 +615,7 @@ class Connect:
             return self.add(
                 GHLabel(
                     text=label.name,
-                    description="FIXME", # HACK. Trying to get
+                    description="FIXME",  # HACK. Trying to get
                     # description=label.description, causes the '400
                     # returned object contains no URL' error
                     color=label.color,
@@ -859,7 +636,7 @@ def parse_args(args=sys.argv[1:]):
         "--repo",
         dest="repo",
         default=None,
-        help="Github repository name in form of user/repo"
+        help="Github repository name in form of user/repo",
     )
 
     parser.add_argument(
@@ -886,14 +663,9 @@ def parse_args(args=sys.argv[1:]):
         help="Maximum number of pull requests to fetch in a single program run",
     )
 
-    parser.add_argument(
-        "outfile", default=None, help="Output database file"
-    )
+    parser.add_argument("outfile", default=None, help="Output database file")
 
     return parser.parse_args(args)
-
-
-# %% Reading the data from the GitHub repository
 
 
 def to_stamp(date_time: DateTime) -> Optional[int]:
@@ -924,8 +696,9 @@ def fill_issues(c: Connect):
         # HACK this check is necessary because `get_issues` consistently
         # returns pull request URLs as well and they even manage to pass
         # into the API, returning valid responses.
-        if issue.html_url.endswith(f"issues/{issue.number}") \
-           and s.is_wanted_issue(issue):
+        if issue.html_url.endswith(
+            f"issues/{issue.number}"
+        ) and s.is_wanted_issue(issue):
             c.get_issue(issue)
             count += 1
 
@@ -935,11 +708,7 @@ def fill_issues(c: Connect):
 
 def fill_pulls(c: Connect):
     s = c.state
-    pulls = s.repo.get_pulls(
-        state="all",
-        direction="asc",
-        sort="updated"
-    )
+    pulls = s.repo.get_pulls(state="all", direction="asc", sort="updated")
 
     count = 1
     for pull in pulls:
@@ -954,15 +723,13 @@ def fill_pulls(c: Connect):
             count += 1
             if s.args.max_pulls_fetch < count:
                 log.warning(
-                    f"Reached max number of pulls ({count}), withdrawing")
+                    f"Reached max number of pulls ({count}), withdrawing"
+                )
 
                 break
 
         else:
-            log.debug({
-                "url": pull.html_url,
-                "num": pull.number
-            })
+            log.debug({"url": pull.html_url, "num": pull.number})
 
 
 def impl(args):
@@ -987,10 +754,7 @@ def impl(args):
         level="NOTSET",
         format="%(message)s",
         datefmt="[%X]",
-        handlers=[RichHandler(
-            rich_tracebacks=True,
-            markup=True
-        )],
+        handlers=[RichHandler(rich_tracebacks=True, markup=True)],
     )
 
     for name in logging.root.manager.loggerDict:
@@ -1026,7 +790,7 @@ if __name__ == "__main__":
                     "--max-issue-fetch=1000",
                     "--max-pull-fetch=1000",
                     # "--clean-write=True",
-                    "--repo=nim-lang/Nim"
+                    "--repo=nim-lang/Nim",
                 ]
             )
         )

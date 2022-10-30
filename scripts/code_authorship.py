@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 
-import argparse
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
-from pprint import pprint
-from cli_common import *
+import cli_common as cli
+import sys
 
 
 def parse_args(args=sys.argv[1:]):
-    parser = init_parser()
+    parser = cli.init_parser()
     parser.add_argument(
         "--top",
         dest="top",
@@ -18,20 +17,22 @@ def parse_args(args=sys.argv[1:]):
         help="How many committers from the top to plot",
     )
 
-    return parse_args_with_config(parser, args)
+    return cli.parse_args_with_config(parser, args)
 
 
 def impl(args):
-    cur = open_db(args)
+    cur = cli.open_db(args)
 
     total_writers = {}
     all_periods = set()
     author_period_map = {}
 
-    for row in cur.execute(open(Path(__file__).parent / "code_authorship.sql").read()):
+    for row in cur.execute(
+        open(Path(__file__).parent / "code_authorship.sql").read()
+    ):
         (author, period, line_count) = row
         all_periods.add(period)
-        name = remap_name(args, author)
+        name = cli.remap_name(args, author)
         if name not in total_writers:
             total_writers[name] = 0
 
@@ -69,7 +70,10 @@ def impl(args):
     author_period_map["other"] = other_authors
     total_writers["other"] = sum([count for _, count in other_authors.items()])
 
-    authors_ordered = sorted(total_writers.items(), key=lambda it: it[1], reverse=True)
+    authors_ordered = sorted(
+        total_writers.items(), key=lambda it: it[1], reverse=True
+    )
+
     for author_idx, (author, count) in enumerate(authors_ordered):
         if author in author_period_map:
             for period in sorted(all_periods):
@@ -86,7 +90,8 @@ def impl(args):
         exit(1)
 
     global_percentage = {  #
-        name: 100 * (count / full_count) for name, count in total_writers.items()
+        name: 100 * (count / full_count)
+        for name, count in total_writers.items()
     }
 
     sample_count: int = len(all_periods)
@@ -109,7 +114,7 @@ def impl(args):
     index = list(sorted(all_periods))
     colors = plt.cm.rainbow(np.linspace(0, 0.8, author_count))
 
-    fig = plt.figure(figsize=(10, 12), dpi=300, constrained_layout=True)
+    plt.figure(figsize=(10, 12), dpi=300, constrained_layout=True)
 
     for author_idx, samples in enumerate(data):
         if top_n - 1 < author_idx:
