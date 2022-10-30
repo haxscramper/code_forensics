@@ -166,7 +166,8 @@ for commit_idx, samples in enumerate(data):
     barplot.bar(
         index,  # Indices for each sample point
         samples,  # New sample information
-        width=1.0,  # Full width, otherwise bars will be misalingned with table change_periods
+        width=1.0,  # Full width, otherwise bars will be misalingned with
+                    # table change_periods
         bottom=y_offset,  # baseline for bars
         color=colors[commit_idx],  # Each comit period has it's own unique color
         edgecolor="black",  # Distinct borders in case there are many periods

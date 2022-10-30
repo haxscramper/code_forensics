@@ -165,6 +165,9 @@ def event_name_to_kind(event: str) -> GHIssueEventKind:
         case "ready_for_review":
             return GHIssueEventKind.READY_FOR_REVIEW
 
+        case "demilestoned":
+            return GHIssueEventKind.DEMILESTONED
+
         case _:
             assert False, event
 

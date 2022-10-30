@@ -33,12 +33,36 @@ def impl(args):
     session = Session()
     meta = SQLBase.metadata
     con = engine.connect()
+    times = {}
 
-    times = {"comment": [], "pull": [], "issue": []}
+    if True:
+        # TODO add configuration argument to implement different
+        # mapping strategies
+        times = {"comment": [], "pull": [], "issue": [], "issue_event": []}
 
-    for name, time in times.items():
-        for it in con.execute(sqa.select(meta.tables["comment"])):
-            time.append(it.created_at)
+        for name, time in times.items():
+            for it in con.execute(sqa.select(meta.tables["comment"])):
+                time.append(it.created_at)
+
+    elif False:
+        created = []
+        closed = []
+        for it in con.execute(sqa.select(meta.tables["issue"])):
+            created.append(it.created_at)
+            if it.closed_at:
+                closed.append(it.closed_at)
+
+        times = {"created": created, "closed": closed}
+
+    else:
+        created = []
+        closed = []
+        for it in con.execute(sqa.select(meta.tables["pull"])):
+            created.append(it.created_at)
+            if it.closed_at:
+                closed.append(it.closed_at)
+
+        times = {"created": created, "closed": closed}
 
     for name, time in times.items():
         time = sorted(time)
@@ -60,15 +84,37 @@ def impl(args):
         )
 
     fig, ax = plt.subplots(figsize=(12, 12))
-    ax.stackplot(
-        histogram_data[0][1][:-1],
-        [it[0] for it in histogram_data],
-        labels=[name for name, _ in times.items()],
-    )
+    label = [name for name, _ in times.items()]
+    value = [it[0] for it in histogram_data]
+    xdata = histogram_data[0][1][:-1]
+    items = len(times)
+    width = np.min(np.diff(xdata)) * 0.7
+
+    if False:
+        for idx in range(items):
+            if 0 < idx:
+                value[idx] += value[idx - 1]
+
+        ax.stackplot(xdata, value, labels=label)
+
+    else:
+        bottom = np.cumsum(
+            [np.zeros(len(value[0])).astype(int)] + value, axis=0
+        )
+
+        for idx in range(items):
+            ax.bar(
+                x=xdata,
+                height=value[idx],
+                bottom=bottom[idx],
+                label=label[idx],
+                width=width,
+                edgecolor="black",
+            )
 
     ax.grid(True)
     cli.format_x_dates(ax)
-    fig.legend()
+    ax.legend(loc="upper left")
     fig.savefig(args.outfile, dpi=300, bbox_inches="tight")
 
 
