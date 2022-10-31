@@ -85,6 +85,7 @@ class GHIssueEventKind(IntEnum):
     COMMENT_DELETED = 23
     READY_FOR_REVIEW = 24
     DEMILESTONED = 25
+    CONNECTED = 26
 
 
 class GHIssueEvent(SQLBase):

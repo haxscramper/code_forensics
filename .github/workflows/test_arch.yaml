@@ -75,7 +75,7 @@ jobs:
     needs: [build_image]
     runs-on: ubuntu-22.04
     # Use arch linux because ubuntu has a fossiltech-version of the boost
-    # installed and conan cannot build because I need to use the python
+    # installed and conan cannot build it because I need to use the python
     # component, which fails on the ubuntu installation.
     container:
       # HACK `env.` is not available in the `image:` expression so
@@ -111,13 +111,23 @@ jobs:
       - name: "Build code analyzer"
         run: ./tests/ci_general_build.sh
 
+      - name: "Build test database"
+        run: ./tests/ci_build_db.sh
+
+      - uses: actions/upload-artifact@v3
+        name: "Upload generated database"
+        with:
+          name: repo-database
+          path: |
+            nimskull.sqlite
+
       - name: "Execute main test commands"
         run: ./tests/ci_general_run.sh
 
       - uses: actions/upload-artifact@v3
+        name: "Upload generated plots"
         with:
           name: burndown-plots
           path: |
             *.png
             nimskull_plots/*.png
-            nimskull.sqlite

@@ -168,6 +168,9 @@ def event_name_to_kind(event: str) -> GHIssueEventKind:
         case "demilestoned":
             return GHIssueEventKind.DEMILESTONED
 
+        case "connected":
+            return GHIssueEventKind.CONNECTED
+
         case _:
             assert False, event
 
