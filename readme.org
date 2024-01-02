@@ -1,3 +1,7 @@
+Archived, v2 implementation is at https://github.com/haxscramper/haxorg/tree/master/scripts/cxx_repository -- much better data model, should have tests and so on. This repo is kept around for my own reference, some thing from here are still worth copying. 
+
+-------------------
+
 Historical data analysis for the git repositories. Largely inspired by
 projects such as [[https://github.com/src-d/hercules][src-d/hercules: Gaining advanced insights from Git
 repository history]], [[https://github.com/adamtornhill/code-maat][adamtornhill/code-maat: A command line tool to mine and
